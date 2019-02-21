@@ -50,6 +50,9 @@ public class MapRepresentation implements Serializable {
 		this.nbEdges=0;
 	}
 
+	public void display() {
+		this.viewer = this.g.display();
+	}
 	/**
 	 * Associate to a node an attribute in order to identify them by type. 
 	 * @param id
