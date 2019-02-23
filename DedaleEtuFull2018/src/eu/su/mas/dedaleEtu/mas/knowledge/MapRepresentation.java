@@ -1,16 +1,20 @@
 package eu.su.mas.dedaleEtu.mas.knowledge;
 
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.graphstream.algorithm.Dijkstra;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
+
+import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 /**
  * This simple topology representation only deals with the graph, not its content.</br>
@@ -43,7 +47,6 @@ public class MapRepresentation implements Serializable {
 	
 	public MapRepresentation() {
 		System.setProperty("org.graphstream.ui.renderer","org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
 		this.g= new SingleGraph("My world vision");
 		this.g.setAttribute("ui.stylesheet",nodeStyle);
 		this.viewer = this.g.display();
@@ -122,6 +125,25 @@ public class MapRepresentation implements Serializable {
 		dijkstra.clear();
 		shortestPath.remove(0);//remove the current position
 		return shortestPath;
+	}
+	
+	public Graph getG() {
+		return g;
+	}
+	
+	//Peut etre plus efficace
+	public Pair<ArrayList<String>,ArrayList<Pair<String,String>>> getStringListRepresentation(){ 
+		ArrayList<String> nodes = new ArrayList<String>();
+		for(Node n : g.getEachNode()) {
+			nodes.add(n.toString());
+		}
+		
+		ArrayList<Pair<String,String>> edges= new ArrayList<Pair<String,String>>();
+		for(Edge e : g.getEachEdge()) {
+			edges.add(new Pair<String,String>(e.getNode0().toString(), e.getNode1().toString()));
+		}
+		
+		return new Pair<ArrayList<String>,ArrayList<Pair<String,String>>>(nodes, edges);
 	}
 	
 

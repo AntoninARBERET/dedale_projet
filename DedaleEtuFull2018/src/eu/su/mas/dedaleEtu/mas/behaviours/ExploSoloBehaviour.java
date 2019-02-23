@@ -68,6 +68,8 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 		if (myPosition!=null){
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
+			
+			System.out.println(lobs.toString());
 
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick

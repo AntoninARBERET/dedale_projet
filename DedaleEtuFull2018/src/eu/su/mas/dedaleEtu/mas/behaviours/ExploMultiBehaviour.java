@@ -47,13 +47,19 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	 * Visited nodes
 	 */
 	private Set<String> closedNodes;
+	
+	private String previousPosition;
+	
+	private String[] agentsIds;
 
 
-	public ExploMultiBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap) {
+	public ExploMultiBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, String[] agentsIds) {
 		super(myagent);
 		this.myMap=myMap;
 		this.openNodes=new ArrayList<String>();
 		this.closedNodes=new HashSet<String>();
+		this.previousPosition=null;
+		this.agentsIds = agentsIds;
 	}
 
 	@Override
@@ -63,9 +69,25 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			this.myMap= new MapRepresentation();
 		
 		//0) Retrieve the current position
+		
+		boolean blocked=false;
+		
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
+		
+		
 	
 		if (myPosition!=null){
+			if(previousPosition !=null && previousPosition.equals(myPosition)) {
+				blocked=true;
+				System.out.println(this.myAgent.getName()+" est bloque");
+				//check methode et completer
+				SendMapBehaviour behav = new SendMapBehaviour(myAgent, myMap, "-1", agentsIds);
+				behav.action();
+				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myAgent);
+				rmb.action();
+			}
+			previousPosition = myPosition;
+			
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 
@@ -73,7 +95,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(500);
+				this.myAgent.doWait(250);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.io.IOException;
 import java.util.Random;
 
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -27,30 +28,26 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	/**
 	 * number of values to send
 	 */
-	private int nbValues;
-	
-	/**
-	 * number of values already sent
-	 */
-	private int nbMessagesSent=0;
 	
 	/**
 	 * Name of the agent that should receive the values
 	 */
 	private String receiverName;
+	private String[] agentsIds;
 	
-	Random r;
-
+	MapRepresentation myMap;
+	
 	/**
 	 * 
 	 * @param myagent the Agent this behaviour is linked to
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public SendMapBehaviour(final Agent myagent,MapRepresentation myMap, String receiverName) {
+	public SendMapBehaviour(final Agent myagent,MapRepresentation myMap, String receiverName, String[] agentsIds) {
 		super(myagent);
 		this.receiverName=receiverName;
-		this.r= new Random();
+		this.myMap = myMap;
+		this.agentsIds = agentsIds;
 		
 	}
 
@@ -60,19 +57,34 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		
 		//1°Create the message
 		final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		
 		msg.setSender(this.myAgent.getAID());
-		msg.addReceiver(new AID(this.receiverName, AID.ISLOCALNAME));  
+		
+		if(this.receiverName=="-1") {
+			for(int i =0; i<agentsIds.length; i++) {
+				if(agentsIds[i]!=myAgent.getName()) {
+					msg.addReceiver(new AID(agentsIds[i], AID.ISLOCALNAME));
+				}
+			}
+		}
+		else {
+			msg.addReceiver(new AID(this.receiverName, AID.ISLOCALNAME));  
+		}
 			
 		//2° compute the random value		
-		msg.setContent(((Integer)r.nextInt(100)).toString());
-		this.myAgent.send(msg);
-		nbMessagesSent++;
-		
-		if(nbMessagesSent>=nbValues){
-			this.finished=true; // After the execution of the action() method, this behaviour will be erased from the agent's list of triggerable behaviours.
+		try {
+			msg.setContent("MAP");
+			msg.setContentObject(myMap.getStringListRepresentation());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		System.out.println(this.myAgent.getLocalName()+" ----> Message number "+this.nbMessagesSent+" sent to "+this.receiverName+" ,content= "+msg.getContent());
+		this.myAgent.send(msg);
+		
+		this.finished=true; // After the execution of the action() method, this behaviour will be erased from the agent's list of triggerable behaviours.
+
+		
+		System.out.println(this.myAgent.getLocalName()+" ----> myMap sent to "+this.receiverName);
 
 	}
 
