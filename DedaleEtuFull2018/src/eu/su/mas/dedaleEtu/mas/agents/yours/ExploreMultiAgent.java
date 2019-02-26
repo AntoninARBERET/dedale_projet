@@ -6,7 +6,7 @@ import java.util.List;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
 import eu.su.mas.dedaleEtu.mas.behaviours.ExploMultiBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.ExploSoloBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.dummies.ExploSoloBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 
@@ -20,7 +20,7 @@ import jade.core.behaviours.Behaviour;
  *
  */
 
-public class ExploreMultiAgent extends AbstractDedaleAgent {
+public class ExploreMultiAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	private MapRepresentation myMap;
@@ -62,19 +62,5 @@ public class ExploreMultiAgent extends AbstractDedaleAgent {
 		System.out.println("the  agent "+this.getLocalName()+ " is started");
 
 	}
-	
-	public String[] getIdList() {
-		return idList;
-	}
-	
-	public MapRepresentation getMap() {
-		return myMap;
-	}
-	
-	public void setMap(MapRepresentation m) {
-		myMap=m;
-	}
-	
-	
 	
 }

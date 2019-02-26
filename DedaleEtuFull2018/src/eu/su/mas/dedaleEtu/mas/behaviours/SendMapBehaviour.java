@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 import java.io.IOException;
 import java.util.Random;
 
+import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.AID;
 import jade.core.Agent;
@@ -34,6 +35,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	 */
 	private String receiverName;
 	private String[] agentsIds;
+	private DedaleAgent myDedaleAgent;
 	
 	MapRepresentation myMap;
 	
@@ -43,8 +45,9 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public SendMapBehaviour(final Agent myagent,MapRepresentation myMap, String receiverName, String[] agentsIds) {
+	public SendMapBehaviour(final DedaleAgent myagent,MapRepresentation myMap, String receiverName, String[] agentsIds) {
 		super(myagent);
+		this.myDedaleAgent = myagent;
 		this.receiverName=receiverName;
 		this.myMap = myMap;
 		this.agentsIds = agentsIds;
@@ -58,11 +61,11 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		//1°Create the message
 		final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		
-		msg.setSender(this.myAgent.getAID());
+		msg.setSender(this.myDedaleAgent.getAID());
 		
 		if(this.receiverName=="-1") {
 			for(int i =0; i<agentsIds.length; i++) {
-				if(agentsIds[i]!=myAgent.getName()) {
+				if(agentsIds[i]!=myDedaleAgent.getName()) {
 					msg.addReceiver(new AID(agentsIds[i], AID.ISLOCALNAME));
 				}
 			}
@@ -73,18 +76,18 @@ public class SendMapBehaviour extends SimpleBehaviour{
 			
 		//2° compute the random value		
 		try {
-			msg.setContent("MAP");
+			msg.setProtocol("MAP");
 			msg.setContentObject(myMap.getStringListRepresentation());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		this.myAgent.send(msg);
+		this.myDedaleAgent.send(msg);
 		
 		this.finished=true; // After the execution of the action() method, this behaviour will be erased from the agent's list of triggerable behaviours.
 
 		
-		System.out.println(this.myAgent.getLocalName()+" ----> myMap sent to "+this.receiverName);
+		System.out.println(this.myDedaleAgent.getLocalName()+" ----> myMap sent to "+this.receiverName);
 
 	}
 

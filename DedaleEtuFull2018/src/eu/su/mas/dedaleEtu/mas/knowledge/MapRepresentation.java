@@ -14,6 +14,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 /**
@@ -131,19 +132,35 @@ public class MapRepresentation implements Serializable {
 		return g;
 	}
 	
+	public Iterable<? extends Node> getEachNode() {
+		return g.getEachNode();
+	}
+	
+	public Node getNode(String id) {
+		return g.getNode(id);
+	}
+	
 	//Peut etre plus efficace
-	public Pair<ArrayList<String>,ArrayList<Pair<String,String>>> getStringListRepresentation(){ 
-		ArrayList<String> nodes = new ArrayList<String>();
+	public Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>> getStringListRepresentation(){ 
+		ArrayList<String> openNodes = new ArrayList<String>();
+		ArrayList<String> closedNodes = new ArrayList<String>();
+
 		for(Node n : g.getEachNode()) {
-			nodes.add(n.toString());
+			if(n.hasAttribute("open")) {
+				closedNodes.add(n.toString());
+			}else {
+				openNodes.add(n.toString());
+			}
 		}
+		Couple<ArrayList<String>,ArrayList<String>> nodes = new Couple<ArrayList<String>,ArrayList<String>>(openNodes, closedNodes);
 		
-		ArrayList<Pair<String,String>> edges= new ArrayList<Pair<String,String>>();
+		
+		ArrayList<Couple<String,String>> edges= new ArrayList<Couple<String,String>>();
 		for(Edge e : g.getEachEdge()) {
-			edges.add(new Pair<String,String>(e.getNode0().toString(), e.getNode1().toString()));
+			edges.add(new Couple<String,String>(e.getNode0().toString(), e.getNode1().toString()));
 		}
 		
-		return new Pair<ArrayList<String>,ArrayList<Pair<String,String>>>(nodes, edges);
+		return new Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>(nodes, edges);
 	}
 	
 

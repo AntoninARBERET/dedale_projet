@@ -10,6 +10,7 @@ import java.util.Set;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import jade.core.behaviours.Behaviour;
@@ -51,10 +52,13 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	private String previousPosition;
 	
 	private String[] agentsIds;
+	
+	private DedaleAgent myDedaleAgent;
 
 
-	public ExploMultiBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, String[] agentsIds) {
+	public ExploMultiBehaviour(final DedaleAgent myagent, MapRepresentation myMap, String[] agentsIds) {
 		super(myagent);
+		this.myDedaleAgent = myagent;
 		this.myMap=myMap;
 		this.openNodes=new ArrayList<String>();
 		this.closedNodes=new HashSet<String>();
@@ -72,30 +76,30 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 		
 		boolean blocked=false;
 		
-		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
+		String myPosition=myDedaleAgent.getCurrentPosition();
 		
 		
 	
 		if (myPosition!=null){
 			if(previousPosition !=null && previousPosition.equals(myPosition)) {
 				blocked=true;
-				System.out.println(this.myAgent.getName()+" est bloque");
+				System.out.println(this.myDedaleAgent.getName()+" est bloque");
 				//check methode et completer
-				SendMapBehaviour behav = new SendMapBehaviour(myAgent, myMap, "-1", agentsIds);
-				behav.action();
-				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myAgent);
+				SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, myMap, "-1", agentsIds);
+				smb.action();
+				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
 				rmb.action();
 			}
 			previousPosition = myPosition;
 			
 			//List of observable from the agent's current position
-			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
+			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(250);
+				this.myDedaleAgent.doWait(250);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -138,7 +142,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					//chose one, compute the path and take the first step.
 					nextNode=this.myMap.getShortestPath(myPosition, this.openNodes.get(0)).get(0);
 				}
-				((AbstractDedaleAgent)this.myAgent).moveTo(nextNode);
+				myDedaleAgent.moveTo(nextNode);
 			}
 
 		}

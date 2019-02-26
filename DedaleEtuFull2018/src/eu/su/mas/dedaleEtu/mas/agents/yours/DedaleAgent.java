@@ -1,10 +1,11 @@
-package eu.su.mas.dedaleEtu.mas.agents.dummies;
+package eu.su.mas.dedaleEtu.mas.agents.yours;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
+import eu.su.mas.dedaleEtu.mas.behaviours.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.dummies.ExploSoloBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
@@ -19,10 +20,11 @@ import jade.core.behaviours.Behaviour;
  *
  */
 
-public class ExploreSoloAgent extends AbstractDedaleAgent {
+public class DedaleAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	private MapRepresentation myMap;
+	private String[] idList;
 	
 
 	/**
@@ -35,7 +37,9 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 	protected void setup(){
 
 		super.setup();
-		
+		/*final Object[] args = getArguments();
+		idList = (String[])args[2];
+		myMap=new MapRepresentation();
 
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
@@ -45,7 +49,7 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new ExploSoloBehaviour(this,this.myMap));
+		//lb.add(new ExploMultiBehaviour(this,this.myMap, idList));
 		
 		
 		/***
@@ -53,12 +57,19 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		 */
 		
 		
-		addBehaviour(new startMyBehaviours(this,lb));
+		/*addBehaviour(new startMyBehaviours(this,lb));
 		
-		System.out.println("the  agent "+this.getLocalName()+ " is started");
+		System.out.println("the  agent "+this.getLocalName()+ " is started");*/
 
 	}
-	
-	
-	
+
+
+	public void setMap(MapRepresentation myMap) {
+		this.myMap=myMap;
+	}
+
+
+	public MapRepresentation getMap() {
+		return myMap;
+	}
 }
