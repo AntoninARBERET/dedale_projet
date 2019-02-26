@@ -73,7 +73,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	
 		if (myPosition!=null){
 			
-			
+			myDedaleAgent.setPosition(myPosition);
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 
@@ -125,6 +125,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					nextNode=this.myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getOpenNodes().get(0)).get(0);
+					myDedaleAgent.setNextNode(nextNode);
 				}
 				myDedaleAgent.moveTo(nextNode);
 			}

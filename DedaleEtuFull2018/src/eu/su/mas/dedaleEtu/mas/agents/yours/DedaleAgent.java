@@ -56,6 +56,10 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	 * Visited nodes
 	 */
 	private Set<String> closedNodes;
+	
+	private String position;
+	
+	private String nextNode;
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -104,4 +108,26 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public MapRepresentation getMap() {
 		return myMap;
 	}
+
+
+	public String getPosition() {
+		return position;
+	}
+
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+
+	public String getNextNode() {
+		return nextNode;
+	}
+
+
+	public void setNextNode(String nextNode) {
+		this.nextNode = nextNode;
+	}
+	
+	
 }

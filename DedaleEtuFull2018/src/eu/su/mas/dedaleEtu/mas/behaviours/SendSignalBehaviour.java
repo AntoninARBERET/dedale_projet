@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 import java.io.IOException;
 import java.util.Random;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.AID;
@@ -21,7 +22,7 @@ import jade.lang.acl.ACLMessage;
  *
  */
 
-public class SendMapBehaviour extends SimpleBehaviour{
+public class SendSignalBehaviour extends SimpleBehaviour{
 	
 	private static final long serialVersionUID = 9088209402507795289L;
 
@@ -43,7 +44,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public SendMapBehaviour(final DedaleAgent myagent, String receiverName, String[] agentsIds) {
+	public SendSignalBehaviour(final DedaleAgent myagent, String receiverName, String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.receiverName=receiverName;
@@ -66,7 +67,6 @@ public class SendMapBehaviour extends SimpleBehaviour{
 					msg.addReceiver(new AID(agentsIds[i], AID.ISLOCALNAME));
 				}
 			}
-
 		}
 		else {
 			msg.addReceiver(new AID(this.receiverName, AID.ISLOCALNAME));  
@@ -74,8 +74,8 @@ public class SendMapBehaviour extends SimpleBehaviour{
 			
 		//2° compute the random value		
 		try {
-			msg.setProtocol("MAP");
-			msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
+			msg.setProtocol("SIGNAL");
+			msg.setContentObject(new Couple<String, String>(myDedaleAgent.getPosition(), myDedaleAgent.getNextNode()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
