@@ -38,12 +38,10 @@ public class MergeMapsBehaviour extends SimpleBehaviour{
 	/**
 	 * Name of the agent that should receive the values
 	 */
-	private String receiverName;
-	private String[] agentsIds;
+
 	private Object recMap;
 	private DedaleAgent myDedaleAgent;
 	
-	MapRepresentation myMap;
 	
 	/**
 	 * 
@@ -51,10 +49,9 @@ public class MergeMapsBehaviour extends SimpleBehaviour{
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public MergeMapsBehaviour(final DedaleAgent myagent,MapRepresentation myMap, Object recMap) {
+	public MergeMapsBehaviour(final DedaleAgent myagent, Object recMap) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
-		this.myMap = myDedaleAgent.getMap();
 		this.recMap=recMap;
 		
 	}
@@ -64,28 +61,42 @@ public class MergeMapsBehaviour extends SimpleBehaviour{
 		
 		//if(recMap instanceof Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>){
 			Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>  newMap = (Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>) recMap;
+			if(myDedaleAgent.getMap()==null) {
+				System.out.println(myDedaleAgent.getLocalName()+" ----> MAP NULL");
+				try {
+					this.myDedaleAgent.doWait(250);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			
+			int o=0, f=0, a=0;
 			//Ajout des noeuds ouverts
 			for(String noeud : newMap.getLeft().getLeft()) {
-				if(myMap.getNode(noeud)==null) {
-					myMap.addNode(noeud, MapAttribute.open);
+				if(myDedaleAgent.getMap().getNode(noeud)==null) {
+					myDedaleAgent.getMap().addNode(noeud, MapAttribute.open);
+					myDedaleAgent.getOpenNodes().add(noeud);
+					o++;
 				}
 			}
 			
 			//Ajout des noeuds fermes
 			for(String noeud : newMap.getLeft().getRight()) {
-				if(myMap.getNode(noeud)==null) {
-					myMap.addNode(noeud);
-				}
+				myDedaleAgent.getMap().addNode(noeud);
+				myDedaleAgent.getClosedNodes().add(noeud);
+				myDedaleAgent.getOpenNodes().remove(noeud);
+				f++;
 			}
 			
 			//Ajout des arcs
 			for(Couple<String,String> arc : newMap.getRight()) {
-				myMap.addEdge(arc.getLeft(), arc.getRight());
+				myDedaleAgent.getMap().addEdge(arc.getLeft(), arc.getRight());
+				a++;
 			}
 			
-			//myDedaleAgent.setMap(myMap);
-			System.out.println(this.myDedaleAgent.getLocalName()+" merged maps ");
+			//myDedaleAgent.setMap(myDedaleAgent.getMap());
+			System.out.println(this.myDedaleAgent.getLocalName()+" merged maps - o = " +o+" f = "+f+" a = "+a );
 		//}else {
 			//System.out.println(this.myDedaleAgent.getLocalName()+" echec de merge, mauvais type");
 		//}

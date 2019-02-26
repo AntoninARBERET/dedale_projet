@@ -26,6 +26,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 	private MapRepresentation myMap;
 	private String[] idList;
 	
+	
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -35,11 +36,11 @@ public class ExploreMultiAgent extends DedaleAgent {
 	 *          
 	 */
 	protected void setup(){
-
+		
 		super.setup();
 		final Object[] args = getArguments();
 		idList = (String[])args[2];
-		myMap=new MapRepresentation();
+		//myMap=new MapRepresentation();
 
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
@@ -49,7 +50,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new ExploMultiBehaviour(this,this.myMap, idList));
+		lb.add(new ExploMultiBehaviour(this, idList));
 		
 		
 		/***

@@ -38,16 +38,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	/**
 	 * Current knowledge of the agent regarding the environment
 	 */
-	private MapRepresentation myMap;
 
-	/**
-	 * Nodes known but not yet visited
-	 */
-	private List<String> openNodes;
-	/**
-	 * Visited nodes
-	 */
-	private Set<String> closedNodes;
+
 	
 	private String previousPosition;
 	
@@ -56,21 +48,20 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	private DedaleAgent myDedaleAgent;
 
 
-	public ExploMultiBehaviour(final DedaleAgent myagent, MapRepresentation myMap, String[] agentsIds) {
+	public ExploMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
-		this.myMap=myMap;
-		this.openNodes=new ArrayList<String>();
-		this.closedNodes=new HashSet<String>();
+		
 		this.previousPosition=null;
 		this.agentsIds = agentsIds;
 	}
 
 	@Override
 	public void action() {
-
-		if(this.myMap==null)
-			this.myMap= new MapRepresentation();
+		
+		if(myDedaleAgent.getMap()==null) {
+			myDedaleAgent.setMap(new MapRepresentation());
+		}
 		
 		//0) Retrieve the current position
 		
@@ -81,16 +72,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 		
 	
 		if (myPosition!=null){
-			if(previousPosition !=null && previousPosition.equals(myPosition)) {
-				blocked=true;
-				System.out.println(this.myDedaleAgent.getName()+" est bloque");
-				//check methode et completer
-				SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, myMap, "-1", agentsIds);
-				smb.action();
-				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
-				rmb.action();
-			}
-			previousPosition = myPosition;
+			
 			
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
@@ -105,31 +87,33 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			}
 
 			//1) remove the current node from openlist and add it to closedNodes.
-			this.closedNodes.add(myPosition);
-			this.openNodes.remove(myPosition);
+			myDedaleAgent.getClosedNodes().add(myPosition);
+			myDedaleAgent.getOpenNodes().remove(myPosition);
 
-			this.myMap.addNode(myPosition);
+			this.myDedaleAgent.getMap().addNode(myPosition);
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
 			Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
 			while(iter.hasNext()){
 				String nodeId=iter.next().getLeft();
-				if (!this.closedNodes.contains(nodeId)){
-					if (!this.openNodes.contains(nodeId)){
-						this.openNodes.add(nodeId);
-						this.myMap.addNode(nodeId, MapAttribute.open);
-						this.myMap.addEdge(myPosition, nodeId);	
+				if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
+					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
+						myDedaleAgent.getOpenNodes().add(nodeId);
+						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open);
+						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
 					}else{
 						//the node exist, but not necessarily the edge
-						this.myMap.addEdge(myPosition, nodeId);
+						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);
 					}
 					if (nextNode==null) nextNode=nodeId;
 				}
 			}
+			
+			
 
 			//3) while openNodes is not empty, continues.
-			if (this.openNodes.isEmpty()){
+			if (myDedaleAgent.getOpenNodes().isEmpty()){
 				//Explo finished
 				finished=true;
 				System.out.println("Exploration successufully done, behaviour removed.");
@@ -140,10 +124,26 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				if (nextNode==null){
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
-					nextNode=this.myMap.getShortestPath(myPosition, this.openNodes.get(0)).get(0);
+					nextNode=this.myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getOpenNodes().get(0)).get(0);
 				}
 				myDedaleAgent.moveTo(nextNode);
 			}
+			
+			//check si l'agent est bloqué
+			if(previousPosition !=null && previousPosition.equals(myPosition)) {
+				blocked=true;
+				if(nextNode!=null) {
+					System.out.println(this.myDedaleAgent.getName()+" est bloque, objectif : " + nextNode.toString() );
+				}
+				//check methode et completer
+				SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, "-1", agentsIds);
+				smb.action();
+			
+				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
+				rmb.action();
+			}
+			previousPosition = myPosition;
+			
 
 		}
 	}

@@ -37,19 +37,16 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	private String[] agentsIds;
 	private DedaleAgent myDedaleAgent;
 	
-	MapRepresentation myMap;
-	
 	/**
 	 * 
 	 * @param myagent the Agent this behaviour is linked to
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public SendMapBehaviour(final DedaleAgent myagent,MapRepresentation myMap, String receiverName, String[] agentsIds) {
+	public SendMapBehaviour(final DedaleAgent myagent, String receiverName, String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.receiverName=receiverName;
-		this.myMap = myMap;
 		this.agentsIds = agentsIds;
 		
 	}
@@ -77,7 +74,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		//2° compute the random value		
 		try {
 			msg.setProtocol("MAP");
-			msg.setContentObject(myMap.getStringListRepresentation());
+			msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

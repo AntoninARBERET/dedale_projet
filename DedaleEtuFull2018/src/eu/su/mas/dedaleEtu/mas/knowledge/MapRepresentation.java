@@ -146,10 +146,10 @@ public class MapRepresentation implements Serializable {
 		ArrayList<String> closedNodes = new ArrayList<String>();
 
 		for(Node n : g.getEachNode()) {
-			if(n.hasAttribute("open")) {
-				closedNodes.add(n.toString());
-			}else {
+			if(n.getAttribute("ui.class")==MapAttribute.open.toString()) {
 				openNodes.add(n.toString());
+			}else {
+				closedNodes.add(n.toString());
 			}
 		}
 		Couple<ArrayList<String>,ArrayList<String>> nodes = new Couple<ArrayList<String>,ArrayList<String>>(openNodes, closedNodes);

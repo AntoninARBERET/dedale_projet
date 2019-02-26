@@ -1,7 +1,9 @@
 package eu.su.mas.dedaleEtu.mas.agents.yours;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
@@ -23,9 +25,37 @@ import jade.core.behaviours.Behaviour;
 public class DedaleAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
+	public List<String> getOpenNodes() {
+		return openNodes;
+	}
+
+
+	public void setOpenNodes(List<String> openNodes) {
+		this.openNodes = openNodes;
+	}
+
+
+	public Set<String> getClosedNodes() {
+		return closedNodes;
+	}
+
+
+	public void setClosedNodes(Set<String> closedNodes) {
+		this.closedNodes = closedNodes;
+	}
+
+
 	private MapRepresentation myMap;
-	private String[] idList;
 	
+	private String[] idList;
+	/**
+	 * Nodes known but not yet visited
+	 */
+	private List<String> openNodes;
+	/**
+	 * Visited nodes
+	 */
+	private Set<String> closedNodes;
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -37,11 +67,13 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	protected void setup(){
 
 		super.setup();
-		/*final Object[] args = getArguments();
-		idList = (String[])args[2];
-		myMap=new MapRepresentation();
+		this.openNodes=new ArrayList<String>();
+		this.closedNodes=new HashSet<String>();
+		//final Object[] args = getArguments();
+		//idList = (String[])args[2];
+		//myMap=new MapRepresentation();
 
-		List<Behaviour> lb=new ArrayList<Behaviour>();
+		//List<Behaviour> lb=new ArrayList<Behaviour>();
 		
 		/************************************************
 		 * 
