@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.dummies;
+package eu.su.mas.dedaleEtu.archive.dummies;
 
 import java.io.IOException;
 import java.util.ArrayList;

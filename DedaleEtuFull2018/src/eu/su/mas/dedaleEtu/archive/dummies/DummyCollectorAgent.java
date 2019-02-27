@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.agents.dummies;
+package eu.su.mas.dedaleEtu.archive.dummies;
 
 
 import eu.su.mas.dedale.env.Observation;

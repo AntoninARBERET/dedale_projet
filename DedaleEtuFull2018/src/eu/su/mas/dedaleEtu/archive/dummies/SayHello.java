@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.dummies;
+package eu.su.mas.dedaleEtu.archive.dummies;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import jade.core.AID;

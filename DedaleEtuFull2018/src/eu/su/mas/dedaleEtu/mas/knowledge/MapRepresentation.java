@@ -15,6 +15,8 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
 
 import dataStructures.tuple.Couple;
+import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 /**
@@ -163,6 +165,44 @@ public class MapRepresentation implements Serializable {
 		return new Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>(nodes, edges);
 	}
 	
+	public static void MergeMaps(DedaleAgent myDedaleAgent, Object recMap) {
+		Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>  newMap = (Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>) recMap;
+		if(myDedaleAgent.getMap()==null) {
+			System.out.println(myDedaleAgent.getLocalName()+" ----> MAP NULL");
+			try {
+				myDedaleAgent.doWait(250);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		int o=0, f=0, a=0;
+		//Ajout des noeuds ouverts
+		for(String noeud : newMap.getLeft().getLeft()) {
+			if(myDedaleAgent.getMap().getNode(noeud)==null) {
+				myDedaleAgent.getMap().addNode(noeud, MapAttribute.open);
+				myDedaleAgent.getOpenNodes().add(noeud);
+				o++;
+			}
+		}
+		
+		//Ajout des noeuds fermes
+		for(String noeud : newMap.getLeft().getRight()) {
+			myDedaleAgent.getMap().addNode(noeud);
+			myDedaleAgent.getClosedNodes().add(noeud);
+			myDedaleAgent.getOpenNodes().remove(noeud);
+			f++;
+		}
+		
+		//Ajout des arcs
+		for(Couple<String,String> arc : newMap.getRight()) {
+			myDedaleAgent.getMap().addEdge(arc.getLeft(), arc.getRight());
+			a++;
+		}
+		
+		System.out.println(myDedaleAgent.getLocalName()+" merged maps - o = " +o+" f = "+f+" a = "+a );
 
+	}
 	
 }

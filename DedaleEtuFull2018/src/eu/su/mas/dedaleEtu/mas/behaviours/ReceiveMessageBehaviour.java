@@ -48,14 +48,8 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 			try {
 				if(msg.getProtocol().equals("MAP")) {
 					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
-					MergeMapsBehaviour mmp;
-					try {
-						mmp = new MergeMapsBehaviour(myDedaleAgent, msg.getContentObject());
-						mmp.action();
-					} catch (UnreadableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
+					MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
 
 				}
 			} catch (Exception e) {
