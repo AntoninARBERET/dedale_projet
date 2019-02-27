@@ -137,11 +137,13 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					System.out.println(this.myDedaleAgent.getName()+" est bloque, objectif : " + nextNode.toString() );
 				}
 				//check methode et completer
-				SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, "-1", agentsIds);
-				smb.action();
+				//SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, "-1", agentsIds);
+				//smb.action();
+				myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
 			
-				ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
-				rmb.action();
+				//ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
+				//rmb.action();
+				myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
 			}
 			previousPosition = myPosition;
 			
