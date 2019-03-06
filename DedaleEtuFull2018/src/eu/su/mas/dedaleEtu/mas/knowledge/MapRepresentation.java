@@ -110,8 +110,10 @@ public class MapRepresentation implements Serializable {
 		n.addAttribute("ui.label",id);
 		n.addAttribute("ui.date", date);
 		n.addAttribute("ui.ress", mapRess.toString());
-		n.addAttribute("ui.ress", mapAgent.toString());
+		n.addAttribute("ui.agent", mapAgent.toString());
+		
 	}
+	
 	
 	public void addNode(String id,MapAttribute mapAttribute, MapRessources mapRess, MapAgent mapAgent){
 		Node n;
@@ -338,12 +340,16 @@ public class MapRepresentation implements Serializable {
 				System.out.println("MERGE ----> test date");
 				//si le noeud recu est plus recent
 				if(dnew>dcurrent) {
+					
 					date = noeud.get(2);
+					System.out.println("Choix 1 "+noeud.toString());
 					agent=MapAgent.valueOf(noeud.get(4));
+					System.out.println(agent);
 					myDedaleAgent.getMap().addNode(id, attr, date, ress, agent);
 				}else {
 					date = currentNode.getAttribute("ui.date");
 					
+					System.out.println("Choix 2 "+id+" "+myDedaleAgent.getMap().getFullRepresentation().toString());
 					agent=MapAgent.valueOf(currentNode.getAttribute("ui.agent"));
 
 					

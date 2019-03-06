@@ -12,7 +12,9 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapRessources;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.SimpleBehaviour;
 
@@ -89,8 +91,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			//1) remove the current node from openlist and add it to closedNodes.
 			myDedaleAgent.getClosedNodes().add(myPosition);
 			myDedaleAgent.getOpenNodes().remove(myPosition);
-
-			this.myDedaleAgent.getMap().addNode(myPosition);
+			//incomplet
+			this.myDedaleAgent.getMap().addNode(myPosition, MapAttribute.closed, MapRessources.none, MapAgent.none);
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
@@ -100,7 +102,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
 					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
 						myDedaleAgent.getOpenNodes().add(nodeId);
-						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open);
+						//Incomplet
+						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open,MapRessources.none, MapAgent.none);
 						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
 					}else{
 						//the node exist, but not necessarily the edge

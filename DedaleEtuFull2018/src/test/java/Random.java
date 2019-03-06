@@ -40,7 +40,7 @@ public class Random {
 		map2.addEdge("21", "22");
 		try {
 			
-			DedaleAgent ag = new DedaleAgent();
+			/*DedaleAgent ag = new DedaleAgent();
 			ag.setMap(map);
 			System.out.println("Try merge");
 			System.out.println(map.getFullRepresentation().toString());
@@ -67,7 +67,7 @@ public class Random {
 			System.out.println(map.getFullRepresentation().toString());
 			System.out.println("done");*/
 			//System.out.println(map.getG().getEdge(0).get.toString());
-			
+			System.out.println(MapRepresentation.MapAgent.valueOf("none"));
 			
 		    
 		}catch(Exception e) {
