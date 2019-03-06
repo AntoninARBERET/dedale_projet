@@ -49,7 +49,8 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 				if(msg.getProtocol().equals("MAP")) {
 					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
 					
-					MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
+					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
+					MapRepresentation.MergeFullMaps(myDedaleAgent, msg.getContentObject());
 
 				}
 			} catch (Exception e) {

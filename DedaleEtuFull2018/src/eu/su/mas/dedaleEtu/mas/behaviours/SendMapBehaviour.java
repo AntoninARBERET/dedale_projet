@@ -75,7 +75,8 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		//2° compute the random value		
 		try {
 			msg.setProtocol("MAP");
-			msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
+			//msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
+			msg.setContentObject(myDedaleAgent.getMap().getFullRepresentation());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
