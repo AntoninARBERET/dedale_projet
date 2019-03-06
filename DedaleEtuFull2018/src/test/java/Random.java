@@ -12,12 +12,15 @@ import java.util.Set;
 
 import org.graphstream.graph.Node;
 
+import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 public class Random {
 	public static void main(String args[]) {
+		Observation o = Observation.GOLD;
+		System.out.println("Test de ouf " + (o instanceof Serializable));
 		Date d1 = new Date();
 		System.out.println(d1.getTime());
 		MapRepresentation map = new MapRepresentation();

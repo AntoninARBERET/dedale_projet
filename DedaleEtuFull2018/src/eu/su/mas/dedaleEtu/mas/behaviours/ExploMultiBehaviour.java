@@ -78,7 +78,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			myDedaleAgent.setPosition(myPosition);
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
-
+			System.out.println(lobs.toString());
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
@@ -88,22 +88,34 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				e.printStackTrace();
 			}
 
-			//1) remove the current node from openlist and add it to closedNodes.
-			myDedaleAgent.getClosedNodes().add(myPosition);
-			myDedaleAgent.getOpenNodes().remove(myPosition);
-			//incomplet
-			this.myDedaleAgent.getMap().addNode(myPosition, MapAttribute.closed, MapRessources.none, MapAgent.none);
+			
+			
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
 			Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
+			
+			//1) remove the current node from openlist and add it to closedNodes.
+			myDedaleAgent.getClosedNodes().add(myPosition);
+			myDedaleAgent.getOpenNodes().remove(myPosition);
+			//incomplet
+			Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
+			List<Couple<Observation, Integer>> obs =tmp.getRight();
+			System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
+			
+			this.myDedaleAgent.getMap().addNode(myPosition, MapAttribute.closed, obs, MapAgent.none);
+			
 			while(iter.hasNext()){
-				String nodeId=iter.next().getLeft();
+				tmp = iter.next();
+				
+				obs = tmp.getRight();
+				
+				String nodeId=tmp.getLeft();
 				if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
 					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
 						myDedaleAgent.getOpenNodes().add(nodeId);
 						//Incomplet
-						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open,MapRessources.none, MapAgent.none);
+						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open,obs, MapAgent.none);
 						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
 					}else{
 						//the node exist, but not necessarily the edge
