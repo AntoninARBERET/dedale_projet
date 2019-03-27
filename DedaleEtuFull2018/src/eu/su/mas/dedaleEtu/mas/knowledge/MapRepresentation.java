@@ -202,6 +202,33 @@ public class MapRepresentation implements Serializable {
 		return shortestPath;
 	}
 	
+	public List<String> getShortestPathOpenNodes(String idFrom,List<String> idTo){
+		List<String> shortestPath=new ArrayList<String>();
+
+		Dijkstra dijkstra = new Dijkstra();//number of edge
+		dijkstra.init(g);
+		dijkstra.setSource(g.getNode(idFrom));
+		dijkstra.compute();//compute the distance to all nodes from idFrom
+		int minDist=-1;
+		List<Node> minPath=null;
+		for(String id : idTo) {
+			List<Node> path=dijkstra.getPath(g.getNode(id)).getNodePath(); //the shortest path from idFrom to idTo
+			int dist = path.size();
+			if(minDist==-1 || dist<minDist) {
+				minDist=dist;
+				minPath=path;
+			}
+
+		}
+		Iterator<Node> iter=minPath.iterator();
+		while (iter.hasNext()){
+			shortestPath.add(iter.next().getId());
+		}
+		dijkstra.clear();
+		shortestPath.remove(0);//remove the current position
+		return shortestPath;
+	}
+	
 	public Graph getG() {
 		return g;
 	}
