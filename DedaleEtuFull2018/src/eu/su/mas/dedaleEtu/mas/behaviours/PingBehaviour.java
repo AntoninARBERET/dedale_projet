@@ -28,10 +28,18 @@ public class PingBehaviour extends SimpleBehaviour{
 	 private static final long serialVersionUID = 9088209402507795289L;
 	 
 	 private boolean finished=false;
-
 	 private DedaleAgent myDedaleAgent;
-
-	private String[] agentslist;
+	 private String[] agentslist;
+	 
+	 
+	 
+	 /**
+		 * 
+		 * @param myagent the Agent this behaviour is linked to
+		 * @param agentslist is the list of all the agents
+		 */
+	 
+	 
 	 
 	 public PingBehaviour (DedaleAgent myagent,String[] agentslist){
 		super(myagent);
@@ -44,14 +52,13 @@ public class PingBehaviour extends SimpleBehaviour{
 		 //creation du message
 		 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		 msg.setSender(this.myDedaleAgent.getAID());
+		 
+		 
 		 for(int i =0; i<agentslist.length; i++) {
 		 msg.addReceiver(new AID(agentslist[i], AID.ISLOCALNAME));
 		 }
 		 
-		/* for (int i=0; i<agents.length;i++)
-				msg.addReceiver( agents[i].getName() ); 
-		 */
-		 
+		
 		//2Â° compute the random value
 		 try {
 			  msg.setProtocol("PING");
@@ -62,7 +69,7 @@ public class PingBehaviour extends SimpleBehaviour{
 		 this.myDedaleAgent.send(msg);
 		 this.finished=true;
 		 
-		 
+		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> Ping sent "/*peut etre ajouté le receveur*/);
 	 }
 	 
 	 
