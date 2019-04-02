@@ -43,15 +43,25 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 
 		final ACLMessage msg = this.myDedaleAgent.receive(msgTemplate);
 		System.out.println(myDedaleAgent.getLocalName() + " ----> ouvrerture messages");
-		if (msg != null) {	
+		if (msg != null) {
 
 			try {
-				if(msg.getProtocol().equals("MAP")) {
-					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
+				switch(msg.getProtocol()) {
+				case "PING":
+					System.out.println(myDedaleAgent.getLocalName() + " ----> ping recue");
 					
+					break;
+				case "MAP":
+					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
 					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
 					MapRepresentation.MergeFullMaps(myDedaleAgent, msg.getContentObject());
-
+					break;
+				
+				/*if(msg.getProtocol().equals("MAP")) {
+					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
+					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
+					MapRepresentation.MergeFullMaps(myDedaleAgent, msg.getContentObject());
+					}*/
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

@@ -155,6 +155,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				//check methode et completer
 				//SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, "-1", agentsIds);
 				//smb.action();
+				myDedaleAgent.addBehaviour(new PingBehaviour(myDedaleAgent, agentsIds));
+				
 				myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
 			
 				//ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
