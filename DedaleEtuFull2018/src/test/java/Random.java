@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.graphstream.graph.Node;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -19,7 +20,7 @@ import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 public class Random {
 	public static void main(String args[]) {
-		Observation o = Observation.GOLD;
+		/*Observation o = Observation.GOLD;
 		System.out.println("Test de ouf " + (o instanceof Serializable));
 		Date d1 = new Date();
 		System.out.println(d1.getTime());
@@ -43,7 +44,7 @@ public class Random {
 		map2.addEdge("21", "22");
 		try {
 			
-			/*DedaleAgent ag = new DedaleAgent();
+			DedaleAgent ag = new DedaleAgent();
 			ag.setMap(map);
 			System.out.println("Try merge");
 			System.out.println(map.getFullRepresentation().toString());
@@ -68,13 +69,12 @@ public class Random {
 			/*boolean b = map.getG().getEachNode() instanceof Set ;
 			System.out.println(b);
 			System.out.println(map.getFullRepresentation().toString());
-			System.out.println("done");*/
-			//System.out.println(map.getG().getEdge(0).get.toString());
-			System.out.println(MapRepresentation.MapAgent.valueOf("none"));
-			
+			System.out.println("done");
+			System.out.println(map.getG().getEdge(0).get.toString());
+			System.out.println(MapRepresentation.MapAgent.valueOf("none"));*/
+			Couple<String, String> c = new Couple("A","R");
+			System.out.println(c instanceof Serializable);
 		    
-		}catch(Exception e) {
-			
-		}
+		
 	}
 }

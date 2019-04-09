@@ -246,68 +246,41 @@ public class MapRepresentation implements Serializable {
 	// ET FUSIONS
 	// SUR LES MAPS
 	
-	
-	//Peut etre plus efficace
-	public Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>> getStringListRepresentation(){ 
-		ArrayList<String> openNodes = new ArrayList<String>();
-		ArrayList<String> closedNodes = new ArrayList<String>();
-
-		for(Node n : g.getEachNode()) {
-			if(n.getAttribute("ui.class")==MapAttribute.open.toString()) {
-				openNodes.add(n.toString());
-			}else {
-				closedNodes.add(n.toString());
-			}
-		}
-		Couple<ArrayList<String>,ArrayList<String>> nodes = new Couple<ArrayList<String>,ArrayList<String>>(openNodes, closedNodes);
+	public ArrayList<Case> getCases(){
+		ArrayList<Case> cases = new ArrayList<Case>();
 		
+		for(Node n : g.getEachNode()) {
+			String id, open, date, agnt;
+			List<Couple<Observation, Integer>> obs;
+			
+			id=n.toString();
+			open =n.getAttribute("ui.class");
+			date=n.getAttribute("ui.date");
+			obs =n.getAttribute("ui.obs");
+			agnt =n.getAttribute("ui.agent");
+			//ajouter ressources et agent
+			ArrayList<Object> desc = new ArrayList<Object>();
+			desc.add(id);
+			desc.add(open);
+			desc.add(date);
+			desc.add(obs);
+			desc.add(agnt);
+			nodes.add(desc);
+			
+			
+		}
+			
 		
 		ArrayList<Couple<String,String>> edges= new ArrayList<Couple<String,String>>();
 		for(Edge e : g.getEachEdge()) {
 			edges.add(new Couple<String,String>(e.getNode0().toString(), e.getNode1().toString()));
 		}
 		
-		return new Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>(nodes, edges);
+		return new Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>>(nodes, edges);
 	}
 	
-	public static void MergeMaps(DedaleAgent myDedaleAgent, Object recMap) {
-		Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>  newMap = (Couple<Couple<ArrayList<String>,ArrayList<String>>,ArrayList<Couple<String,String>>>) recMap;
-		if(myDedaleAgent.getMap()==null) {
-			try {
-				myDedaleAgent.doWait(250);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		int o=0, f=0, a=0;
-		//Ajout des noeuds ouverts
-		for(String noeud : newMap.getLeft().getLeft()) {
-			if(myDedaleAgent.getMap().getNode(noeud)==null) {
-				myDedaleAgent.getMap().addNode(noeud, MapAttribute.open);
-				myDedaleAgent.getOpenNodes().add(noeud);
-				o++;
-			}
-		}
-		
-		//Ajout des noeuds fermes
-		for(String noeud : newMap.getLeft().getRight()) {
-			myDedaleAgent.getMap().addNode(noeud);
-			myDedaleAgent.getClosedNodes().add(noeud);
-			myDedaleAgent.getOpenNodes().remove(noeud);
-			f++;
-		}
-		
-		//Ajout des arcs
-		for(Couple<String,String> arc : newMap.getRight()) {
-			myDedaleAgent.getMap().addEdge(arc.getLeft(), arc.getRight());
-			a++;
-		}
-		
-		System.out.println(myDedaleAgent.getLocalName()+" merged maps - o = " +o+" f = "+f+" a = "+a );
 
-	}
+	
 	
 	
 	public Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>> getFullRepresentation(){
@@ -419,114 +392,6 @@ public class MapRepresentation implements Serializable {
 
 	}
 	
-	/*public Couple<ArrayList<ArrayList<String>>,ArrayList<Couple<String,String>>> getFullRepresentation(){
-		ArrayList<ArrayList<String>> nodes = new ArrayList<ArrayList<String>>();
-		
-		for(Node n : g.getEachNode()) {
-			String id, open, date, ress, agnt;
-			
-			id=n.toString();
-			open =n.getAttribute("ui.class");
-
-			date=n.getAttribute("ui.date");
-			ress =n.getAttribute("ui.ress");
-			agnt =n.getAttribute("ui.agent");
-			//ajouter ressources et agent
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add(id);
-			desc.add(open);
-			desc.add(date);
-			desc.add(ress);
-			desc.add(agnt);
-			nodes.add(desc);
-			
-			
-		}
-			
-		
-		ArrayList<Couple<String,String>> edges= new ArrayList<Couple<String,String>>();
-		for(Edge e : g.getEachEdge()) {
-			edges.add(new Couple<String,String>(e.getNode0().toString(), e.getNode1().toString()));
-		}
-		
-		return new Couple<ArrayList<ArrayList<String>>,ArrayList<Couple<String,String>>>(nodes, edges);
-	}
 	
-	public static void MergeFullMaps(DedaleAgent myDedaleAgent, Object recMap) {
-		
-		Couple<ArrayList<ArrayList<String>>,ArrayList<Couple<String,String>>>  newMap = (Couple<ArrayList<ArrayList<String>>,ArrayList<Couple<String,String>>>) recMap;
-		if(myDedaleAgent.getMap()==null) {
-			System.out.println(myDedaleAgent.getLocalName()+" ----> MAP NULL");
-			try {
-				myDedaleAgent.doWait(250);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		//ajout des noeuds
-		for(ArrayList<String> noeud : newMap.getLeft()) {
-			Node currentNode = myDedaleAgent.getMap().getNode(noeud.get(0));
-			MapAttribute attr;
-			//si le noeud n'existe pas
-			if(currentNode==null) {
-				attr = MapAttribute.valueOf(noeud.get(1));
-				myDedaleAgent.getMap().addNode(noeud.get(0), attr, MapRessources.valueOf(noeud.get(3)), MapAgent.valueOf(noeud.get(4)));
-				//myDedaleAgent.getOpenNodes().add(noeud);
-			//si le noeud existe deja
-			}else {
-				//identifiant
-				String id = noeud.get(0);
-				
-				//attribut ouvert ferme
-				
-				id = noeud.get(0);
-				if(currentNode.getAttribute("ui.class").equals("open") && noeud.get(1).equals("open")) {
-					attr=MapAttribute.open;
-				}else {
-					attr=MapAttribute.closed;
-				}
-				
-				//attribut ressource
-				MapRessources ress = MapRessources.valueOf(noeud.get(3));
-				
-				long dcurrent = Long.parseLong(currentNode.getAttribute("ui.date"));
-				long dnew = Long.parseLong(noeud.get(2));
-				String date;
-				MapAgent agent;
-				//si le noeud recu est plus recent
-				if(dnew>dcurrent) {
-					
-					date = noeud.get(2);
-					agent=MapAgent.valueOf(noeud.get(4));
-					myDedaleAgent.getMap().addNode(id, attr, date, ress, agent);
-				}else if(dnew<dcurrent) {
-					date = currentNode.getAttribute("ui.date");
-					
-					agent=MapAgent.valueOf(currentNode.getAttribute("ui.agent"));
-
-					
-					myDedaleAgent.getMap().addNode(id, attr, date, ress, agent);
-				}
-				if(attr==MapAttribute.open) {
-					myDedaleAgent.getOpenNodes().add(noeud.get(0));
-				}else {
-					myDedaleAgent.getClosedNodes().add(noeud.get(0));
-					myDedaleAgent.getOpenNodes().remove(noeud.get(0));
-				}
-				
-			}
-		}
-		
-
-		
-		//Ajout des arcs
-		for(Couple<String,String> arc : newMap.getRight()) {
-			myDedaleAgent.getMap().addEdge(arc.getLeft(), arc.getRight());
-		}
-		
-		System.out.println(myDedaleAgent.getLocalName()+" merged maps");
-
-	}*/
 	
 }

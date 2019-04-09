@@ -25,25 +25,7 @@ import jade.core.behaviours.Behaviour;
 public class DedaleAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
-	public List<String> getOpenNodes() {
-		return openNodes;
-	}
-
-
-	public void setOpenNodes(List<String> openNodes) {
-		this.openNodes = openNodes;
-	}
-
-
-	public Set<String> getClosedNodes() {
-		return closedNodes;
-	}
-
-
-	public void setClosedNodes(Set<String> closedNodes) {
-		this.closedNodes = closedNodes;
-	}
-
+	
 
 	private MapRepresentation myMap;
 	
@@ -52,6 +34,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	 * Nodes known but not yet visited
 	 */
 	private List<String> openNodes;
+	
 	/**
 	 * Visited nodes
 	 */
@@ -60,6 +43,10 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	private String position;
 	
 	private String nextNode;
+	
+
+
+
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -97,6 +84,26 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		
 		System.out.println("the  agent "+this.getLocalName()+ " is started");*/
 
+	}
+	
+	
+	public List<String> getOpenNodes() {
+		return openNodes;
+	}
+
+
+	public void setOpenNodes(List<String> openNodes) {
+		this.openNodes = openNodes;
+	}
+
+
+	public Set<String> getClosedNodes() {
+		return closedNodes;
+	}
+
+
+	public void setClosedNodes(Set<String> closedNodes) {
+		this.closedNodes = closedNodes;
 	}
 
 
