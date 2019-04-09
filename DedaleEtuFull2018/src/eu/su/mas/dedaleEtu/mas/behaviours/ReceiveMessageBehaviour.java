@@ -52,9 +52,12 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 					
 					break;
 				case "MAP":
-					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
+					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue de " + msg.getSender().toString());
 					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
-					MapRepresentation.MergeFullMaps(myDedaleAgent, msg.getContentObject());
+					MapRepresentation.MergeWithSendableMap(myDedaleAgent, msg.getContentObject());
+					break;
+				case "BLOCKSIMPLE":
+					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, (String)msg.getContent()));
 					break;
 				
 				/*if(msg.getProtocol().equals("MAP")) {

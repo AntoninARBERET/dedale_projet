@@ -10,17 +10,15 @@ public class Case implements Serializable{
 	private Date date;
 	private int gold;
 	private int force;
-	
-
 	private boolean tresor_ouvert;
 	private boolean wumpus;
 	
 	
 	
-	public Case(String id,boolean node_open,int gold,boolean tresor_ouvert,int force, boolean wumpus) {
+	public Case(String id,boolean node_open,int gold,boolean tresor_ouvert,int force, boolean wumpus, Date date) {
 		this.id=id;
 		this.node_open=node_open;
-		date=new Date();
+		this.date=date;
 		this.gold=gold;
 		this.tresor_ouvert=tresor_ouvert;
 		this.wumpus=wumpus;

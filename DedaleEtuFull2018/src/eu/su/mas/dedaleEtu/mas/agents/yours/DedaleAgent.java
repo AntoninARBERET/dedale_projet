@@ -44,6 +44,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	private String nextNode;
 	
+	private int blockedSince;
+	
 
 
 
@@ -60,6 +62,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		super.setup();
 		this.openNodes=new ArrayList<String>();
 		this.closedNodes=new HashSet<String>();
+		this.blockedSince=0;
 		//final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
@@ -134,6 +137,20 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	public void setNextNode(String nextNode) {
 		this.nextNode = nextNode;
+	}
+
+
+	public int getBlockedSince() {
+		return blockedSince;
+	}
+
+
+	public void incBlockedSince() {
+		this.blockedSince++;
+	}
+	
+	public void resetBlockedSince() {
+		this.blockedSince=0;
 	}
 	
 	

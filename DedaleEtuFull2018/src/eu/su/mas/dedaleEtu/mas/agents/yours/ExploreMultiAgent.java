@@ -23,7 +23,6 @@ import jade.core.behaviours.Behaviour;
 public class ExploreMultiAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
-	private MapRepresentation myMap;
 	private String[] idList;
 	
 	

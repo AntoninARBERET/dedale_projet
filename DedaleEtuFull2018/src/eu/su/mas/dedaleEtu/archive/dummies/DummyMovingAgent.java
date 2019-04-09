@@ -5,6 +5,7 @@ import java.util.List;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
+import eu.su.mas.dedaleEtu.mas.behaviours.RandomWalkBehaviour;
 import jade.core.behaviours.Behaviour;
 
 /**

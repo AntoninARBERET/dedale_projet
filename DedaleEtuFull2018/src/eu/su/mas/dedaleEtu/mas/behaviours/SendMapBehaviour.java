@@ -53,7 +53,12 @@ public class SendMapBehaviour extends SimpleBehaviour{
 
 
 	public void action() {
-		
+		try {
+			this.myAgent.doWait(2000);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		//1°Create the message
 		final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
@@ -76,7 +81,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		try {
 			msg.setProtocol("MAP");
 			//msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
-			msg.setContentObject(myDedaleAgent.getMap().getFullRepresentation());
+			msg.setContentObject(myDedaleAgent.getMap().getSendableMap());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

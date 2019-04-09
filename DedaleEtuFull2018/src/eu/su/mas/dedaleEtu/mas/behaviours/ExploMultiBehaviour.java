@@ -2,6 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,9 +13,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapRessources;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.SimpleBehaviour;
 
@@ -102,8 +101,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
 			List<Couple<Observation, Integer>> obs =tmp.getRight();
 			System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
-			
-			this.myDedaleAgent.getMap().addNode(myPosition, MapAttribute.closed, obs, MapAgent.none);
+			 
+			this.myDedaleAgent.getMap().addNode(myPosition, false, -1, false, -1, false, new Date());
 			
 			while(iter.hasNext()){
 				tmp = iter.next();
@@ -115,7 +114,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
 						myDedaleAgent.getOpenNodes().add(nodeId);
 						//Incomplet
-						this.myDedaleAgent.getMap().addNode(nodeId, MapAttribute.open,obs, MapAgent.none);
+						this.myDedaleAgent.getMap().addNode(nodeId, true, -1, false, -1, false, new Date());
 						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
 					}else{
 						//the node exist, but not necessarily the edge
@@ -149,19 +148,19 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			//check si l'agent est bloqué
 			if(previousPosition !=null && previousPosition.equals(myPosition)) {
 				blocked=true;
+				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
 					System.out.println(this.myDedaleAgent.getName()+" est bloque, objectif : " + nextNode.toString() );
 				}
-				//check methode et completer
-				//SendMapBehaviour smb = new SendMapBehaviour(myDedaleAgent, "-1", agentsIds);
-				//smb.action();
-				myDedaleAgent.addBehaviour(new PingBehaviour(myDedaleAgent, agentsIds));
+				
 				
 				myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
 			
-				//ReceiveMessageBehaviour rmb = new ReceiveMessageBehaviour(myDedaleAgent);
-				//rmb.action();
+
 				myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
+			}else{
+				myDedaleAgent.resetBlockedSince();
+
 			}
 			previousPosition = myPosition;
 			

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.Hashtable;
 
 import org.graphstream.algorithm.Dijkstra;
@@ -35,13 +37,7 @@ public class MapRepresentation implements Serializable {
 		closed,open,agent
 	}
 	
-	public enum MapRessources{
-		gold, none
-	}
-	
-	public enum MapAgent {
-		explo, collect, sillo, wumpus, none
-	}
+
 
 	private static final long serialVersionUID = -1333959882640838272L;
 
@@ -73,94 +69,37 @@ public class MapRepresentation implements Serializable {
 		this.viewer = this.g.display();
 	}
 	
-	/**
-	 * Associate to a node an attribute in order to identify them by type. 
-	 * @param id
-	 * @param mapAttribute
-	 */
-	public void addNode(String id,MapAttribute mapAttribute){
-		Node n;
-		if (this.g.getNode(id)==null){
-			n=this.g.addNode(id);
-		}else{
-			n=this.g.getNode(id);
-		}
-		
-		n.clearAttributes();
-		n.addAttribute("ui.class", mapAttribute.toString());
-		n.addAttribute("ui.label",id);
-	}
-	
-	/**
-	 * Associate to a node an attribute in order to identify them by type. 
-	 * @param id
-	 * @param mapAttribute
-	 */
-	public void addNode(String id,MapAttribute mapAttribute, String date, MapRessources mapRess, MapAgent mapAgent){
-		Node n;
-		if (this.g.getNode(id)==null){
-			n=this.g.addNode(id);
-		}else{
-			n=this.g.getNode(id);
-		}
-		
 
+
+	
+	public void addNode(String id,boolean open, int gold, boolean tresor_open, int force, boolean wumpus, Date date){
+		Node n;
+		if (this.g.getNode(id)==null){
+			n=this.g.addNode(id);
+		}else{
+			n=this.g.getNode(id);
+		}
+		
 		
 		n.clearAttributes();
-		n.addAttribute("ui.class", mapAttribute.toString());
 		n.addAttribute("ui.label",id);
-		n.addAttribute("ui.date", date);
-		n.addAttribute("ui.ress", mapRess.toString());
-		n.addAttribute("ui.agent", mapAgent.toString());
+		n.addAttribute("open", open);
+		n.addAttribute("gold", gold);
+		n.addAttribute("tresor_open", tresor_open);
+		n.addAttribute("force", force);
+		n.addAttribute("wumpus", wumpus);
+		n.addAttribute("date", date);
 		
 	}
 	
 	
-	public void addNode(String id,MapAttribute mapAttribute, MapRessources mapRess, MapAgent mapAgent){
+	
+	public void addNode(String id,boolean open, int gold, boolean tresor_open, int force, boolean wumpus,  List<Couple<Observation,Integer>> mapRess){
 		Date date = new Date();
-		String strDate=""+date.getTime();
-		addNode(id, mapAttribute, strDate,  mapRess,  mapAgent);
-	}
-	
-	public void addNode(String id,MapAttribute mapAttribute, String date, List<Couple<Observation,Integer>> mapRess, MapAgent mapAgent){
-		Node n;
-		if (this.g.getNode(id)==null){
-			n=this.g.addNode(id);
-		}else{
-			n=this.g.getNode(id);
-		}
-		
-
-		
-		n.clearAttributes();
-		n.addAttribute("ui.class", mapAttribute.toString());
-		n.addAttribute("ui.label",id);
-		n.addAttribute("ui.date", date);
-		n.addAttribute("ui.obs", mapRess);
-		n.addAttribute("ui.agent", mapAgent.toString());
-		
-	}
-	
-	
-	public void addNode(String id,MapAttribute mapAttribute, List<Couple<Observation,Integer>> mapRess, MapAgent mapAgent){
-		Date date = new Date();
-		String strDate=""+date.getTime();
-		addNode(id, mapAttribute, strDate,  mapRess,  mapAgent);
+		addNode(id, open, gold, tresor_open, force, wumpus, date);
 	}
 
-	/**
-	 * Add the node id if not already existing
-	 * @param id
-	 */
-	public void addNode(String id){
-		Node n=this.g.getNode(id);
-		if(n==null){
-			n=this.g.addNode(id);
-		}else{
-			n.clearAttributes();
-		}
-		n.addAttribute("ui.label",id);
-	}
+	
 
    /**
     * Add the edge if not already existing.
@@ -229,6 +168,19 @@ public class MapRepresentation implements Serializable {
 		return shortestPath;
 	}
 	
+	public String getRandomNodeWhitout(String idFrom, String idWithout){
+		Iterator<Node> it = getNode(idFrom).getNeighborNodeIterator();
+		ArrayList<Node> candidates = new ArrayList<Node>();
+		Node current;
+		while(it.hasNext()){
+			current = it.next();
+			if(!current.getAttribute("ui.label").equals(idWithout)){
+				candidates.add(current);
+			}
+		}
+		return(candidates.get(ThreadLocalRandom.current().nextInt(0, candidates.size())).getAttribute("ui.label"));		
+	}
+	
 	public Graph getG() {
 		return g;
 	}
@@ -250,40 +202,130 @@ public class MapRepresentation implements Serializable {
 		ArrayList<Case> cases = new ArrayList<Case>();
 		
 		for(Node n : g.getEachNode()) {
-			String id, open, date, agnt;
-			List<Couple<Observation, Integer>> obs;
 			
-			id=n.toString();
-			open =n.getAttribute("ui.class");
-			date=n.getAttribute("ui.date");
-			obs =n.getAttribute("ui.obs");
-			agnt =n.getAttribute("ui.agent");
-			//ajouter ressources et agent
-			ArrayList<Object> desc = new ArrayList<Object>();
-			desc.add(id);
-			desc.add(open);
-			desc.add(date);
-			desc.add(obs);
-			desc.add(agnt);
-			nodes.add(desc);
+			String id = n.getAttribute("ui.label");
+			boolean open = n.getAttribute("open");
+			int gold = n.getAttribute("gold");
+			boolean open_tresor = n.getAttribute("tresor_open");
+			int force = n.getAttribute("force");
+			boolean wumpus = n.getAttribute("wumpus");
+			Date date = n.getAttribute("date");
 			
+			Case c = new Case(id, open, gold, open_tresor, force, wumpus, date);
+			cases.add(c);
 			
 		}
 			
-		
+		return cases;
+	}
+	
+	public ArrayList<Couple<String,String>> getListEdges(){
 		ArrayList<Couple<String,String>> edges= new ArrayList<Couple<String,String>>();
 		for(Edge e : g.getEachEdge()) {
 			edges.add(new Couple<String,String>(e.getNode0().toString(), e.getNode1().toString()));
 		}
+		return edges;
+	}
+	
+	public SendableMap getSendableMap(){
+		ArrayList<Case> cases= this.getCases();
+		ArrayList<Couple<String,String>> edges = this.getListEdges();
+		return new SendableMap(cases, edges);
+	}
+	
+	public static void MergeWithSendableMap(DedaleAgent myDedaleAgent, Object recMap) {
+		int nbnode =0, nbarrete=0 ,nodemaj=0;
 		
-		return new Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>>(nodes, edges);
+		SendableMap recieved = (SendableMap)recMap;
+		
+		if(myDedaleAgent.getMap()==null) {
+			System.out.println(myDedaleAgent.getLocalName()+" ----> MAP NULL");
+			try {
+				myDedaleAgent.doWait(250);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//ajout des noeuds
+		for(Case c : recieved.getCases()) {
+			
+			String cId = c.getId();
+			boolean cOpen = c.is_Open();//mis a true car si on cree la case c'est que le noeud est ouvert
+			Date cDate= c.getDate();
+			int cGold = c.getGold();
+			int cForce = c.getForce();
+			boolean cTresor_ouvert= c.is_TresorOuvert();
+			boolean cWumpus = c.isWumpus();
+			
+			Node currentNode = myDedaleAgent.getMap().getNode(cId);
+			
+			//si le noeud n'existe pas
+			if(currentNode==null) {
+				
+				myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cForce, cWumpus, cDate);
+				if(cOpen){
+					myDedaleAgent.getOpenNodes().add(cId);
+				}else{
+					myDedaleAgent.getClosedNodes().add(cId);
+				}
+				nbnode++;
+				
+			//si le noeud existe deja
+			}else {
+				//identifiant
+				
+				//attribut ouvert ferme
+				boolean mergeOpen;
+				
+				if((boolean)currentNode.getAttribute("open") && cOpen) {
+					mergeOpen=true;
+				}else {
+					mergeOpen=false;
+				}
+				
+				Date localDate=(Date)currentNode.getAttribute("date");
+				
+				//si le noeud recu est plus recent
+				if(cDate.after(localDate)) {
+					myDedaleAgent.getMap().addNode(cId, mergeOpen, cGold, cTresor_ouvert, cForce, cWumpus, cDate);
+					nodemaj++;
+				}else{
+					currentNode.setAttribute("open", mergeOpen);
+				}
+				
+				if(mergeOpen && !myDedaleAgent.getOpenNodes().contains(cId)) {
+					myDedaleAgent.getOpenNodes().add(cId);
+				}else if(!mergeOpen) {
+					if(!myDedaleAgent.getClosedNodes().contains(cId)){
+						myDedaleAgent.getClosedNodes().add(cId);
+					}
+					myDedaleAgent.getOpenNodes().remove(cId);
+				}
+			}
+		}
+		
+		//ajout des arretes
+		for(Couple<String,String> a : recieved.getEdges()){
+			String n1=a.getLeft();
+			String n2=a.getRight();
+			myDedaleAgent.getMap().addEdge(n1, n2);
+			nbarrete++;
+		}
+		
+		System.out.println(myDedaleAgent.getLocalName()+" merged maps : maj ou add "+ nbnode + " noeud et "+ nbarrete+" arretes et maj node "+ nodemaj);
+		System.out.println(myDedaleAgent.getLocalName()+" open "+myDedaleAgent.getOpenNodes().toString());
+		System.out.println(myDedaleAgent.getLocalName()+" closed "+myDedaleAgent.getClosedNodes().toString());
+
+
 	}
 	
 
 	
 	
 	
-	public Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>> getFullRepresentation(){
+	/*public Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>> getFullRepresentation(){
 		ArrayList<ArrayList<Object>> nodes = new ArrayList<ArrayList<Object>>();
 		
 		for(Node n : g.getEachNode()) {
@@ -390,7 +432,7 @@ public class MapRepresentation implements Serializable {
 		
 		System.out.println(myDedaleAgent.getLocalName()+" merged maps");
 
-	}
+	}*/
 	
 	
 	

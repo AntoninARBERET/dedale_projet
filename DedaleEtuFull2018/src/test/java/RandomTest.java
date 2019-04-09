@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.graphstream.graph.Node;
 
@@ -18,7 +19,7 @@ import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
-public class Random {
+public class RandomTest {
 	public static void main(String args[]) {
 		/*Observation o = Observation.GOLD;
 		System.out.println("Test de ouf " + (o instanceof Serializable));
@@ -71,9 +72,10 @@ public class Random {
 			System.out.println(map.getFullRepresentation().toString());
 			System.out.println("done");
 			System.out.println(map.getG().getEdge(0).get.toString());
-			System.out.println(MapRepresentation.MapAgent.valueOf("none"));*/
+			System.out.println(MapRepresentation.MapAgent.valueOf("none"));
 			Couple<String, String> c = new Couple("A","R");
-			System.out.println(c instanceof Serializable);
+			System.out.println(c instanceof Serializable);*/
+		System.out.println();
 		    
 		
 	}
