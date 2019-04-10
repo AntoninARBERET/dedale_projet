@@ -224,8 +224,12 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
 				}
 				
-				
-				myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
+				if(myDedaleAgent.getBlockedSince()<2) {
+					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
+				}
+				else if(myDedaleAgent.getBlockedSince()>=2) {
+					myDedaleAgent.addBehaviour(new SimpleBlockingSendMessageBehaviour(myDedaleAgent, "-1", agentsIds));
+				}
 			
 
 				myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));

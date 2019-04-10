@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -55,7 +56,8 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 					MapRepresentation.MergeWithSendableMap(myDedaleAgent, msg.getContentObject());
 					break;
 				case "BLOCKSIMPLE":
-					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, (String)msg.getContent()));
+					Couple<String, Integer> content =(Couple<String, Integer>)msg.getContentObject();
+					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, content.getLeft(), content.getRight().intValue()));
 					break;
 				
 				/*if(msg.getProtocol().equals("MAP")) {

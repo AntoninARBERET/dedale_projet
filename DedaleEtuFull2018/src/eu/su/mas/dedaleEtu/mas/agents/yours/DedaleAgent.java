@@ -47,6 +47,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	private int blockedSince;
 	
+	private int priority;
+	
 
 
 
@@ -64,6 +66,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.openNodes=new ArrayList<String>();
 		this.closedNodes=new HashSet<String>();
 		this.blockedSince=0;
+		this.priority=0;
 		//final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
@@ -157,6 +160,16 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	public String[] getIdList() {
 		return idList;
+	}
+
+
+	public int getPriority() {
+		return priority;
+	}
+
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 	
 }

@@ -10,6 +10,7 @@ public class AlphaNumCompare {
 			else if(str1.charAt(cpt)<str2.charAt(cpt)){
 				return false;
 			}
+			cpt++;
 		}
 		if(str1.length()<str2.length()){
 			return true;

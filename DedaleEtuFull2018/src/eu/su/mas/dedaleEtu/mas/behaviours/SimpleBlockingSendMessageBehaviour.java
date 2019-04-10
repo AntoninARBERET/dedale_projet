@@ -28,6 +28,8 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 	 private boolean finished=false;
 	 private DedaleAgent myDedaleAgent;
 	 private String[] agentslist;
+
+	private String recieverName;
 	 
 	 
 	 
@@ -39,10 +41,11 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 	 
 	 
 	 
-	 public SimpleBlockingSendMessageBehaviour (DedaleAgent myagent,String[] agentslist){
+	 public SimpleBlockingSendMessageBehaviour (DedaleAgent myagent,String recieverName,String[] agentslist){
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.agentslist = agentslist;
+		this.recieverName = recieverName;
 	 }
 	 
 	 
@@ -52,21 +55,26 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 		 msg.setSender(this.myDedaleAgent.getAID());
 		 
 		 
-		 for(int i =0; i<agentslist.length; i++) {
-		 msg.addReceiver(new AID(agentslist[i], AID.ISLOCALNAME));
-		 }
+		 if(this.recieverName=="-1") {
+				for(int i =0; i<agentslist.length; i++) {
+					if(!agentslist[i].equals(myDedaleAgent.getLocalName())) {
+						msg.addReceiver(new AID(agentslist[i], AID.ISLOCALNAME));
+					}
+				}
+
+			}
 		 
 		
 		//2° compute the random value
 		 try {
 			  msg.setProtocol("BLOCKSIMPLE");
-			  msg.setContentObject(myDedaleAgent.getName());
+			  msg.setContentObject(new Couple<String, Integer>(myDedaleAgent.getName(), new Integer(myDedaleAgent.getPriority())));
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 
 		 this.myDedaleAgent.send(msg);
 		 this.finished=true;
-		 
+		 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
 		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple sent "/*peut etre ajout� le receveur*/);
 	 }
 	 
