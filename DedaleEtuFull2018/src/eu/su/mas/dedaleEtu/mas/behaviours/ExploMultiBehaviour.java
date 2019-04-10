@@ -82,7 +82,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myDedaleAgent.doWait(250);
+				this.myDedaleAgent.doWait(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -143,6 +143,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				obs = tmp.getRight();
 				
 				String nodeId=tmp.getLeft();
+				
+				// Pas de réexploration
 				if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
 					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
 						myDedaleAgent.getOpenNodes().add(nodeId);
@@ -188,7 +190,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 						//the node exist, but not necessarily the edge
 						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);
 					}
-					if (nextNode==null) nextNode=nodeId;
+					
 				}
 			}
 			
@@ -198,7 +200,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			if (myDedaleAgent.getOpenNodes().isEmpty()){
 				//Explo finished
 				finished=true;
-				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
 				System.out.println("Exploration successufully done, behaviour removed.");
 			}else{
 				//4) select next move.

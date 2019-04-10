@@ -96,6 +96,73 @@ public class MapRepresentation implements Serializable {
 		n.addAttribute("agent", agent);
 		n.addAttribute("date", date);
 		
+		setColor(n);
+		
+		/*if(wumpus) {
+			n.addAttribute("ui.class", MapAttribute.wumpus.toString());
+		}else if(agent!=null) {
+			n.addAttribute("ui.class", MapAttribute.agent.toString());
+		}else if (node_open){
+			n.addAttribute("ui.class", MapAttribute.open.toString());
+		}else if(gold>0) {
+			if(tresor_open) {
+				n.addAttribute("ui.class", MapAttribute.tresor_open.toString());
+			}else {
+				n.addAttribute("ui.class", MapAttribute.tresor_closed.toString());
+			}
+		}*/
+		
+		
+	}
+	
+	
+	
+	public void updateNode(String id,Boolean node_open,Integer gold,Boolean tresor_open,Integer lockPicking, Integer force, Boolean wumpus, Couple<String,String> agent, Date date){
+		Node n;
+		if (this.g.getNode(id)==null){
+			n=this.g.addNode(id);
+		}
+		n=this.g.getNode(id);
+		
+		
+		
+		n.clearAttributes();
+		n.addAttribute("ui.label",id);
+		n.addAttribute("open", node_open);
+		n.addAttribute("gold", gold);
+		n.addAttribute("tresor_open", tresor_open);
+		n.addAttribute("lockPicking", lockPicking);
+		n.addAttribute("force", force);
+		n.addAttribute("wumpus", wumpus);
+		n.addAttribute("agent", agent);
+		n.addAttribute("date", date);
+		
+		setColor(n);
+		
+		/*if(wumpus) {
+			n.addAttribute("ui.class", MapAttribute.wumpus.toString());
+		}else if(agent!=null) {
+			n.addAttribute("ui.class", MapAttribute.agent.toString());
+		}else if (node_open){
+			n.addAttribute("ui.class", MapAttribute.open.toString());
+		}else if(gold>0) {
+			if(tresor_open) {
+				n.addAttribute("ui.class", MapAttribute.tresor_open.toString());
+			}else {
+				n.addAttribute("ui.class", MapAttribute.tresor_closed.toString());
+			}
+		}*/
+		
+		
+	}
+	
+	public void setColor(Node n) {
+		boolean wumpus = n.getAttribute("wumpus");
+		Couple<String, String> agent = n.getAttribute("agent");
+		boolean node_open = n.getAttribute("open");
+		int gold = n.getAttribute("gold");
+		boolean tresor_open = n.getAttribute("tresor_open");
+		
 		if(wumpus) {
 			n.addAttribute("ui.class", MapAttribute.wumpus.toString());
 		}else if(agent!=null) {
@@ -109,11 +176,9 @@ public class MapRepresentation implements Serializable {
 				n.addAttribute("ui.class", MapAttribute.tresor_closed.toString());
 			}
 		}
-		
-		
 	}
 	
-	
+
 	
 
 
@@ -182,8 +247,15 @@ public class MapRepresentation implements Serializable {
 			shortestPath.add(iter.next().getId());
 		}
 		dijkstra.clear();
+		try {
 		shortestPath.remove(0);//remove the current position bug
 		return shortestPath;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
+			return null;
+		}
 	}
 	
 	public String getRandomNodeWhitout(String idFrom, String idWithout){
@@ -300,8 +372,8 @@ public class MapRepresentation implements Serializable {
 				
 				//attribut ouvert ferme
 				boolean mergeOpen;
-				
-				if((boolean)currentNode.getAttribute("open") && cOpen) {
+				boolean localOpen = (boolean)currentNode.getAttribute("open");
+				if(localOpen && cOpen) {
 					mergeOpen=true;
 				}else {
 					mergeOpen=false;
@@ -314,7 +386,16 @@ public class MapRepresentation implements Serializable {
 					myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
 					nodemaj++;
 				}else{
-					currentNode.setAttribute("open", mergeOpen);
+					if(localOpen != mergeOpen) {
+						int localGold = (int)currentNode.getAttribute("gold");
+						boolean localTresor_ouvert = (boolean)currentNode.getAttribute("tresor_open");
+						int localLockPicking = (int)currentNode.getAttribute("lockPicking");
+						int localForce = (int)currentNode.getAttribute("force");
+						boolean localWumpus =(boolean)currentNode.getAttribute("wumpus");
+						Couple<String, String> localAgent =(Couple<String, String>)currentNode.getAttribute("agent");
+						
+						myDedaleAgent.getMap().addNode(cId, mergeOpen, localGold, localTresor_ouvert, localLockPicking, localForce, localWumpus, localAgent, localDate);
+					}
 				}
 				
 				if(mergeOpen && !myDedaleAgent.getOpenNodes().contains(cId)) {

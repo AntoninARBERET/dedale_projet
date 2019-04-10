@@ -54,7 +54,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 
 	public void action() {
 		try {
-			this.myAgent.doWait(2000);
+			this.myAgent.doWait(300);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

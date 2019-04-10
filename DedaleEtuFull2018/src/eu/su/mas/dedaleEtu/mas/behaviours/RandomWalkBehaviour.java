@@ -7,6 +7,7 @@ import java.util.Random;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 
@@ -26,19 +27,17 @@ public class RandomWalkBehaviour extends SimpleBehaviour{
 	 *  
 	 */
 	private static final long serialVersionUID = 9088209402507795289L;
-
-	public RandomWalkBehaviour (final AbstractDedaleAgent myagent) {
+	private DedaleAgent myDedaleAgent;
+	private String[] agentsIds;
+	public RandomWalkBehaviour (final DedaleAgent myagent, String[] agentsIds) {
 		super(myagent);
+		this.myDedaleAgent=myagent;
+		this.agentsIds=agentsIds;
 	}
 
 	@Override
 	public void action() {
-		try {
-			this.myAgent.doWait(2000);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
 		//Example to retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
@@ -56,7 +55,7 @@ public class RandomWalkBehaviour extends SimpleBehaviour{
 			}*/
 			
 			//list of observations associated to the currentPosition
-			List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
+			/*List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
 
 			//example related to the use of the backpack for the treasure hunt
 			Boolean b=false;
@@ -74,13 +73,13 @@ public class RandomWalkBehaviour extends SimpleBehaviour{
 				default:
 					break;
 				}
-			}
+			
 
 			//If the agent picked (part of) the treasure
 			if (b){
 				List<Couple<String,List<Couple<Observation,Integer>>>> lobs2=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 				System.out.println(this.myAgent.getLocalName()+" - State of the observations after trying to pick something "+lobs2);
-			}
+			}*/
 
 			//Random move from the current position
 			Random r= new Random();

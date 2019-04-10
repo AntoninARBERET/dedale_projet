@@ -29,6 +29,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	private MapRepresentation myMap;
 	
+
 	private String[] idList;
 	/**
 	 * Nodes known but not yet visited
@@ -153,5 +154,9 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.blockedSince=0;
 	}
 	
+
+	public String[] getIdList() {
+		return idList;
+	}
 	
 }

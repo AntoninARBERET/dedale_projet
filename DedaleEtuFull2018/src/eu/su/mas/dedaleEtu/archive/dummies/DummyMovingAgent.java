@@ -44,7 +44,7 @@ public class DummyMovingAgent extends AbstractDedaleAgent{
 		 * ADD the behaviours of the Dummy Moving Agent
 		 * 
 		 ************************************************/
-		lb.add(new RandomWalkBehaviour(this));
+		//lb.add(new RandomWalkBehaviour(this));
 		lb.add(new SayHello(this));
 		
 		
