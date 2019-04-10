@@ -3,6 +3,8 @@ package eu.su.mas.dedaleEtu.mas.knowledge;
 import java.io.Serializable;
 import java.util.Date;
 
+import dataStructures.tuple.Couple;
+
 public class Case implements Serializable{
 	
 	private String id;
@@ -12,10 +14,12 @@ public class Case implements Serializable{
 	private int force;
 	private boolean tresor_ouvert;
 	private boolean wumpus;
+	private int lockPicking;
+	private Couple<String,String> agent;
 	
 	
 	
-	public Case(String id,boolean node_open,int gold,boolean tresor_ouvert,int force, boolean wumpus, Date date) {
+	public Case(String id,boolean node_open,int gold,boolean tresor_ouvert,int lockPicking,int force, boolean wumpus, Couple<String,String> agent, Date date) {
 		this.id=id;
 		this.node_open=node_open;
 		this.date=date;
@@ -23,8 +27,18 @@ public class Case implements Serializable{
 		this.tresor_ouvert=tresor_ouvert;
 		this.wumpus=wumpus;
 		this.force=force;
+		this.lockPicking=lockPicking;
+		this.agent=agent;
 	}
 	
+	public int getLockPicking() {
+		return lockPicking;
+	}
+
+	public Couple<String, String> getAgent() {
+		return agent;
+	}
+
 	public int getForce() {
 		return force;
 	}

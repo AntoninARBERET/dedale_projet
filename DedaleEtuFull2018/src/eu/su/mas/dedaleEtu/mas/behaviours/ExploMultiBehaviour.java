@@ -77,7 +77,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			myDedaleAgent.setPosition(myPosition);
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
-			System.out.println(lobs.toString());
+			//System.out.println(lobs.toString());
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
@@ -100,9 +100,42 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			//incomplet
 			Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
 			List<Couple<Observation, Integer>> obs =tmp.getRight();
-			System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
-			 
-			this.myDedaleAgent.getMap().addNode(myPosition, false, -1, false, -1, false, new Date());
+			//System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
+			
+			//recup des informations
+			int obsGold=-1;
+			boolean obsTresorOpen = false;
+			int obsLockPicking=-1;
+			int obsForce=-1;
+			boolean obsWumpus = false;
+			Couple<String, String> obsAgent=null;
+			
+			
+			for(Couple<Observation, Integer> c : obs) {
+				switch (c.getLeft().getName()) {
+					case("Gold"):
+						obsGold=c.getRight().intValue();
+						break;
+					case("LockIsOpen"):
+						if(c.getRight().intValue()==1) {
+							obsTresorOpen=true;
+						}
+						break;
+					case("LockPicking"):
+						obsLockPicking=c.getRight().intValue();
+						break;
+					case("Strength"):
+						obsForce=c.getRight().intValue();
+						break;
+					case("Wumpus"):
+						if(c.getRight().intValue()==1) {
+							obsWumpus=true;
+						}
+						break;
+					
+				}
+			}
+			this.myDedaleAgent.getMap().addNode(myPosition, false, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
 			
 			while(iter.hasNext()){
 				tmp = iter.next();
@@ -114,7 +147,42 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
 						myDedaleAgent.getOpenNodes().add(nodeId);
 						//Incomplet
-						this.myDedaleAgent.getMap().addNode(nodeId, true, -1, false, -1, false, new Date());
+						//recup des informations
+						obsGold=-1;
+						obsTresorOpen = false;
+						obsLockPicking=-1;
+						obsForce=-1;
+						obsWumpus = false;
+						obsAgent=null;
+						
+						
+						for(Couple<Observation, Integer> c : obs) {
+							switch (c.getLeft().getName()) {
+								case("Gold"):
+									obsGold=c.getRight().intValue();
+									break;
+								case("LockIsOpen"):
+									if(c.getRight().intValue()==1) {
+										obsTresorOpen=true;
+									}
+									break;
+								case("LockPicking"):
+									obsLockPicking=c.getRight().intValue();
+									break;
+								case("Strength"):
+									obsForce=c.getRight().intValue();
+									break;
+								case("Wumpus"):
+									if(c.getRight().intValue()==1) {
+										obsWumpus=true;
+									}
+									break;
+								
+							}
+						}
+						this.myDedaleAgent.getMap().addNode(nodeId, true, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+						
+						
 						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
 					}else{
 						//the node exist, but not necessarily the edge
@@ -130,6 +198,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 			if (myDedaleAgent.getOpenNodes().isEmpty()){
 				//Explo finished
 				finished=true;
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
 				System.out.println("Exploration successufully done, behaviour removed.");
 			}else{
 				//4) select next move.
@@ -150,7 +219,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
-					System.out.println(this.myDedaleAgent.getName()+" est bloque, objectif : " + nextNode.toString() );
+					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
 				}
 				
 				

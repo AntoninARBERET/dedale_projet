@@ -85,7 +85,7 @@ public class SendSignalBehaviour extends SimpleBehaviour{
 		this.finished=true; // After the execution of the action() method, this behaviour will be erased from the agent's list of triggerable behaviours.
 
 		
-		System.out.println(this.myDedaleAgent.getLocalName()+" ----> myMap sent to "+this.receiverName);
+		//System.out.println(this.myDedaleAgent.getLocalName()+" ----> myMap sent to "+this.receiverName);
 
 	}
 

@@ -42,7 +42,6 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);			
 
 		final ACLMessage msg = this.myDedaleAgent.receive(msgTemplate);
-		System.out.println(myDedaleAgent.getLocalName() + " ----> ouvrerture messages");
 		if (msg != null) {
 
 			try {
@@ -52,7 +51,6 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 					
 					break;
 				case "MAP":
-					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue de " + msg.getSender().toString());
 					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
 					MapRepresentation.MergeWithSendableMap(myDedaleAgent, msg.getContentObject());
 					break;

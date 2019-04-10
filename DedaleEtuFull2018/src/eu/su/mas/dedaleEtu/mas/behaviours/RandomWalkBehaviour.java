@@ -7,6 +7,7 @@ import java.util.Random;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 
 /**************************************
@@ -18,7 +19,7 @@ import jade.core.behaviours.TickerBehaviour;
  **************************************/
 
 
-public class RandomWalkBehaviour extends TickerBehaviour{
+public class RandomWalkBehaviour extends SimpleBehaviour{
 	
 	/**
 	 * When an agent choose to move
@@ -27,26 +28,32 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 	private static final long serialVersionUID = 9088209402507795289L;
 
 	public RandomWalkBehaviour (final AbstractDedaleAgent myagent) {
-		super(myagent, 600);
+		super(myagent);
 	}
 
 	@Override
-	public void onTick() {
+	public void action() {
+		try {
+			this.myAgent.doWait(2000);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		//Example to retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-		System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
+		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
 		if (myPosition!=null){
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
+			//System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 
 			//Little pause to allow you to follow what is going on
-			try {
+			/*try {
 				System.out.println("Press enter in the console to allow the agent "+this.myAgent.getLocalName() +" to execute its next move");
 				System.in.read();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 			
 			//list of observations associated to the currentPosition
 			List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
@@ -83,6 +90,12 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());
 		}
 
+	}
+
+	@Override
+	public boolean done() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

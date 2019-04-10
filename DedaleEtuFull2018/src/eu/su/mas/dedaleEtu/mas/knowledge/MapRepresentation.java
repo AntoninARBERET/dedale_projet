@@ -34,7 +34,7 @@ import eu.su.mas.dedaleEtu.mas.tools.Pair;
 public class MapRepresentation implements Serializable {
 
 	public enum MapAttribute {
-		closed,open,agent
+		open,agent,tresor_open, tresor_closed,wumpus
 	}
 	
 
@@ -52,7 +52,11 @@ public class MapRepresentation implements Serializable {
 	private String defaultNodeStyle= "node {"+"fill-color: black;"+" size-mode:fit;text-alignment:under; text-size:14;text-color:white;text-background-mode:rounded-box;text-background-color:black;}";
 	private String nodeStyle_open = "node.agent {"+"fill-color: forestgreen;"+"}";
 	private String nodeStyle_agent = "node.open {"+"fill-color: blue;"+"}";
-	private String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open;
+	private String nodeStyle_wumpus = "node.wumpus {"+"fill-color: red;"+"}";
+	private String nodeStyle_tresor_open = "node.tresor_open {"+"fill-color: yellow;"+"}";
+	private String nodeStyle_tresor_closed = "node.tresor_closed {"+"fill-color: orange;"+"}";
+	
+	private String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open+nodeStyle_wumpus+nodeStyle_tresor_open+nodeStyle_tresor_closed;
 	//private Hashtable<String, String[]> nodes_informations;
 
 	
@@ -72,32 +76,46 @@ public class MapRepresentation implements Serializable {
 
 
 	
-	public void addNode(String id,boolean open, int gold, boolean tresor_open, int force, boolean wumpus, Date date){
+	public void addNode(String id,boolean node_open,int gold,boolean tresor_open,int lockPicking,int force, boolean wumpus, Couple<String,String> agent, Date date){
 		Node n;
 		if (this.g.getNode(id)==null){
 			n=this.g.addNode(id);
-		}else{
-			n=this.g.getNode(id);
 		}
+		n=this.g.getNode(id);
+		
 		
 		
 		n.clearAttributes();
 		n.addAttribute("ui.label",id);
-		n.addAttribute("open", open);
+		n.addAttribute("open", node_open);
 		n.addAttribute("gold", gold);
 		n.addAttribute("tresor_open", tresor_open);
+		n.addAttribute("lockPicking", lockPicking);
 		n.addAttribute("force", force);
 		n.addAttribute("wumpus", wumpus);
+		n.addAttribute("agent", agent);
 		n.addAttribute("date", date);
+		
+		if(wumpus) {
+			n.addAttribute("ui.class", MapAttribute.wumpus.toString());
+		}else if(agent!=null) {
+			n.addAttribute("ui.class", MapAttribute.agent.toString());
+		}else if (node_open){
+			n.addAttribute("ui.class", MapAttribute.open.toString());
+		}else if(gold>0) {
+			if(tresor_open) {
+				n.addAttribute("ui.class", MapAttribute.tresor_open.toString());
+			}else {
+				n.addAttribute("ui.class", MapAttribute.tresor_closed.toString());
+			}
+		}
+		
 		
 	}
 	
 	
 	
-	public void addNode(String id,boolean open, int gold, boolean tresor_open, int force, boolean wumpus,  List<Couple<Observation,Integer>> mapRess){
-		Date date = new Date();
-		addNode(id, open, gold, tresor_open, force, wumpus, date);
-	}
+
 
 	
 
@@ -164,7 +182,7 @@ public class MapRepresentation implements Serializable {
 			shortestPath.add(iter.next().getId());
 		}
 		dijkstra.clear();
-		shortestPath.remove(0);//remove the current position
+		shortestPath.remove(0);//remove the current position bug
 		return shortestPath;
 	}
 	
@@ -207,11 +225,13 @@ public class MapRepresentation implements Serializable {
 			boolean open = n.getAttribute("open");
 			int gold = n.getAttribute("gold");
 			boolean open_tresor = n.getAttribute("tresor_open");
+			int lockPicking = n.getAttribute("lockPicking");
 			int force = n.getAttribute("force");
 			boolean wumpus = n.getAttribute("wumpus");
+			Couple<String, String> agent = n.getAttribute("agent");
 			Date date = n.getAttribute("date");
 			
-			Case c = new Case(id, open, gold, open_tresor, force, wumpus, date);
+			Case c = new Case(id, open, gold, open_tresor, lockPicking, force, wumpus, agent, date);
 			cases.add(c);
 			
 		}
@@ -256,7 +276,9 @@ public class MapRepresentation implements Serializable {
 			Date cDate= c.getDate();
 			int cGold = c.getGold();
 			int cForce = c.getForce();
-			boolean cTresor_ouvert= c.is_TresorOuvert();
+			int cLockPicking = c.getLockPicking();
+			boolean cTresor_ouvert= c.is_TresorOuvert();//
+			Couple<String, String> cAgent = c.getAgent();
 			boolean cWumpus = c.isWumpus();
 			
 			Node currentNode = myDedaleAgent.getMap().getNode(cId);
@@ -264,7 +286,7 @@ public class MapRepresentation implements Serializable {
 			//si le noeud n'existe pas
 			if(currentNode==null) {
 				
-				myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cForce, cWumpus, cDate);
+				myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
 				if(cOpen){
 					myDedaleAgent.getOpenNodes().add(cId);
 				}else{
@@ -289,7 +311,7 @@ public class MapRepresentation implements Serializable {
 				
 				//si le noeud recu est plus recent
 				if(cDate.after(localDate)) {
-					myDedaleAgent.getMap().addNode(cId, mergeOpen, cGold, cTresor_ouvert, cForce, cWumpus, cDate);
+					myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
 					nodemaj++;
 				}else{
 					currentNode.setAttribute("open", mergeOpen);
@@ -314,9 +336,9 @@ public class MapRepresentation implements Serializable {
 			nbarrete++;
 		}
 		
-		System.out.println(myDedaleAgent.getLocalName()+" merged maps : maj ou add "+ nbnode + " noeud et "+ nbarrete+" arretes et maj node "+ nodemaj);
+		/*System.out.println(myDedaleAgent.getLocalName()+" merged maps : maj ou add "+ nbnode + " noeud et "+ nbarrete+" arretes et maj node "+ nodemaj);
 		System.out.println(myDedaleAgent.getLocalName()+" open "+myDedaleAgent.getOpenNodes().toString());
-		System.out.println(myDedaleAgent.getLocalName()+" closed "+myDedaleAgent.getClosedNodes().toString());
+		System.out.println(myDedaleAgent.getLocalName()+" closed "+myDedaleAgent.getClosedNodes().toString());*/
 
 
 	}
