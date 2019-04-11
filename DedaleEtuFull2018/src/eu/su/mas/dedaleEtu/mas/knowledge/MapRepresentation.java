@@ -236,7 +236,7 @@ public class MapRepresentation implements Serializable {
 		for(String id : idTo) {
 			List<Node> path=dijkstra.getPath(g.getNode(id)).getNodePath(); //the shortest path from idFrom to idTo
 			int dist = path.size();
-			if(minDist==-1 || dist<minDist) {
+			if((minDist==-1 || dist<minDist)&&dist>0) {
 				minDist=dist;
 				minPath=path;
 			}
@@ -326,7 +326,7 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public static void MergeWithSendableMap(DedaleAgent myDedaleAgent, Object recMap) {
-		int nbnode =0, nbarrete=0 ,nodemaj=0;
+		
 		
 		SendableMap recieved = (SendableMap)recMap;
 		
@@ -364,7 +364,6 @@ public class MapRepresentation implements Serializable {
 				}else{
 					myDedaleAgent.getClosedNodes().add(cId);
 				}
-				nbnode++;
 				
 			//si le noeud existe deja
 			}else {
@@ -384,7 +383,6 @@ public class MapRepresentation implements Serializable {
 				//si le noeud recu est plus recent
 				if(cDate.after(localDate)) {
 					myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
-					nodemaj++;
 				}else{
 					if(localOpen != mergeOpen) {
 						int localGold = (int)currentNode.getAttribute("gold");
@@ -414,7 +412,6 @@ public class MapRepresentation implements Serializable {
 			String n1=a.getLeft();
 			String n2=a.getRight();
 			myDedaleAgent.getMap().addEdge(n1, n2);
-			nbarrete++;
 		}
 		
 		/*System.out.println(myDedaleAgent.getLocalName()+" merged maps : maj ou add "+ nbnode + " noeud et "+ nbarrete+" arretes et maj node "+ nodemaj);
