@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import dataStructures.tuple.Couple;
+import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
 import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
@@ -57,7 +59,9 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	private List<String> tagetPath;
 
-
+	protected int myLockPicking;
+	
+	
 
 
 
@@ -79,6 +83,13 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.priority=0;
 		this.targetNode=null;
 		this.tagetPath=new ArrayList<String>();
+		
+		
+		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
+			if(o.getLeft().equals(Observation.LOCKPICKING)) {
+				myLockPicking=o.getRight().intValue();
+			}
+		}
 		//final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
@@ -213,7 +224,11 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public void setTagetPath(List<String> tagetPath) {
 		this.tagetPath = tagetPath;
 	}
-	
+
+
+	public int getMyLockPicking() {
+		return myLockPicking;
+	}
 	
 	
 }

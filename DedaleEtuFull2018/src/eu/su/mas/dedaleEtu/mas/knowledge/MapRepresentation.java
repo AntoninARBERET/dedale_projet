@@ -76,14 +76,26 @@ public class MapRepresentation implements Serializable {
 
 
 	
-	public void addNode(String id,boolean node_open,int gold,boolean tresor_open,int lockPicking,int force, boolean wumpus, Couple<String,String> agent, Date date){
+	public void addNode(DedaleAgent myDedaleAgent, String id,boolean node_open,int gold,boolean tresor_open,int lockPicking,int force, boolean wumpus, Couple<String,String> agent, Date date){
 		Node n;
 		if (this.g.getNode(id)==null){
 			n=this.g.addNode(id);
 		}
 		n=this.g.getNode(id);
 		
-		
+		if(tresor_open && gold>=0) {
+			myDedaleAgent.getClosedTresor().remove(id);
+			if(!myDedaleAgent.getOpenTresor().contains(id)) {
+				myDedaleAgent.getOpenTresor().add(id);
+			}
+			
+		}else if(gold!=-1){
+			if(!myDedaleAgent.getClosedTresor().contains(id)) {
+				myDedaleAgent.getClosedTresor().add(id);
+			}
+			
+
+		}
 		
 		n.clearAttributes();
 		n.addAttribute("ui.label",id);
@@ -235,7 +247,7 @@ public class MapRepresentation implements Serializable {
 		for(String id : idTo) {
 			List<Node> path=dijkstra.getPath(g.getNode(id)).getNodePath(); //the shortest path from idFrom to idTo
 			int dist = path.size();
-			if((minDist==-1 || dist<minDist)&&dist>0) {
+			if((minDist==-1 || dist<minDist)&&dist>1) {
 				minDist=dist;
 				minPath=path;
 			}
@@ -362,7 +374,7 @@ public class MapRepresentation implements Serializable {
 			//si le noeud n'existe pas
 			if(currentNode==null) {
 				
-				myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
+				myDedaleAgent.getMap().addNode(myDedaleAgent, cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
 				if(cOpen){
 					myDedaleAgent.getOpenNodes().add(cId);
 				}else{
@@ -386,7 +398,8 @@ public class MapRepresentation implements Serializable {
 				
 				//si le noeud recu est plus recent
 				if(cDate.after(localDate)) {
-					myDedaleAgent.getMap().addNode(cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
+					myDedaleAgent.getMap().addNode(myDedaleAgent, cId, cOpen, cGold, cTresor_ouvert, cLockPicking, cForce, cWumpus, cAgent, cDate);
+					
 				}else{
 					if(localOpen != mergeOpen) {
 						int localGold = (int)currentNode.getAttribute("gold");
@@ -396,7 +409,7 @@ public class MapRepresentation implements Serializable {
 						boolean localWumpus =(boolean)currentNode.getAttribute("wumpus");
 						Couple<String, String> localAgent =(Couple<String, String>)currentNode.getAttribute("agent");
 						
-						myDedaleAgent.getMap().addNode(cId, mergeOpen, localGold, localTresor_ouvert, localLockPicking, localForce, localWumpus, localAgent, localDate);
+						myDedaleAgent.getMap().addNode(myDedaleAgent, cId, mergeOpen, localGold, localTresor_ouvert, localLockPicking, localForce, localWumpus, localAgent, localDate);
 					}
 				}
 				
@@ -452,12 +465,7 @@ public class MapRepresentation implements Serializable {
 				case("LockIsOpen"):
 					if(c.getRight().intValue()==1) {
 						obsTresorOpen=true;
-						myDedaleAgent.getClosedTresor().remove(myPosition);
-						myDedaleAgent.getOpenTresor().add(myPosition);
-					}else if(obsGold!=-1){
-						System.out.println("ADD FERME " +myPosition);
-						myDedaleAgent.getClosedTresor().add(myPosition);
-
+						
 					}
 					break;
 				case("LockPicking"):
@@ -474,7 +482,7 @@ public class MapRepresentation implements Serializable {
 				
 			}
 		}
-		myDedaleAgent.getMap().addNode(myPosition, false, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+		myDedaleAgent.getMap().addNode(myDedaleAgent, myPosition, false, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
 		
 		while(iter.hasNext()){
 			tmp = iter.next();
@@ -505,11 +513,7 @@ public class MapRepresentation implements Serializable {
 							case("LockIsOpen"):
 								if(c.getRight().intValue()==1) {
 									obsTresorOpen=true;
-									myDedaleAgent.getClosedTresor().remove(nodeId);
-									myDedaleAgent.getOpenTresor().add(nodeId);
-								}else {
-									myDedaleAgent.getClosedTresor().add(nodeId);
-
+									
 								}
 								break;
 							case("LockPicking"):
@@ -526,7 +530,7 @@ public class MapRepresentation implements Serializable {
 							
 						}
 					}
-					myDedaleAgent.getMap().addNode(nodeId, true, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+					myDedaleAgent.getMap().addNode(myDedaleAgent, nodeId, true, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
 					
 					
 					myDedaleAgent.getMap().addEdge(myPosition, nodeId);	

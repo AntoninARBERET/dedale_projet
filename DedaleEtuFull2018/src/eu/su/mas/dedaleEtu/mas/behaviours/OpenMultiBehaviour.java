@@ -12,6 +12,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import jade.core.behaviours.Behaviour;
@@ -46,10 +47,10 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 	
 	private String[] agentsIds;
 	
-	private DedaleAgent myDedaleAgent;
+	private ExploreMultiAgent myDedaleAgent;
 
 
-	public OpenMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
+	public OpenMultiBehaviour(final ExploreMultiAgent myagent,  String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
@@ -91,74 +92,44 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 				e.printStackTrace();
 			}
 
-			
-			
-
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
 			
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			
-			
-
-			//3) while openNodes is not empty, continues.
+		
+			//Plus de tresor fermés
 			if (myDedaleAgent.getClosedTresor().isEmpty()){
-				//Explo finished
 				finished=true;
 				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
 				System.out.println("Opening successufully done no more closed treasure, behaviour removed.");
-			}else{
-				//4) select next move.
-				//4.1 If there exist one open node directly reachable, go for it,
-				//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
+			//Plus de tresor ouvrable
+			}else if(myDedaleAgent.getOpenable().isEmpty()){
+				finished=true;
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
+				System.out.println("Opening successufully done no more openable treasure, behaviour removed.");
+			}
+			else{
+				//si sur target
 				if(myPosition.equals(myDedaleAgent.getTargetNode())){
 					if(myDedaleAgent.openLock(Observation.GOLD)) {
 						myDedaleAgent.getOpenTresor().add(myPosition);
 						myDedaleAgent.getClosedTresor().remove(myPosition);
+						myDedaleAgent.setTargetNode(null);
 						System.out.println(myDedaleAgent.getLocalName() + "-----> Open at "+myPosition);
 					}
 					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
-				}
-				if (myDedaleAgent.getTargetNode()==null){
-					//no directly accessible openNode
-					//chose one, compute the path and take the first step.
-					//nextNode=this.myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getOpenNodes().get(0)).get(0);
-					int myLockPicking=0;
+				}else {
 					
-					for(Couple<Observation, Integer> o : myDedaleAgent.getMyExpertise()) {
-						if(o.getLeft().equals(Observation.LOCKPICKING)) {
-							myLockPicking=o.getRight().intValue();
-						}
-					}
-					
-					List<String> openable = new ArrayList<String>();
-					
-					for(String t :myDedaleAgent.getClosedTresor()) {
-						System.out.println("MyLP "+myLockPicking+" needed " +myDedaleAgent.getMap().getNode(t).getAttribute("lockPicking"));
-						if((int)(myDedaleAgent.getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
-							openable.add(t);
-							
-						}
-					}
-					if(openable.isEmpty()) {
-						finished=true;
-						myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
-						System.out.println("Opening successufully done no more openabletreasure, behaviour removed.");
-					}else {
-						List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, openable);
-						myDedaleAgent.setTagetPath(newPath);
-						myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
-					}
-				}
-				if(this.myDedaleAgent.getTagetPath().size()>0) {
-					nextNode=this.myDedaleAgent.getTagetPath().get(0);
-					this.myDedaleAgent.getTagetPath().remove(0);
-				}
-				if(nextNode!=null) {
-					System.out.println(myPosition+ " to "+nextNode);
-					myDedaleAgent.setNextNode(nextNode);
+					List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, myDedaleAgent.getOpenable());
+					myDedaleAgent.setTagetPath(newPath);
+					System.out.println(myDedaleAgent.getLocalName() +" -------> chose target in "+ myDedaleAgent.getOpenable()+" from "+myPosition);
+					myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
+					nextNode=newPath.get(0);
+				
 					myDedaleAgent.moveTo(nextNode);
 				}
+		
 				
 			}
 			

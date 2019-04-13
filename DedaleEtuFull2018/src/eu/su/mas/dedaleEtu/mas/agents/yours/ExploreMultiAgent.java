@@ -26,6 +26,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 	private String[] idList;
 	
 	
+	
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -61,6 +62,18 @@ public class ExploreMultiAgent extends DedaleAgent {
 		
 		System.out.println("the  agent "+this.getLocalName()+ " is started");
 
+	}
+	
+	public List<String> getOpenable(){
+		List<String> openable = new ArrayList<String>();
+		
+		for(String t : getClosedTresor()) {
+			if((int)(getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
+				openable.add(t);
+				
+			}
+		}
+		return openable;
 	}
 	
 }

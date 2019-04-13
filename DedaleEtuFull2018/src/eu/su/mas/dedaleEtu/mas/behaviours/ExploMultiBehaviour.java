@@ -12,6 +12,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import jade.core.behaviours.Behaviour;
@@ -100,7 +101,10 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				//Explo finished
 				finished=true;
 				//myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
-				myDedaleAgent.addBehaviour(new OpenMultiBehaviour(myDedaleAgent, agentsIds));
+				if(myDedaleAgent instanceof ExploreMultiAgent) {
+					myDedaleAgent.addBehaviour(new OpenMultiBehaviour((ExploreMultiAgent)myDedaleAgent, agentsIds));
+
+				}
 				System.out.println("Exploration successufully done, behaviour removed.");
 			}else{
 				//4) select next move.
