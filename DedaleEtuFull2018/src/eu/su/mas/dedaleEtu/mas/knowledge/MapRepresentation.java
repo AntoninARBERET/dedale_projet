@@ -83,13 +83,20 @@ public class MapRepresentation implements Serializable {
 		}
 		n=this.g.getNode(id);
 		
-		if(tresor_open && gold>=0) {
+		if(tresor_open && gold>0) {
 			myDedaleAgent.getClosedTresor().remove(id);
 			if(!myDedaleAgent.getOpenTresor().contains(id)) {
 				myDedaleAgent.getOpenTresor().add(id);
 			}
 			
-		}else if(gold!=-1){
+		}else if(tresor_open && gold==0){
+			if(!myDedaleAgent.getOpenTresor().contains(id)) {
+				myDedaleAgent.getOpenTresor().add(id);
+			}
+			if(!myDedaleAgent.getClosedTresor().contains(id)) {
+				myDedaleAgent.getClosedTresor().add(id);
+			}
+	    }else if(gold!=-1){
 			if(!myDedaleAgent.getClosedTresor().contains(id)) {
 				myDedaleAgent.getClosedTresor().add(id);
 			}

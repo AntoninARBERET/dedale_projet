@@ -20,11 +20,12 @@ import jade.core.behaviours.Behaviour;
  *
  */
 
-public class ExploreMultiAgent extends DedaleAgent {
+public class CollectMultiAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	//private String[] idList;
-	
+	private List<String> toRetry;
+
 	
 	
 
@@ -41,7 +42,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
-
+		toRetry = new ArrayList<String>();
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
 		/************************************************
@@ -64,16 +65,62 @@ public class ExploreMultiAgent extends DedaleAgent {
 
 	}
 	
-	public List<String> getOpenable(){
-		List<String> openable = new ArrayList<String>();
+	//Lootable open and closed
+	public List<String> getLootable(){
+		List<String> lootable = new ArrayList<String>();
 		
-		for(String t : getClosedTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
-				openable.add(t);
+		for(String t : getOpenTresor()) {
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+				lootable.add(t);
 				
 			}
 		}
-		return openable;
+		for(String t : getClosedTresor()) {
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+				lootable.add(t);
+				
+			}
+		}
+		
+		return lootable;
+	}
+	
+	//open lootable
+	public List<String> getOpenLootable(){
+		List<String> lootable = new ArrayList<String>();
+		
+		for(String t : getOpenTresor()) {
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+				lootable.add(t);
+				
+			}
+		}
+
+		
+		return lootable;
+	}
+	
+	//open or close lootable except "without
+	public List<String> getLootableWhithout(List<String> without){
+		List<String> lootable = new ArrayList<String>();
+		
+		for(String t : getLootable()) {
+			if(!without.contains(t)){
+				lootable.add(t);
+				
+			}
+		}
+		
+		
+		return lootable;
+	}
+
+	public List<String> getToRetry() {
+		return toRetry;
+	}
+	
+	public void resetToRetry() {
+		toRetry = new ArrayList<String>();
 	}
 	
 }

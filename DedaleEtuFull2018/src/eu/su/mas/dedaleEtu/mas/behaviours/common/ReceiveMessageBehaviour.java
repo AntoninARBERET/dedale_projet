@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;

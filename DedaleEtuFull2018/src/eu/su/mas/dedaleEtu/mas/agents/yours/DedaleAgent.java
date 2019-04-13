@@ -10,7 +10,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
 import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.ExploMultiBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 
@@ -61,6 +61,9 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	protected int myLockPicking;
 	
+	protected int myStrengh;
+
+	
 	
 
 
@@ -80,14 +83,18 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.openTresor=new ArrayList<String>();
 		this.closedTresor=new ArrayList<String>();
 		this.blockedSince=0;
-		this.priority=0;
+		this.priority=1;
 		this.targetNode=null;
 		this.tagetPath=new ArrayList<String>();
+		this.myMap=new MapRepresentation();
 		
 		
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
 			if(o.getLeft().equals(Observation.LOCKPICKING)) {
 				myLockPicking=o.getRight().intValue();
+			}
+			if(o.getLeft().equals(Observation.STRENGH)) {
+				myStrengh=o.getRight().intValue();
 			}
 		}
 		final Object[] args = getArguments();

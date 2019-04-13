@@ -20,7 +20,7 @@ import jade.core.behaviours.Behaviour;
  *
  */
 
-public class ExploreMultiAgent extends DedaleAgent {
+public class TankerAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	//private String[] idList;
@@ -64,16 +64,6 @@ public class ExploreMultiAgent extends DedaleAgent {
 
 	}
 	
-	public List<String> getOpenable(){
-		List<String> openable = new ArrayList<String>();
-		
-		for(String t : getClosedTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
-				openable.add(t);
-				
-			}
-		}
-		return openable;
-	}
+
 	
 }
