@@ -30,7 +30,7 @@ import jade.core.behaviours.SimpleBehaviour;
  * @author hc
  *
  */
-public class ExploMultiBehaviour extends SimpleBehaviour {
+public class ExploAndOpenMultiBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
@@ -49,7 +49,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	private DedaleAgent myDedaleAgent;
 
 
-	public ExploMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
+	public ExploAndOpenMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
@@ -92,15 +92,115 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
-			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+			Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
+			
+			//1) remove the current node from openlist and add it to closedNodes.
+			myDedaleAgent.getClosedNodes().add(myPosition);
+			myDedaleAgent.getOpenNodes().remove(myPosition);
+			//incomplet
+			Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
+			List<Couple<Observation, Integer>> obs =tmp.getRight();
+			//System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
+			
+			//recup des informations
+			int obsGold=-1;
+			boolean obsTresorOpen = false;
+			int obsLockPicking=-1;
+			int obsForce=-1;
+			boolean obsWumpus = false;
+			Couple<String, String> obsAgent=null;
+			
+			
+			for(Couple<Observation, Integer> c : obs) {
+				switch (c.getLeft().getName()) {
+					case("Gold"):
+						obsGold=c.getRight().intValue();
+						break;
+					case("LockIsOpen"):
+						if(c.getRight().intValue()==1) {
+							obsTresorOpen=true;
+						}
+						break;
+					case("LockPicking"):
+						obsLockPicking=c.getRight().intValue();
+						break;
+					case("Strength"):
+						obsForce=c.getRight().intValue();
+						break;
+					case("Wumpus"):
+						if(c.getRight().intValue()==1) {
+							obsWumpus=true;
+						}
+						break;
+					
+				}
+			}
+			this.myDedaleAgent.getMap().addNode(myPosition, false, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+			
+			while(iter.hasNext()){
+				tmp = iter.next();
+				
+				obs = tmp.getRight();
+				
+				String nodeId=tmp.getLeft();
+				
+				// Pas de réexploration
+				if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
+					if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
+						myDedaleAgent.getOpenNodes().add(nodeId);
+						//Incomplet
+						//recup des informations
+						obsGold=-1;
+						obsTresorOpen = false;
+						obsLockPicking=-1;
+						obsForce=-1;
+						obsWumpus = false;
+						obsAgent=null;
+						
+						
+						for(Couple<Observation, Integer> c : obs) {
+							switch (c.getLeft().getName()) {
+								case("Gold"):
+									obsGold=c.getRight().intValue();
+									break;
+								case("LockIsOpen"):
+									if(c.getRight().intValue()==1) {
+										obsTresorOpen=true;
+									}
+									break;
+								case("LockPicking"):
+									obsLockPicking=c.getRight().intValue();
+									break;
+								case("Strength"):
+									obsForce=c.getRight().intValue();
+									break;
+								case("Wumpus"):
+									if(c.getRight().intValue()==1) {
+										obsWumpus=true;
+									}
+									break;
+								
+							}
+						}
+						this.myDedaleAgent.getMap().addNode(nodeId, true, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+						
+						
+						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
+					}else{
+						//the node exist, but not necessarily the edge
+						this.myDedaleAgent.getMap().addEdge(myPosition, nodeId);
+					}
+					
+				}
+			}
+			
 			
 
 			//3) while openNodes is not empty, continues.
 			if (myDedaleAgent.getOpenNodes().isEmpty()){
 				//Explo finished
 				finished=true;
-				//myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
-				myDedaleAgent.addBehaviour(new OpenMultiBehaviour(myDedaleAgent, agentsIds));
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
 				System.out.println("Exploration successufully done, behaviour removed.");
 			}else{
 				//4) select next move.

@@ -95,7 +95,6 @@ public class MapRepresentation implements Serializable {
 		n.addAttribute("wumpus", wumpus);
 		n.addAttribute("agent", agent);
 		n.addAttribute("date", date);
-		
 		setColor(n);
 		
 		/*if(wumpus) {
@@ -242,6 +241,11 @@ public class MapRepresentation implements Serializable {
 			}
 
 		}
+		if(minPath==null) {
+			System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
+			return null;
+		}
+		
 		Iterator<Node> iter=minPath.iterator();
 		while (iter.hasNext()){
 			shortestPath.add(iter.next().getId());
@@ -419,6 +423,120 @@ public class MapRepresentation implements Serializable {
 		System.out.println(myDedaleAgent.getLocalName()+" closed "+myDedaleAgent.getClosedNodes().toString());*/
 
 
+	}
+	
+	public static void updateMapWithObs(DedaleAgent myDedaleAgent, String myPosition ,List<Couple<String,List<Couple<Observation,Integer>>>> lobs) {
+		Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
+		
+		//1) remove the current node from openlist and add it to closedNodes.
+		myDedaleAgent.getClosedNodes().add(myPosition);
+		myDedaleAgent.getOpenNodes().remove(myPosition);
+		//incomplet
+		Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
+		List<Couple<Observation, Integer>> obs =tmp.getRight();
+		//System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
+		
+		//recup des informations
+		int obsGold=-1;
+		boolean obsTresorOpen = false;
+		int obsLockPicking=-1;
+		int obsForce=-1;
+		boolean obsWumpus = false;
+		Couple<String, String> obsAgent=null;
+		
+		for(Couple<Observation, Integer> c : obs) {
+			switch (c.getLeft().getName()) {
+				case("Gold"):
+					obsGold=c.getRight().intValue();
+					break;
+				case("LockIsOpen"):
+					if(c.getRight().intValue()==1) {
+						obsTresorOpen=true;
+						myDedaleAgent.getClosedTresor().remove(myPosition);
+						myDedaleAgent.getOpenTresor().add(myPosition);
+					}else if(obsGold!=-1){
+						System.out.println("ADD FERME " +myPosition);
+						myDedaleAgent.getClosedTresor().add(myPosition);
+
+					}
+					break;
+				case("LockPicking"):
+					obsLockPicking=c.getRight().intValue();
+					break;
+				case("Strength"):
+					obsForce=c.getRight().intValue();
+					break;
+				case("Wumpus"):
+					if(c.getRight().intValue()==1) {
+						obsWumpus=true;
+					}
+					break;
+				
+			}
+		}
+		myDedaleAgent.getMap().addNode(myPosition, false, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+		
+		while(iter.hasNext()){
+			tmp = iter.next();
+			
+			obs = tmp.getRight();
+			
+			String nodeId=tmp.getLeft();
+			
+			// Pas de réexploration
+			if (!myDedaleAgent.getClosedNodes().contains(nodeId)){
+				if (!myDedaleAgent.getOpenNodes().contains(nodeId)){
+					myDedaleAgent.getOpenNodes().add(nodeId);
+					//Incomplet
+					//recup des informations
+					obsGold=-1;
+					obsTresorOpen = false;
+					obsLockPicking=-1;
+					obsForce=-1;
+					obsWumpus = false;
+					obsAgent=null;
+					
+					
+					for(Couple<Observation, Integer> c : obs) {
+						switch (c.getLeft().getName()) {
+							case("Gold"):
+								obsGold=c.getRight().intValue();
+								break;
+							case("LockIsOpen"):
+								if(c.getRight().intValue()==1) {
+									obsTresorOpen=true;
+									myDedaleAgent.getClosedTresor().remove(nodeId);
+									myDedaleAgent.getOpenTresor().add(nodeId);
+								}else {
+									myDedaleAgent.getClosedTresor().add(nodeId);
+
+								}
+								break;
+							case("LockPicking"):
+								obsLockPicking=c.getRight().intValue();
+								break;
+							case("Strength"):
+								obsForce=c.getRight().intValue();
+								break;
+							case("Wumpus"):
+								if(c.getRight().intValue()==1) {
+									obsWumpus=true;
+								}
+								break;
+							
+						}
+					}
+					myDedaleAgent.getMap().addNode(nodeId, true, obsGold, obsTresorOpen, obsLockPicking, obsForce, obsWumpus, null, new Date());
+					
+					
+					myDedaleAgent.getMap().addEdge(myPosition, nodeId);	
+				}else{
+					//the node exist, but not necessarily the edge
+					myDedaleAgent.getMap().addEdge(myPosition, nodeId);
+				}
+				
+			}
+		}
 	}
 	
 

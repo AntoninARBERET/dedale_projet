@@ -30,7 +30,7 @@ import jade.core.behaviours.SimpleBehaviour;
  * @author hc
  *
  */
-public class ExploMultiBehaviour extends SimpleBehaviour {
+public class OpenMultiBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
@@ -49,12 +49,13 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	private DedaleAgent myDedaleAgent;
 
 
-	public ExploMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
+	public OpenMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
 		this.previousPosition=null;
 		this.agentsIds = agentsIds;
+		System.out.println("Start opening "+myDedaleAgent.getClosedTresor());
 	}
 
 	@Override
@@ -75,6 +76,9 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 		if (myPosition!=null){
 			
 			myDedaleAgent.setPosition(myPosition);
+			
+			
+			
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 			//System.out.println(lobs.toString());
@@ -92,28 +96,70 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
+			
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+			
 			
 
 			//3) while openNodes is not empty, continues.
-			if (myDedaleAgent.getOpenNodes().isEmpty()){
+			if (myDedaleAgent.getClosedTresor().isEmpty()){
 				//Explo finished
 				finished=true;
-				//myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
-				myDedaleAgent.addBehaviour(new OpenMultiBehaviour(myDedaleAgent, agentsIds));
-				System.out.println("Exploration successufully done, behaviour removed.");
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
+				System.out.println("Opening successufully done no more closed treasure, behaviour removed.");
 			}else{
 				//4) select next move.
 				//4.1 If there exist one open node directly reachable, go for it,
 				//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
-				if (nextNode==null){
+				if(myPosition.equals(myDedaleAgent.getTargetNode())){
+					if(myDedaleAgent.openLock(Observation.GOLD)) {
+						myDedaleAgent.getOpenTresor().add(myPosition);
+						myDedaleAgent.getClosedTresor().remove(myPosition);
+						System.out.println(myDedaleAgent.getLocalName() + "-----> Open at "+myPosition);
+					}
+					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+				}
+				if (myDedaleAgent.getTargetNode()==null){
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					//nextNode=this.myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getOpenNodes().get(0)).get(0);
-					nextNode=this.myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, myDedaleAgent.getOpenNodes()).get(0);
-					myDedaleAgent.setNextNode(nextNode);
+					int myLockPicking=0;
+					
+					for(Couple<Observation, Integer> o : myDedaleAgent.getMyExpertise()) {
+						if(o.getLeft().equals(Observation.LOCKPICKING)) {
+							myLockPicking=o.getRight().intValue();
+						}
+					}
+					
+					List<String> openable = new ArrayList<String>();
+					
+					for(String t :myDedaleAgent.getClosedTresor()) {
+						System.out.println("MyLP "+myLockPicking+" needed " +myDedaleAgent.getMap().getNode(t).getAttribute("lockPicking"));
+						if((int)(myDedaleAgent.getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
+							openable.add(t);
+							
+						}
+					}
+					if(openable.isEmpty()) {
+						finished=true;
+						myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
+						System.out.println("Opening successufully done no more openabletreasure, behaviour removed.");
+					}else {
+						List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, openable);
+						myDedaleAgent.setTagetPath(newPath);
+						myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
+					}
 				}
-				myDedaleAgent.moveTo(nextNode);
+				if(this.myDedaleAgent.getTagetPath().size()>0) {
+					nextNode=this.myDedaleAgent.getTagetPath().get(0);
+					this.myDedaleAgent.getTagetPath().remove(0);
+				}
+				if(nextNode!=null) {
+					System.out.println(myPosition+ " to "+nextNode);
+					myDedaleAgent.setNextNode(nextNode);
+					myDedaleAgent.moveTo(nextNode);
+				}
+				
 			}
 			
 			//check si l'agent est bloqué
@@ -121,7 +167,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
-					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
+					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, next : " + nextNode.toString() );
 				}
 				
 				if(myDedaleAgent.getBlockedSince()<2) {

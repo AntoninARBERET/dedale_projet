@@ -49,6 +49,14 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	private int priority;
 	
+	private List<String> closedTresor;
+	
+	private List<String> openTresor;
+	
+	private String targetNode;
+	
+	private List<String> tagetPath;
+
 
 
 
@@ -65,8 +73,12 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		super.setup();
 		this.openNodes=new ArrayList<String>();
 		this.closedNodes=new HashSet<String>();
+		this.openTresor=new ArrayList<String>();
+		this.closedTresor=new ArrayList<String>();
 		this.blockedSince=0;
 		this.priority=0;
+		this.targetNode=null;
+		this.tagetPath=new ArrayList<String>();
 		//final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
@@ -171,5 +183,37 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
+
+
+	public List<String> getClosedTresor() {
+		return closedTresor;
+	}
+
+
+	public List<String> getOpenTresor() {
+		return openTresor;
+	}
+
+
+	public String getTargetNode() {
+		return targetNode;
+	}
+
+
+	public void setTargetNode(String targetNode) {
+		this.targetNode = targetNode;
+	}
+
+
+	public List<String> getTagetPath() {
+		return tagetPath;
+	}
+
+
+	public void setTagetPath(List<String> tagetPath) {
+		this.tagetPath = tagetPath;
+	}
+	
+	
 	
 }
