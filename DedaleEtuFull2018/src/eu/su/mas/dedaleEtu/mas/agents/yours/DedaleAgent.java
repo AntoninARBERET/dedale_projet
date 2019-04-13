@@ -32,7 +32,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	private MapRepresentation myMap;
 	
 
-	private String[] idList;
+	protected String[] idList;
 	/**
 	 * Nodes known but not yet visited
 	 */
@@ -90,8 +90,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 				myLockPicking=o.getRight().intValue();
 			}
 		}
-		//final Object[] args = getArguments();
-		//idList = (String[])args[2];
+		final Object[] args = getArguments();
+		idList = (String[])args[2];
 		//myMap=new MapRepresentation();
 
 		//List<Behaviour> lb=new ArrayList<Behaviour>();
@@ -229,6 +229,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public int getMyLockPicking() {
 		return myLockPicking;
 	}
+	
+	
 	
 	
 }

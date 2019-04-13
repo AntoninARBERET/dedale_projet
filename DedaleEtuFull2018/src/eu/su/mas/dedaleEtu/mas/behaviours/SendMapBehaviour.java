@@ -43,11 +43,11 @@ public class SendMapBehaviour extends SimpleBehaviour{
 	 * @param nbValues the number of messages that should be sent to the receiver
 	 * @param receiverName The local name of the receiver agent
 	 */
-	public SendMapBehaviour(final DedaleAgent myagent, String receiverName, String[] agentsIds) {
+	public SendMapBehaviour(final DedaleAgent myagent, String receiverNames) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
-		this.receiverName=receiverName;
-		this.agentsIds = agentsIds;
+		this.receiverName=receiverNames;
+		this.agentsIds = myDedaleAgent.getIdList();
 		
 	}
 

@@ -39,10 +39,10 @@ public class PingBehaviour extends SimpleBehaviour{
 	 
 	 
 	 
-	 public PingBehaviour (DedaleAgent myagent,String[] agentslist){
+	 public PingBehaviour (DedaleAgent myagent){
 		super(myagent);
 		this.myDedaleAgent = myagent;
-		this.agentslist = agentslist;
+		this.agentslist = myDedaleAgent.getIdList();
 	 }
 	 
 	 

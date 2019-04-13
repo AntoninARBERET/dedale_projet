@@ -41,10 +41,10 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 	 
 	 
 	 
-	 public SimpleBlockingSendMessageBehaviour (DedaleAgent myagent,String recieverName,String[] agentslist){
+	 public SimpleBlockingSendMessageBehaviour (DedaleAgent myagent,String recieverName){
 		super(myagent);
 		this.myDedaleAgent = myagent;
-		this.agentslist = agentslist;
+		this.agentslist = myDedaleAgent.getIdList();
 		this.recieverName = recieverName;
 	 }
 	 

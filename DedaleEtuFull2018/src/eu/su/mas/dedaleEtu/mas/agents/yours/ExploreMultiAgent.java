@@ -23,7 +23,7 @@ import jade.core.behaviours.Behaviour;
 public class ExploreMultiAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
-	private String[] idList;
+	//private String[] idList;
 	
 	
 	
@@ -39,7 +39,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		
 		super.setup();
 		final Object[] args = getArguments();
-		idList = (String[])args[2];
+		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
 
 		List<Behaviour> lb=new ArrayList<Behaviour>();
@@ -50,7 +50,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new ExploMultiBehaviour(this, idList));
+		lb.add(new ExploMultiBehaviour(this));
 		
 		
 		/***

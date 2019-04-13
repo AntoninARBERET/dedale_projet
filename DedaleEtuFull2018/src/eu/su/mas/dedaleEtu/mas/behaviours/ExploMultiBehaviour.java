@@ -50,12 +50,12 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 	private DedaleAgent myDedaleAgent;
 
 
-	public ExploMultiBehaviour(final DedaleAgent myagent,  String[] agentsIds) {
+	public ExploMultiBehaviour(final DedaleAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
 		this.previousPosition=null;
-		this.agentsIds = agentsIds;
+		this.agentsIds = myDedaleAgent.getIdList();
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				finished=true;
 				//myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
 				if(myDedaleAgent instanceof ExploreMultiAgent) {
-					myDedaleAgent.addBehaviour(new OpenMultiBehaviour((ExploreMultiAgent)myDedaleAgent, agentsIds));
+					myDedaleAgent.addBehaviour(new OpenMultiBehaviour((ExploreMultiAgent)myDedaleAgent));
 
 				}
 				System.out.println("Exploration successufully done, behaviour removed.");
@@ -129,10 +129,10 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 				}
 				
 				if(myDedaleAgent.getBlockedSince()<2) {
-					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
+					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 				}
 				else if(myDedaleAgent.getBlockedSince()>=2) {
-					myDedaleAgent.addBehaviour(new SimpleBlockingSendMessageBehaviour(myDedaleAgent, "-1", agentsIds));
+					myDedaleAgent.addBehaviour(new SimpleBlockingSendMessageBehaviour(myDedaleAgent, "-1"));
 				}
 			
 

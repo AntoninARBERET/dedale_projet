@@ -29,15 +29,15 @@ public class RandomWalkBehaviour extends SimpleBehaviour{
 	private static final long serialVersionUID = 9088209402507795289L;
 	private DedaleAgent myDedaleAgent;
 	private String[] agentsIds;
-	public RandomWalkBehaviour (final DedaleAgent myagent, String[] agentsIds) {
+	public RandomWalkBehaviour (final DedaleAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
-		this.agentsIds=agentsIds;
+		this.agentsIds=myDedaleAgent.getIdList();
 	}
 
 	@Override
 	public void action() {
-		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
+		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 		//Example to retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);

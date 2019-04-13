@@ -50,12 +50,12 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 	private ExploreMultiAgent myDedaleAgent;
 
 
-	public OpenMultiBehaviour(final ExploreMultiAgent myagent,  String[] agentsIds) {
+	public OpenMultiBehaviour(final ExploreMultiAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
 		this.previousPosition=null;
-		this.agentsIds = agentsIds;
+		this.agentsIds = myDedaleAgent.getIdList();
 		System.out.println("Start opening "+myDedaleAgent.getClosedTresor());
 	}
 
@@ -101,12 +101,12 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 			//Plus de tresor fermés
 			if (myDedaleAgent.getClosedTresor().isEmpty()){
 				finished=true;
-				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
 				System.out.println("Opening successufully done no more closed treasure, behaviour removed.");
 			//Plus de tresor ouvrable
 			}else if(myDedaleAgent.getOpenable().isEmpty()){
 				finished=true;
-				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
 				System.out.println("Opening successufully done no more openable treasure, behaviour removed.");
 			}
 			else{
@@ -142,10 +142,10 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 				}
 				
 				if(myDedaleAgent.getBlockedSince()<2) {
-					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1", agentsIds));
+					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 				}
 				else if(myDedaleAgent.getBlockedSince()>=2) {
-					myDedaleAgent.addBehaviour(new SimpleBlockingSendMessageBehaviour(myDedaleAgent, "-1", agentsIds));
+					myDedaleAgent.addBehaviour(new SimpleBlockingSendMessageBehaviour(myDedaleAgent, "-1"));
 				}
 			
 
