@@ -86,7 +86,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 			e.printStackTrace();
 		}
 		
-		this.myDedaleAgent.send(msg);
+		this.myDedaleAgent.sendMessage(msg);
 		myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
 		this.finished=true; // After the execution of the action() method, this behaviour will be erased from the agent's list of triggerable behaviours.
 

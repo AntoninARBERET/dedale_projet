@@ -1,5 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
+import java.util.Date;
+
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
@@ -40,12 +42,15 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 
 	public void action() {
 		//1) receive the message
-		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);			
+		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);	
+		myDedaleAgent.setCheckingBehaviourRunning(true);
 
 		final ACLMessage msg = this.myDedaleAgent.receive(msgTemplate);
-		if (msg != null) {
-
+		if (msg != null /*&&new Date().getTime()- msg.getPostTimeStamp()<1000*/) {
 			try {
+				
+
+
 				switch(msg.getProtocol()) {
 				case "PING":
 					System.out.println(myDedaleAgent.getLocalName() + " ----> ping recue");
@@ -77,6 +82,7 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 	}
 
 	public boolean done() {
+		myDedaleAgent.setCheckingBehaviourRunning(false);
 		return finished;
 	}
 

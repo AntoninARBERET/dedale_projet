@@ -24,6 +24,7 @@ import jade.core.behaviours.Behaviour;
 public class TankerAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
+	private String mySpot;
 	//private String[] idList;
 	
 	
@@ -45,6 +46,7 @@ public class TankerAgent extends DedaleAgent {
 		type = "tanker";
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		this.priority=0;
+		mySpot=null;
 		
 		/************************************************
 		 * 
@@ -64,6 +66,20 @@ public class TankerAgent extends DedaleAgent {
 		
 		System.out.println("the  agent "+this.getLocalName()+ " is started");
 
+	}
+
+
+
+
+	public String getMySpot() {
+		return mySpot;
+	}
+
+
+
+
+	public void setMySpot(String mySpot) {
+		this.mySpot = mySpot;
 	}
 	
 

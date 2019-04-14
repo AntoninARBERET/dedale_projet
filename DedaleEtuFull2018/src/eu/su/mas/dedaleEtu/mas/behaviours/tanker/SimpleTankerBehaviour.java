@@ -32,18 +32,18 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 	 *  
 	 */
 	private static final long serialVersionUID = 9088209402507795289L;
-	private DedaleAgent myDedaleAgent;
+	private TankerAgent myDedaleAgent;
 	private String[] agentsIds;
-	private String mySpot;
 	public SimpleTankerBehaviour (final TankerAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
 		this.agentsIds=myDedaleAgent.getIdList();
-		mySpot=null;
 	}
 
 	@Override
 	public void action() {
+		System.out.println("Tanker main loop");
+
 		myDedaleAgent.doWait(200);
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		
@@ -52,16 +52,17 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 		//Example to retrieve the current position
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
 		if (myPosition!=null){
-			if(mySpot==null){
-				mySpot=myPosition;
+			if(myDedaleAgent.getMySpot()==null){
+				myDedaleAgent.setMySpot(myPosition);
 			}
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 			
-			if(!mySpot.equals(myPosition)) {
+			if(!myDedaleAgent.getMySpot().equals(myPosition)) {
+				System.out.println("Tanker try to come back");
 				List<String> spotList = new ArrayList<String>();
-				spotList.add(mySpot);
+				spotList.add(myDedaleAgent.getMySpot());
 				
 				List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, spotList);
 				myDedaleAgent.setTagetPath(newPath);
@@ -72,8 +73,9 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 			//List of observable from the agent's current position
 			
 			//ADD PING AUX AUTRES
-			
-			myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
+			if(!myDedaleAgent.isCheckingBehaviourRunning()) {
+				myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
+			}
 		}
 		
 

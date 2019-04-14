@@ -2,6 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 	 private String[] agentslist;
 
 	private String recieverName;
+	private static int nbsent=0;
 	 
 	 
 	 
@@ -50,33 +52,51 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 	 
 	 
 	 public void action() {
-		 //creation du message
-		 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		 msg.setSender(this.myDedaleAgent.getAID());
 		 
-		 
-		 if(this.recieverName=="-1") {
-				for(int i =0; i<agentslist.length; i++) {
-					if(!agentslist[i].equals(myDedaleAgent.getLocalName())) {
-						msg.addReceiver(new AID(agentslist[i], AID.ISLOCALNAME));
+		 if(myDedaleAgent.getLockingStart() !=null && new Date().getTime() -myDedaleAgent.getLockingStart().getTime()<500) {
+			 if(!myDedaleAgent.isCheckingBehaviourRunning()) {
+				 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
+			 }
+			 this.finished=true;
+			
+		 }
+		 else {
+			 //creation du message
+			 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			 msg.setSender(this.myDedaleAgent.getAID());
+			 
+			 
+			 if(this.recieverName=="-1") {
+					for(int i =0; i<agentslist.length; i++) {
+						if(!agentslist[i].equals(myDedaleAgent.getLocalName())) {
+							msg.addReceiver(new AID(agentslist[i], AID.ISLOCALNAME));
+						}
 					}
+	
 				}
+			 
+			
+			//2° compute the random value
+			 try {
+				  msg.setProtocol("BLOCKSIMPLE");
+				  msg.setContentObject(new Couple<String, Integer>(myDedaleAgent.getLocalName(), new Integer(myDedaleAgent.getPriority())));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			 
+			 System.out.println(nbsent++ +"eme sent by "+ myDedaleAgent.getLocalName());
+			 jade.util.leap.Iterator it = msg.getAllReceiver();
+			 while(it.hasNext()) {
+				 System.out.println(it.next());
 
-			}
-		 
-		
-		//2° compute the random value
-		 try {
-			  msg.setProtocol("BLOCKSIMPLE");
-			  msg.setContentObject(new Couple<String, Integer>(myDedaleAgent.getName(), new Integer(myDedaleAgent.getPriority())));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
-		 this.myDedaleAgent.send(msg);
-		 this.finished=true;
-		 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
-		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple sent "/*peut etre ajout� le receveur*/);
-		 myDedaleAgent.doWait(500);
+			 }
+
+			 this.myDedaleAgent.sendMessage(msg);
+			 this.finished=true;
+			 myDedaleAgent.setLockingStart(new Date());
+			 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
+			 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple sent "/*peut etre ajout� le receveur*/);
+		 }
 	 }
 	 
 	 

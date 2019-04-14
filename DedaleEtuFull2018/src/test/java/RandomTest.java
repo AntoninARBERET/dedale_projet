@@ -21,14 +21,18 @@ import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 public class RandomTest {
 	public static void main(String args[]) {
-		ArrayList<String> l = new ArrayList<String>();
-		l.add("pipi");
-		l.add("pii");
+		Date d1 = new Date();
+		for(int i=0; i<2000000;i++) {
+			System.out.print('A');
+		}
+		Date d2 = new Date();
+
 		
 		
 		
-		System.out.println(l.indexOf("pii"));
-		    
+		System.out.println(d1+" "+d2+" "+(d2.getTime()-d1.getTime()));
+		System.out.println(d1+" "+d2+" "+d1.compareTo(d2));
+
 		
 	}
 }

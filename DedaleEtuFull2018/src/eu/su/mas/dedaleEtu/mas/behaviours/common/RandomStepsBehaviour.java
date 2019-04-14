@@ -95,6 +95,7 @@ public class RandomStepsBehaviour extends SimpleBehaviour{
 
 			//The move action (if any) should be the last action of your behaviour
 			((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());
+			myDedaleAgent.doWait(200);
 			nbSteps--;
 			if(nbSteps<=0) {
 				this.finished=true;

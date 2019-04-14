@@ -30,7 +30,7 @@ public class SimpleBlockingReceptionBehaviour extends SimpleBehaviour{
 	 private DedaleAgent myDedaleAgent;
 	 private String recievedName;
 	 private int moveNum;
-	 private int moveMax=3;
+	 private int moveMax=2;
 
 	 private int recievedPrio;
 	
@@ -59,25 +59,25 @@ public class SimpleBlockingReceptionBehaviour extends SimpleBehaviour{
 
 		 if(recievedPrio!=myDedaleAgent.getPriority()) {
 			 if(recievedPrio<myDedaleAgent.getPriority()){
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple prio"/*peut etre ajout� le receveur*/);
+				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple prio vs "+recievedName/*peut etre ajout� le receveur*/);
 
 				 this.finished=true;
 			 }
 			 else{
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple not prio"/*peut etre ajout� le receveur*/);
+				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple not prio vs "+recievedName/*peut etre ajout� le receveur*/);
 
 				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax));
-
+				 this.finished=true;
 			 }
 		 }
 		 else {
 			 if(AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), recievedName)){
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple first"/*peut etre ajout� le receveur*/);
+				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple first "+recievedName/*peut etre ajout� le receveur*/);
 
 				 this.finished=true;
 			 }
 			 else{
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple second"/*peut etre ajout� le receveur*/);
+				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple second "+recievedName/*peut etre ajout� le receveur*/);
 
 				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax));
 				 

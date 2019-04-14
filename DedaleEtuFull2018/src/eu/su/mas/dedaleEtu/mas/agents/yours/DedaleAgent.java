@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.agents.yours;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +66,9 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	protected String type;
 	
+	protected Date lockingStart;
+	
+	protected boolean checkingBehaviourRunning;
 
 
 
@@ -83,10 +87,12 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.openTresor=new ArrayList<String>();
 		this.closedTresor=new ArrayList<String>();
 		this.blockedSince=0;
+		this.lockingStart=null;
 		this.priority=1;
 		this.targetNode=null;
 		this.tagetPath=new ArrayList<String>();
 		this.myMap=new MapRepresentation();
+		this.checkingBehaviourRunning=false;
 		
 		
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
@@ -246,8 +252,28 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+
+	public Date getLockingStart() {
+		return lockingStart;
+	}
+
+
+	public void setLockingStart(Date lockingStart) {
+		this.lockingStart = lockingStart;
+	}
 	
-	
+
+	public boolean isCheckingBehaviourRunning() {
+		return checkingBehaviourRunning;
+	}
+
+
+	public void setCheckingBehaviourRunning(boolean checkingBehaviourRunning) {
+		this.checkingBehaviourRunning = checkingBehaviourRunning;
+	}
+
+
 	
 	
 }
