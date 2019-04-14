@@ -81,7 +81,7 @@ public class SendMapBehaviour extends SimpleBehaviour{
 		try {
 			msg.setProtocol("MAP");
 			//msg.setContentObject(myDedaleAgent.getMap().getStringListRepresentation());
-			msg.setContentObject(myDedaleAgent.getMap().getSendableMap());
+			msg.setContentObject(myDedaleAgent.getMap().getSendableMap(myDedaleAgent));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -63,7 +63,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	protected int myStrengh;
 
-	
+	protected String type;
 	
 
 
@@ -235,6 +235,16 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	public int getMyLockPicking() {
 		return myLockPicking;
+	}
+
+
+	public String getType() {
+		return type;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	

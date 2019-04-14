@@ -41,6 +41,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
+		type="explorer";
 
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		

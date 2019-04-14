@@ -41,7 +41,7 @@ public class TankerAgent extends DedaleAgent {
 		final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
-
+		type = "tanker";
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
 		/************************************************

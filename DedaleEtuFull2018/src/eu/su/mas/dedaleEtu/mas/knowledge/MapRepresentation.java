@@ -4,6 +4,7 @@ package eu.su.mas.dedaleEtu.mas.knowledge;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -44,6 +45,7 @@ public class MapRepresentation implements Serializable {
 	private Graph g; //data structure
 	private Viewer viewer; //ref to the display
 	private Integer nbEdges;//used to generate the edges ids
+	private HashMap<String, Couple<String,String>> agentsInfo;
 	
 	/*********************************
 	 * Parameters for graph rendering
@@ -66,6 +68,7 @@ public class MapRepresentation implements Serializable {
 		this.g.setAttribute("ui.stylesheet",nodeStyle);
 		this.viewer = this.g.display();
 		this.nbEdges=0;
+		agentsInfo=new  HashMap<String, Couple<String,String>>();
 		//this.nodes_informations=new Hashtable<String, String[]>();
 	}
 
@@ -217,6 +220,24 @@ public class MapRepresentation implements Serializable {
 		}
 		
 	}
+	
+	
+
+	public HashMap<String, Couple<String, String>> getAgentsInfo() {
+		return agentsInfo;
+	}
+	
+	public Couple<List<String>,List<String>> getPosByType(String type){
+		ArrayList<String> listId = new ArrayList<String>();
+		ArrayList<String> listPos = new ArrayList<String>();
+		for(String k:agentsInfo.keySet()) {
+			if(agentsInfo.get(k).getLeft().equals(type)) {
+				listId.add(k);
+				listPos.add(agentsInfo.get(k).getRight());
+			}
+		}
+		return new Couple<List<String>,List<String>>(listId,listPos);
+	}
 
 	/**
 	 * Compute the shortest Path from idFrom to IdTo. The computation is currently not very efficient
@@ -342,12 +363,16 @@ public class MapRepresentation implements Serializable {
 		return edges;
 	}
 	
-	public SendableMap getSendableMap(){
+	public SendableMap getSendableMap(DedaleAgent myDedaleAgent){
 		ArrayList<Case> cases= this.getCases();
 		ArrayList<Couple<String,String>> edges = this.getListEdges();
-		return new SendableMap(cases, edges);
+		String sender = myDedaleAgent.getLocalName();
+		String pos = myDedaleAgent.getPosition();
+		String type = myDedaleAgent.getType();
+		return new SendableMap(cases, edges, agentsInfo, sender, type, pos);
 	}
 	
+	//A passer en non static
 	public static void MergeWithSendableMap(DedaleAgent myDedaleAgent, Object recMap) {
 		
 		
@@ -362,6 +387,14 @@ public class MapRepresentation implements Serializable {
 				e.printStackTrace();
 			}
 		}
+		
+		//Gestion de la hashMap
+		myDedaleAgent.getMap().getAgentsInfo().putAll(recieved.getAgentsInfo());
+				
+		//Gestion de l'agent envoyeur
+		myDedaleAgent.getMap().getAgentsInfo().put(recieved.getSender(), new Couple<String, String>(recieved.getType(), recieved.getSendingPos()));
+		
+		
 		
 		//ajout des noeuds
 		for(Case c : recieved.getCases()) {
@@ -554,115 +587,7 @@ public class MapRepresentation implements Serializable {
 	
 	
 	
-	/*public Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>> getFullRepresentation(){
-		ArrayList<ArrayList<Object>> nodes = new ArrayList<ArrayList<Object>>();
-		
-		for(Node n : g.getEachNode()) {
-			String id, open, date, agnt;
-			List<Couple<Observation, Integer>> obs;
-			
-			id=n.toString();
-			open =n.getAttribute("ui.class");
 
-			date=n.getAttribute("ui.date");
-			obs =n.getAttribute("ui.obs");
-			agnt =n.getAttribute("ui.agent");
-			//ajouter ressources et agent
-			ArrayList<Object> desc = new ArrayList<Object>();
-			desc.add(id);
-			desc.add(open);
-			desc.add(date);
-			desc.add(obs);
-			desc.add(agnt);
-			nodes.add(desc);
-			
-			
-		}
-			
-		
-		ArrayList<Couple<String,String>> edges= new ArrayList<Couple<String,String>>();
-		for(Edge e : g.getEachEdge()) {
-			edges.add(new Couple<String,String>(e.getNode0().toString(), e.getNode1().toString()));
-		}
-		
-		return new Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>>(nodes, edges);
-	}
-	
-	public static void MergeFullMaps(DedaleAgent myDedaleAgent, Object recMap) {
-		
-		Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>>  newMap = (Couple<ArrayList<ArrayList<Object>>,ArrayList<Couple<String,String>>>) recMap;
-		if(myDedaleAgent.getMap()==null) {
-			System.out.println(myDedaleAgent.getLocalName()+" ----> MAP NULL");
-			try {
-				myDedaleAgent.doWait(250);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		//ajout des noeuds
-		for(ArrayList<Object> noeud : newMap.getLeft()) {
-			Node currentNode = myDedaleAgent.getMap().getNode((String)noeud.get(0));
-			MapAttribute attr;
-			//si le noeud n'existe pas
-			if(currentNode==null) {
-				attr = MapAttribute.valueOf((String)noeud.get(1));
-				myDedaleAgent.getMap().addNode((String)noeud.get(0), attr, (List<Couple<Observation, Integer>>)noeud.get(3), MapAgent.valueOf((String)noeud.get(4)));
-				//myDedaleAgent.getOpenNodes().add(noeud);
-			//si le noeud existe deja
-			}else {
-				//identifiant
-				String id;
-				
-				//attribut ouvert ferme
-				
-				id = (String)noeud.get(0);
-				if(currentNode.getAttribute("ui.class").equals("open") && noeud.get(1).equals("open")) {
-					attr=MapAttribute.open;
-				}else {
-					attr=MapAttribute.closed;
-				}
-				
-				
-				
-				long dcurrent = Long.parseLong(currentNode.getAttribute("ui.date"));
-				long dnew = Long.parseLong((String)noeud.get(2));
-				String date;
-				MapAgent agent;
-				//si le noeud recu est plus recent
-				if(dnew>dcurrent) {
-					List<Couple<Observation, Integer>> obs = (List<Couple<Observation, Integer>>)noeud.get(3);
-					date = (String)noeud.get(2);
-					agent=MapAgent.valueOf((String)noeud.get(4));
-					myDedaleAgent.getMap().addNode(id, attr, date, obs, agent);
-				}else if(dnew<dcurrent) {
-					date = currentNode.getAttribute("ui.date");
-					
-					agent=MapAgent.valueOf(currentNode.getAttribute("ui.agent"));
-					List<Couple<Observation, Integer>> obs = currentNode.getAttribute("ui.obs");
-					myDedaleAgent.getMap().addNode(id, attr, date, obs, agent);
-				}
-				if(attr==MapAttribute.open) {
-					myDedaleAgent.getOpenNodes().add((String)noeud.get(0));
-				}else {
-					myDedaleAgent.getClosedNodes().add((String)noeud.get(0));
-					myDedaleAgent.getOpenNodes().remove((String)noeud.get(0));
-				}
-				
-			}
-		}
-		
-
-		
-		//Ajout des arcs
-		for(Couple<String,String> arc : newMap.getRight()) {
-			myDedaleAgent.getMap().addEdge(arc.getLeft(), arc.getRight());
-		}
-		
-		System.out.println(myDedaleAgent.getLocalName()+" merged maps");
-
-	}*/
-	
 	
 	
 }

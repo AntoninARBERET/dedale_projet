@@ -102,17 +102,34 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 			
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			
-		
+			//-10%de place dans le sac
+			float freeSpace = myDedaleAgent.getBackPackFreeSpace();
+			float totalSpace = myDedaleAgent.getTotalSpace();
+			if(freeSpace/totalSpace<0.1){
+				finished=true;
+				System.out.println(myDedaleAgent.getLocalName()+" ----> Need to empty my backpack");
+				myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
+			}
 			//Plus de tresor fermés
 			if (myDedaleAgent.getClosedTresor().isEmpty()&&myDedaleAgent.getOpenTresor().isEmpty()){
 				finished=true;
-				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
-				System.out.println("Collect successufully done no more closed or lootable tresor to take, behaviour removed.");
+				if(freeSpace==totalSpace){
+					myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+					System.out.println(myDedaleAgent.getLocalName()+" ----> no more closed or lootable tresor to take, behaviour removed.");
+				}else {
+					myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
+					System.out.println(myDedaleAgent.getLocalName()+" ----> no more closed or lootable tresor to take, need to empty my backpack");
+				}
 			//Plus de tresor ouvrable
 			}else if(myDedaleAgent.getLootable().isEmpty()){
 				finished=true;
-				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
-				System.out.println("Opening successufully done no more lootable treasure, behaviour removed.");
+				if(freeSpace==totalSpace){
+					myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+					System.out.println(myDedaleAgent.getLocalName()+" ----> no more lootable tresor to take, behaviour removed.");
+				}else {
+					myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
+					System.out.println(myDedaleAgent.getLocalName()+" ----> no more lootable tresor to take, need to empty my backpack");
+				}
 			}
 			else{
 				//si sur target

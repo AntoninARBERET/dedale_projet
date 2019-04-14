@@ -63,7 +63,6 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		
 		/*if(myDedaleAgent.getMap()==null) {
 			System.out.println("CREATION MAP DE PORC");
 			myDedaleAgent.setMap(new MapRepresentation());
@@ -74,7 +73,8 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 		boolean blocked=false;
 		
 		String myPosition=myDedaleAgent.getCurrentPosition();
-		
+		System.out.println("Case " +myPosition);
+
 		
 	
 		if (myPosition!=null){

@@ -25,6 +25,7 @@ public class CollectMultiAgent extends DedaleAgent {
 	private static final long serialVersionUID = -6431752665590433727L;
 	//private String[] idList;
 	private List<String> toRetry;
+	private int totalSpace;
 
 	
 	
@@ -42,7 +43,9 @@ public class CollectMultiAgent extends DedaleAgent {
 		final Object[] args = getArguments();
 		//idList = (String[])args[2];
 		//myMap=new MapRepresentation();
+		type="collector";
 		toRetry = new ArrayList<String>();
+		totalSpace =  this.getBackPackFreeSpace();
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
 		/************************************************
@@ -121,6 +124,10 @@ public class CollectMultiAgent extends DedaleAgent {
 	
 	public void resetToRetry() {
 		toRetry = new ArrayList<String>();
+	}
+
+	public int getTotalSpace() {
+		return totalSpace;
 	}
 	
 }

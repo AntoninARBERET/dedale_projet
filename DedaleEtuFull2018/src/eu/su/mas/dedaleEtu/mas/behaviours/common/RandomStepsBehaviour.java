@@ -10,6 +10,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 
@@ -49,6 +50,8 @@ public class RandomStepsBehaviour extends SimpleBehaviour{
 		if (myPosition!=null){
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
+			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+
 			//System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 
 			//Little pause to allow you to follow what is going on
