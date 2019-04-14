@@ -66,6 +66,7 @@ public class DropLootBehaviour extends SimpleBehaviour {
 		this.agentsIds = myDedaleAgent.getIdList();
 		targetAgent=null;
 		System.out.println("Start opening "+myDedaleAgent.getClosedTresor());
+		myDedaleAgent.setTargetNode(null);
 		
 	}
 
@@ -124,9 +125,11 @@ public class DropLootBehaviour extends SimpleBehaviour {
 						}
 						
 						if(goals.size()>0) {
+							System.out.println("GOALS " + goals);
 							List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
 							String goalPos = newPath.get(newPath.size()-1);
 							targetAgent = goalsId.get(goals.indexOf(goalPos));
+							System.out.println("TARGET AGENT "+ targetAgent);
 							myDedaleAgent.setTagetPath(newPath);
 							myDedaleAgent.setTargetNode(newPath.get(newPath.size()-2));
 							nextNode=newPath.get(0);

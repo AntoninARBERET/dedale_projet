@@ -127,9 +127,10 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 					
 					List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, myDedaleAgent.getOpenable());
 					myDedaleAgent.setTagetPath(newPath);
-					System.out.println(myDedaleAgent.getLocalName() +" -------> chose target in "+ myDedaleAgent.getOpenable()+" from "+myPosition);
 					myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
 					nextNode=newPath.get(0);
+					System.out.println(myDedaleAgent.getLocalName() +" -------> chose target in "+ myDedaleAgent.getOpenable()+" from "+myPosition +" next node ="+nextNode);
+					
 				
 					myDedaleAgent.moveTo(nextNode);
 				}
