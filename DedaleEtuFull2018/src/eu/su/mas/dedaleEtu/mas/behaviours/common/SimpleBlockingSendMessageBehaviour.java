@@ -76,6 +76,7 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 		 this.finished=true;
 		 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
 		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple sent "/*peut etre ajout� le receveur*/);
+		 myDedaleAgent.doWait(500);
 	 }
 	 
 	 

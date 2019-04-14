@@ -12,6 +12,7 @@ import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.TankerAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 
@@ -43,19 +44,21 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
-		myDedaleAgent.doWait(500);
-		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
-		
-		//ADD PING AUX AUTRES
-		
-		myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
-		//Example to retrieve the current position
+		myDedaleAgent.doWait(200);
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
+		
+		
+		
+		//Example to retrieve the current position
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
 		if (myPosition!=null){
 			if(mySpot==null){
 				mySpot=myPosition;
 			}
+			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
+			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+			myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+			
 			if(!mySpot.equals(myPosition)) {
 				List<String> spotList = new ArrayList<String>();
 				spotList.add(mySpot);
@@ -68,8 +71,9 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 			}
 			//List of observable from the agent's current position
 			
-			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-
+			//ADD PING AUX AUTRES
+			
+			myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
 		}
 		
 

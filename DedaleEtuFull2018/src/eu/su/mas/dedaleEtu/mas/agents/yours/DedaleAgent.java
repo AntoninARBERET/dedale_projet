@@ -49,7 +49,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	private int blockedSince;
 	
-	private int priority;
+	protected int priority;
 	
 	private List<String> closedTresor;
 	

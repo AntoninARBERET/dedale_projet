@@ -73,7 +73,6 @@ public class ExploMultiBehaviour extends SimpleBehaviour {
 		boolean blocked=false;
 		
 		String myPosition=myDedaleAgent.getCurrentPosition();
-		System.out.println("Case " +myPosition);
 
 		
 	

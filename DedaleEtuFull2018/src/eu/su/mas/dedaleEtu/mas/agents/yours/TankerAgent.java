@@ -7,6 +7,7 @@ import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
 import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.tanker.SimpleTankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 
@@ -43,6 +44,7 @@ public class TankerAgent extends DedaleAgent {
 		//myMap=new MapRepresentation();
 		type = "tanker";
 		List<Behaviour> lb=new ArrayList<Behaviour>();
+		this.priority=0;
 		
 		/************************************************
 		 * 
@@ -50,7 +52,7 @@ public class TankerAgent extends DedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new ExploMultiBehaviour(this));
+		lb.add(new SimpleTankerBehaviour(this));
 		
 		
 		/***

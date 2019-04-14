@@ -315,7 +315,7 @@ public class Principal {
 		Assert.assertNotNull("This container does not exist",c);
 		
 		//Hardcoded !!!
-		String[] agentNames = {"Explo1", "Explo2", "Explo3"};
+		String[] agentNames = {"Explo1", "Explo2", "Collect1", "Tanker1"};
 		
 		
 		//2) Give the name of your agent, MUST be the same as the one given in the entities file.
