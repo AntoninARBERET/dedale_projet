@@ -84,12 +84,7 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 					e.printStackTrace();
 				} 
 			 
-			 System.out.println(nbsent++ +"eme sent by "+ myDedaleAgent.getLocalName());
-			 jade.util.leap.Iterator it = msg.getAllReceiver();
-			 while(it.hasNext()) {
-				 System.out.println(it.next());
-
-			 }
+		
 
 			 this.myDedaleAgent.sendMessage(msg);
 			 this.finished=true;

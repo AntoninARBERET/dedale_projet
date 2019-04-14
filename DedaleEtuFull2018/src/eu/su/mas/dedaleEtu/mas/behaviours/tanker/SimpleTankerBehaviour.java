@@ -42,9 +42,8 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
-		System.out.println("Tanker main loop");
 
-		myDedaleAgent.doWait(200);
+		myDedaleAgent.doWait(100);
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		
 		

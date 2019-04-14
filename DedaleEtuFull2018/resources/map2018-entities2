@@ -1,5 +1,8 @@
 mapname:map2018MultiTypes
 agentExplo:Explo1:3:free:-1:-1:0:1:1
 agentExplo:Explo2:3:free:-1:-1:0:2:1
-agentExplo:Explo3:3:free:-1:-1:0:2:1
-wumpus:Golem:0:free:200:0:1
+agentCollect:Collect1:3:free:11:-1:0:1:0
+agentTanker:Tanker1:3:free:11:-1:0:1:0
+
+
+
