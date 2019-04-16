@@ -116,12 +116,14 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 			else{
 				//si sur target
 				if(myPosition.equals(myDedaleAgent.getTargetNode())){
+					System.out.println(myDedaleAgent.getLocalName() + "-----> " +myDedaleAgent.getMyExpertise()+ " expertise to "+ lobs);
 					if(myDedaleAgent.openLock(Observation.GOLD)) {
 						myDedaleAgent.getOpenTresor().add(myPosition);
 						myDedaleAgent.getClosedTresor().remove(myPosition);
 						myDedaleAgent.setTargetNode(null);
 						System.out.println(myDedaleAgent.getLocalName() + "-----> Open at "+myPosition);
 					}
+					lobs=myDedaleAgent.observe();
 					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 				}else {
 					
@@ -131,7 +133,8 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 					nextNode=newPath.get(0);
 					System.out.println(myDedaleAgent.getLocalName() +" -------> chose target in "+ myDedaleAgent.getOpenable()+" from "+myPosition +" next node ="+nextNode);
 					
-				
+					lobs=myDedaleAgent.observe();
+					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 					myDedaleAgent.moveTo(nextNode);
 				}
 		

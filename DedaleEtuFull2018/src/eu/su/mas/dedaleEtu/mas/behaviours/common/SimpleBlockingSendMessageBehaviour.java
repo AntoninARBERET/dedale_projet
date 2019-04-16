@@ -90,7 +90,7 @@ public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
 			 this.finished=true;
 			 myDedaleAgent.setLockingStart(new Date());
 			 myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
-			 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple sent "/*peut etre ajout� le receveur*/);
+			 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple on "+myDedaleAgent.getPosition()+" to "+myDedaleAgent.getTargetNode()/*peut etre ajout� le receveur*/);
 		 }
 	 }
 	 

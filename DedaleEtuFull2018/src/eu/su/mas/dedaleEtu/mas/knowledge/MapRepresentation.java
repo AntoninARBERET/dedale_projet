@@ -228,6 +228,7 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public Couple<List<String>,List<String>> getPosByType(String type){
+		System.out.println(agentsInfo);
 		ArrayList<String> listId = new ArrayList<String>();
 		ArrayList<String> listPos = new ArrayList<String>();
 		for(String k:agentsInfo.keySet()) {
@@ -488,6 +489,8 @@ public class MapRepresentation implements Serializable {
 		Couple<String, List<Couple<Observation, Integer>>> tmp = iter.next();
 		List<Couple<Observation, Integer>> obs =tmp.getRight();
 		//System.out.println("Courant "+myPosition+" iterator "+tmp.getLeft());
+		
+		myDedaleAgent.getMap().getAgentsInfo().put(myDedaleAgent.getLocalName(), new Couple<String, String>(myDedaleAgent.getType(), myPosition));
 		
 		//recup des informations
 		int obsGold=-1;

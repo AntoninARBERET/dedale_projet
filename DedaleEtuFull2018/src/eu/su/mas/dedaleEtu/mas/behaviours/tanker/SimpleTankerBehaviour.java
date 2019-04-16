@@ -47,10 +47,10 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		
 		
-		
 		//Example to retrieve the current position
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
 		if (myPosition!=null){
+			myDedaleAgent.setPosition(myPosition);
 			if(myDedaleAgent.getMySpot()==null){
 				myDedaleAgent.setMySpot(myPosition);
 			}

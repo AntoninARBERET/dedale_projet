@@ -69,7 +69,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		List<String> openable = new ArrayList<String>();
 		
 		for(String t : getClosedTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking){
+			if((int)(getMap().getNode(t).getAttribute("lockPicking"))<=myLockPicking&&(int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
 				openable.add(t);
 				
 			}

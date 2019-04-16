@@ -74,13 +74,13 @@ public class CollectMultiAgent extends DedaleAgent {
 		List<String> lootable = new ArrayList<String>();
 		
 		for(String t : getOpenTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh&&(int)(getMap().getNode(t).getAttribute("gold"))>=0){
 				lootable.add(t);
 				
 			}
 		}
 		for(String t : getClosedTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh&&(int)(getMap().getNode(t).getAttribute("gold"))>=0){
 				lootable.add(t);
 				
 			}
@@ -94,7 +94,7 @@ public class CollectMultiAgent extends DedaleAgent {
 		List<String> lootable = new ArrayList<String>();
 		
 		for(String t : getOpenTresor()) {
-			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh){
+			if((int)(getMap().getNode(t).getAttribute("force"))<=myStrengh&&(int)(getMap().getNode(t).getAttribute("gold"))>=0){
 				lootable.add(t);
 				
 			}

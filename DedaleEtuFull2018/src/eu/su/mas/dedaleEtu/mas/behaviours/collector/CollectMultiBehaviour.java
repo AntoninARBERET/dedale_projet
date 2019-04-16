@@ -14,6 +14,7 @@ import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
@@ -54,6 +55,9 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 	
 	private CollectMultiAgent myDedaleAgent;
 	
+	private boolean noMoreLoot, dropPhase;
+	private String targetAgent;
+
 
 
 	public CollectMultiBehaviour(final CollectMultiAgent myagent) {
@@ -62,7 +66,10 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 		
 		this.previousPosition=null;
 		this.agentsIds = myDedaleAgent.getIdList();
-		System.out.println("Start opening "+myDedaleAgent.getClosedTresor());
+		noMoreLoot = false;
+		dropPhase=false;
+		targetAgent = null;
+		System.out.println("Start collecting "+myDedaleAgent.getLootable());
 		
 	}
 
@@ -74,20 +81,10 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 		//0) Retrieve the current position
 		
 		boolean blocked=false;
-		
 		String myPosition=myDedaleAgent.getCurrentPosition();
-		
-		
-	
 		if (myPosition!=null){
 			
-			myDedaleAgent.setPosition(myPosition);
 			
-			
-			
-			//List of observable from the agent's current position
-			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
-			//System.out.println(lobs.toString());
 			/**
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
@@ -96,77 +93,108 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
+			
+			myDedaleAgent.setPosition(myPosition);
+			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 			String nextNode=null;
 			
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			
-			//-10%de place dans le sac
-			float freeSpace = myDedaleAgent.getBackPackFreeSpace();
-			float totalSpace = myDedaleAgent.getTotalSpace();
-			if(freeSpace/totalSpace<0.1){
-				finished=true;
-				System.out.println(myDedaleAgent.getLocalName()+" ----> Need to empty my backpack");
-				myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
-			}
-			//Plus de tresor fermés
-			if (myDedaleAgent.getClosedTresor().isEmpty()&&myDedaleAgent.getOpenTresor().isEmpty()){
-				finished=true;
-				if(freeSpace==totalSpace){
-					myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
-					System.out.println(myDedaleAgent.getLocalName()+" ----> no more closed or lootable tresor to take, behaviour removed.");
-				}else {
-					myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
-					System.out.println(myDedaleAgent.getLocalName()+" ----> no more closed or lootable tresor to take, need to empty my backpack");
+			
+			
+			//Si sac non plein et tresor restant : cherche plus de tresor
+			if(myDedaleAgent.getBackPackFreeSpace()>0 && !myDedaleAgent.getOpenLootable().isEmpty()) {
+				System.out.println(myDedaleAgent.getLocalName() + "-----> boucle1");
+				if(dropPhase) {
+					dropPhase=false;
+					myDedaleAgent.setTargetNode(null);
+					System.out.println(myDedaleAgent.getLocalName()+" ----> Going for more");
 				}
-			//Plus de tresor ouvrable
-			}else if(myDedaleAgent.getLootable().isEmpty()){
-				finished=true;
-				if(freeSpace==totalSpace){
-					myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
-					System.out.println(myDedaleAgent.getLocalName()+" ----> no more lootable tresor to take, behaviour removed.");
-				}else {
-					myDedaleAgent.addBehaviour(new DropLootBehaviour(myDedaleAgent));
-					System.out.println(myDedaleAgent.getLocalName()+" ----> no more lootable tresor to take, need to empty my backpack");
-				}
-			}
-			else{
+				
 				//si sur target
 				if(myPosition.equals(myDedaleAgent.getTargetNode())){
+					//ramassage
 					int picked= myDedaleAgent.pick();
 					if(picked>0) {
-						/*myDedaleAgent.getOpenTresor().add(myPosition);
-						myDedaleAgent.getClosedTresor().remove(myPosition);
-						myDedaleAgent.setTargetNode(null);*/
 						System.out.println(myDedaleAgent.getLocalName() + "-----> Picked "+picked+" gold at "+myPosition);
 					}else if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
 						myDedaleAgent.getToRetry().add(myPosition);
 					}
+					lobs=myDedaleAgent.observe();//myPosition
 					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 				}else {
+					//choix dans lootable ouvert
 					List<String> goals = myDedaleAgent.getOpenLootable();
+					//System.out.println("Choix dans les lootable ouverts : "+goals);
+					//si pas de choix, choix dans lootable sans le deja testes
 					if(goals.size()==0) {
 						goals=myDedaleAgent.getLootableWhithout(myDedaleAgent.getToRetry());
+						//si toujours pas de choix, reset des testes et random steps
 						if(goals.size()==0) {
 							myDedaleAgent.resetToRetry();
 							goals=myDedaleAgent.getLootableWhithout(myDedaleAgent.getToRetry());
+							myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
 						}
 					}
-					if(goals.size()>0) {
+					else {
 						List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
 						myDedaleAgent.setTagetPath(newPath);
-						myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
+						myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));//crash here
 						nextNode=newPath.get(0);
-					
 						myDedaleAgent.moveTo(nextNode);
 					}
 				}
-		
+			}
+			else if(myDedaleAgent.getOpenLootable().isEmpty()&&!noMoreLoot){
+				System.out.println(myDedaleAgent.getLocalName() + "-----> boucle2");
+				myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+			}
+			//si sac plein ou plus de tresor, depot
+			else {
+				System.out.println(myDedaleAgent.getLocalName() + "-----> boucle3");
+				if(!dropPhase) {
+					dropPhase=true;
+					myDedaleAgent.setTargetNode(null);
+					System.out.println(myDedaleAgent.getLocalName()+" ----> Need to empty my backpack");
+				}
 				
+				if(myPosition.equals(myDedaleAgent.getTargetNode())){
+					finished = myDedaleAgent.emptyMyBackPack(targetAgent);
+					lobs=myDedaleAgent.observe();//myPosition
+					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+				}else {
+					Couple<List<String>, List<String>> tmp = myDedaleAgent.getMap().getPosByType("tanker");//renvoie null
+					List<String> goals=tmp.getRight();
+					List<String> goalsId=tmp.getLeft();
+
+					if(goals.size()==0) {
+						myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+					}
+					
+					if(goals.size()>0) {
+						System.out.println(myDedaleAgent.getLocalName()+" -----> case goal size>0 "+goals + myDedaleAgent.getTargetNode());
+						List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
+						String goalPos = newPath.get(newPath.size()-1);
+						targetAgent = goalsId.get(goals.indexOf(goalPos));
+						System.out.println("TARGET AGENT "+ targetAgent);
+						myDedaleAgent.setTagetPath(newPath);
+						if(newPath.size()==1) {
+							System.out.println(myDedaleAgent.getLocalName()+" -----> case path taille 1 "+goals + targetAgent);
+							myDedaleAgent.setTargetNode(myPosition);
+						}else {
+							myDedaleAgent.setTargetNode(newPath.get(newPath.size()-2));
+							nextNode=newPath.get(0);
+							myDedaleAgent.moveTo(nextNode);
+						}
+						
+					}
+				}
 			}
 			
-			//check si l'agent est bloquÃ©
+			
+			
+			
+			//check si l'agent est bloque
 			if(previousPosition !=null && previousPosition.equals(myPosition)) {
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
@@ -191,6 +219,13 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 			
 
 		}
+		noMoreLoot = myDedaleAgent.getLootable().isEmpty();//to check
+		if(noMoreLoot && myDedaleAgent.getBackPackFreeSpace()==0) {
+			finished = noMoreLoot;
+			myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+			System.out.println(myDedaleAgent.getLocalName()+" -----> Fin de la collecte.");
+		}
+		
 	}
 
 	@Override

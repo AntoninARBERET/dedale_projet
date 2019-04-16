@@ -82,8 +82,9 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 	}
 
 	public boolean done() {
-		myDedaleAgent.setCheckingBehaviourRunning(false);
-		return finished;
+		//myDedaleAgent.setCheckingBehaviourRunning(false);
+
+		return false; //change pour check en permanence
 	}
 
 }

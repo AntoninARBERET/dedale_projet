@@ -37,12 +37,14 @@ public class RandomWalkBehaviour extends SimpleBehaviour{
 
 	@Override
 	public void action() {
+		
 		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 		//Example to retrieve the current position
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
 		if (myPosition!=null){
 			//List of observable from the agent's current position
+			myDedaleAgent.setPosition(myPosition);
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			//System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 

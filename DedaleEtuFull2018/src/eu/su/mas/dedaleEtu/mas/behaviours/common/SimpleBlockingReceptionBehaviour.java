@@ -55,7 +55,6 @@ public class SimpleBlockingReceptionBehaviour extends SimpleBehaviour{
 	 
 	 
 	 public void action() {
-		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple recieved"/*peut etre ajout� le receveur*/);
 
 		 if(recievedPrio!=myDedaleAgent.getPriority()) {
 			 if(recievedPrio<myDedaleAgent.getPriority()){

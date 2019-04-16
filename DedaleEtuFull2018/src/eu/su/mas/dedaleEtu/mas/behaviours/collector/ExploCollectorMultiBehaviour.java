@@ -130,7 +130,7 @@ public class ExploCollectorMultiBehaviour extends SimpleBehaviour {
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
-					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
+					//System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
 				}
 				
 				if(myDedaleAgent.getBlockedSince()<2) {
