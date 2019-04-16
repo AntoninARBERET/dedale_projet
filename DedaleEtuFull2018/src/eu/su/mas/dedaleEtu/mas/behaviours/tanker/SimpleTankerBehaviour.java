@@ -52,6 +52,7 @@ public class SimpleTankerBehaviour extends SimpleBehaviour{
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
 			if(myDedaleAgent.getMySpot()==null){
+				System.out.println(myDedaleAgent.getLocalName()+" -----> spot = "+myPosition);
 				myDedaleAgent.setMySpot(myPosition);
 			}
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition

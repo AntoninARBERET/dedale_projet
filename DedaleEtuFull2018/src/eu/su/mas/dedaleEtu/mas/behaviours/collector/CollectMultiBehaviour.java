@@ -147,7 +147,18 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 			}
 			else if(myDedaleAgent.getOpenLootable().isEmpty()&&!noMoreLoot){
 				System.out.println(myDedaleAgent.getLocalName() + "-----> boucle2");
-				myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+				List<String> goals = myDedaleAgent.getOpenLootable();
+				if(goals.size()>0) {
+					List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
+					myDedaleAgent.setTagetPath(newPath);
+					myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));//crash here
+					nextNode=newPath.get(0);
+					myDedaleAgent.moveTo(nextNode);
+				}
+				
+				else {
+					myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+				}
 			}
 			//si sac plein ou plus de tresor, depot
 			else {
@@ -160,6 +171,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 				
 				if(myPosition.equals(myDedaleAgent.getTargetNode())){
 					finished = myDedaleAgent.emptyMyBackPack(targetAgent);
+					System.out.println(myDedaleAgent.getLocalName() + "-----> on target");
 					lobs=myDedaleAgent.observe();//myPosition
 					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 				}else {
@@ -168,6 +180,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 					List<String> goalsId=tmp.getLeft();
 
 					if(goals.size()==0) {
+						System.out.println(myDedaleAgent.getLocalName() + "-----> size goal =0");
 						myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
 					}
 					

@@ -21,17 +21,16 @@ import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 public class RandomTest {
 	public static void main(String args[]) {
-		Date d1 = new Date();
-		for(int i=0; i<2000000;i++) {
-			System.out.print('A');
-		}
-		Date d2 = new Date();
+		boolean b=true;
+		if(b) {
+			System.out.println("1");
+		}else if(!b) {
+			System.out.println("2");
 
-		
-		
-		
-		System.out.println(d1+" "+d2+" "+(d2.getTime()-d1.getTime()));
-		System.out.println(d1+" "+d2+" "+d1.compareTo(d2));
+		}else {
+			System.out.println("3");
+
+		}
 
 		
 	}

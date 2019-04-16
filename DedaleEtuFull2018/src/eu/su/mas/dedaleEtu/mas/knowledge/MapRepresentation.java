@@ -22,6 +22,7 @@ import org.graphstream.ui.view.Viewer;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.TankerAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
@@ -368,7 +369,14 @@ public class MapRepresentation implements Serializable {
 		ArrayList<Case> cases= this.getCases();
 		ArrayList<Couple<String,String>> edges = this.getListEdges();
 		String sender = myDedaleAgent.getLocalName();
-		String pos = myDedaleAgent.getPosition();
+		String pos;
+		if(myDedaleAgent instanceof TankerAgent) {
+			pos = ((TankerAgent) myDedaleAgent).getMySpot();
+		}
+		else {
+			pos = myDedaleAgent.getPosition();
+		}
+		
 		String type = myDedaleAgent.getType();
 		return new SendableMap(cases, edges, agentsInfo, sender, type, pos);
 	}
