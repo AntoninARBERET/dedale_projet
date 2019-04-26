@@ -23,7 +23,7 @@ import jade.lang.acl.ACLMessage;
  
   */
 
-public class SimpleBlockingReceptionBehaviour extends DedaleSimpleBehaviour{
+public class PingReceptionBehaviour extends DedaleSimpleBehaviour{
 	 private static final long serialVersionUID = 9088209402507795289L;
 	 
 	 private boolean finished=false;
@@ -45,7 +45,7 @@ public class SimpleBlockingReceptionBehaviour extends DedaleSimpleBehaviour{
 	 
 	 
 	 
-	 public SimpleBlockingReceptionBehaviour (DedaleAgent myagent, String recievedName, int recievedPrio){
+	 public PingReceptionBehaviour (DedaleAgent myagent, String recievedName){
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.recievedName = recievedName;
@@ -55,35 +55,11 @@ public class SimpleBlockingReceptionBehaviour extends DedaleSimpleBehaviour{
 	 
 	 
 	 public void action() {
-
-		 if(recievedPrio!=myDedaleAgent.getPriority()) {
-			 if(recievedPrio<myDedaleAgent.getPriority()){
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple prio vs "+recievedName/*peut etre ajout� le receveur*/);
-
-				 this.finished=true;
-			 }
-			 else{
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple not prio vs "+recievedName/*peut etre ajout� le receveur*/);
-
-				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax, false));
-				 this.finished=true;
-			 }
+		 int actionsCpt =myDedaleAgent.getActionsCpt();
+		 if(myDedaleAgent.getLastPing(recievedName)<actionsCpt-DedaleAgent.pingGap) {
+			 myDedaleAgent.setLastPing(recievedName, actionsCpt);
+			 myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, recievedName));
 		 }
-		 else {
-			 if(AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), recievedName)){
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple first "+recievedName/*peut etre ajout� le receveur*/);
-
-				 this.finished=true;
-			 }
-			 else{
-				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple second "+recievedName/*peut etre ajout� le receveur*/);
-
-				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax, false));
-				 
-				 this.finished=true;
-			 }
-		 }
-		 
 	 }
 	 
 	 

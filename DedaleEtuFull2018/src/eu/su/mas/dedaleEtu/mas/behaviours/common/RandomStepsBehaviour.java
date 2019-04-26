@@ -21,7 +21,7 @@ import jade.core.behaviours.SimpleBehaviour;
  **************************************/
 
 
-public class RandomStepsBehaviour extends SimpleBehaviour{
+public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 	
 	private static final long serialVersionUID = 9088209402507795289L;
 	private DedaleAgent myDedaleAgent;

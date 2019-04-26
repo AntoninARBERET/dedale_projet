@@ -13,6 +13,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SimpleBlockingSendMessageBehaviour;
@@ -34,7 +35,7 @@ import jade.core.behaviours.SimpleBehaviour;
  * @author hc
  *
  */
-public class ExploMultiBehaviour extends SimpleBehaviour {
+public class ExploMultiBehaviour extends DedaleSimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 

@@ -20,7 +20,7 @@ import jade.core.behaviours.TickerBehaviour;
  **************************************/
 
 
-public class RandomWalkBehaviour extends SimpleBehaviour{
+public class RandomWalkBehaviour extends DedaleSimpleBehaviour{
 	
 	/**
 	 * When an agent choose to move

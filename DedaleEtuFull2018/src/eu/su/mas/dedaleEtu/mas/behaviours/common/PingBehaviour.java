@@ -22,7 +22,7 @@ import jade.lang.acl.ACLMessage;
  
   */
 
-public class PingBehaviour extends SimpleBehaviour{
+public class PingBehaviour extends DedaleSimpleBehaviour{
 	 private static final long serialVersionUID = 9088209402507795289L;
 	 
 	 private boolean finished=false;
@@ -47,6 +47,7 @@ public class PingBehaviour extends SimpleBehaviour{
 	 
 	 
 	 public void action() {
+		 super.action();
 		 //creation du message
 		 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		 msg.setSender(this.myDedaleAgent.getAID());
@@ -65,15 +66,14 @@ public class PingBehaviour extends SimpleBehaviour{
 				e.printStackTrace();
 			} 
 		 this.myDedaleAgent.send(msg);
-		 this.finished=true;
 		 
-		 System.out.println(this.myDedaleAgent.getLocalName()+" ----> Ping sent "/*peut etre ajout� le receveur*/);
+		 //System.out.println(this.myDedaleAgent.getLocalName()+" ----> Ping sent "/*peut etre ajout� le receveur*/);
 	 }
 	 
 	 
 	 
 	 public boolean done() {
-			return finished;
+			return false;
 		}
 	 
 	 

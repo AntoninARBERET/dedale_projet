@@ -2,6 +2,7 @@ package eu.su.mas.dedaleEtu.mas.agents.yours;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	
+	public static final int pingGap = 20;
 
 	private MapRepresentation myMap;
 	
@@ -69,6 +71,10 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	protected Date lockingStart;
 	
 	protected boolean checkingBehaviourRunning;
+	
+	protected int actionsCpt;
+	
+	protected HashMap<String, Integer> lastPinged;
 
 
 
@@ -93,6 +99,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.tagetPath=new ArrayList<String>();
 		this.myMap=new MapRepresentation();
 		this.checkingBehaviourRunning=false;
+		this.actionsCpt=0;
+		this.lastPinged=new HashMap<String, Integer>();
 		
 		
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
@@ -105,6 +113,10 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		}
 		final Object[] args = getArguments();
 		idList = (String[])args[2];
+		
+		for(String id:idList) {
+			lastPinged.put(id, new Integer(-1*pingGap));
+		}
 		//myMap=new MapRepresentation();
 
 		//List<Behaviour> lb=new ArrayList<Behaviour>();
@@ -272,8 +284,21 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public void setCheckingBehaviourRunning(boolean checkingBehaviourRunning) {
 		this.checkingBehaviourRunning = checkingBehaviourRunning;
 	}
-
-
 	
+	public void incActionsCpt() {
+		actionsCpt++;
+	}
+	
+	public int getActionsCpt() {
+		return actionsCpt;
+	}
+
+	public int getLastPing(String id) {
+		return lastPinged.get(id).intValue();
+	}
+	
+	public void setLastPing(String id, int val) {
+		lastPinged.put(id, new Integer(val));
+	}
 	
 }

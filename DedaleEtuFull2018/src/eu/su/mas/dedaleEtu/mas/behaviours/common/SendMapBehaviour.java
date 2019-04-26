@@ -21,7 +21,7 @@ import jade.lang.acl.ACLMessage;
  *
  */
 
-public class SendMapBehaviour extends SimpleBehaviour{
+public class SendMapBehaviour extends DedaleSimpleBehaviour{
 	
 	private static final long serialVersionUID = 9088209402507795289L;
 

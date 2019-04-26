@@ -10,6 +10,11 @@ import eu.su.mas.dedaleEtu.mas.behaviours.collector.ExploCollectorMultiBehaviour
 import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.Property;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 /**
  * ExploreSolo agent. 
@@ -48,6 +53,29 @@ public class CollectMultiAgent extends DedaleAgent {
 		toRetry = new ArrayList<String>();
 		totalSpace =  this.getBackPackFreeSpace();
 		List<Behaviour> lb=new ArrayList<Behaviour>();
+		
+		//Registering to DF
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd .setName(getAID()); // The agent AID
+		
+		
+		ServiceDescription sd = new ServiceDescription () ;
+		sd .setType( type ); // You have to give aname to each service your agent offers
+		sd .setName(getLocalName());//(local)name ofthe agent
+		dfd . addServices(sd) ;
+		
+		Property p=new Property();
+		p.setName("stengh");
+		p.setValue(new Integer(myStrengh));
+		sd.addProperties(p);
+		
+		
+		//Register the service
+		try {
+			DFService. register ( this , dfd ) ;
+		} catch (FIPAException fe) {
+			fe . printStackTrace () ; 
+		}
 		
 		/************************************************
 		 * 

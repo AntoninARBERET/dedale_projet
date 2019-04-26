@@ -10,6 +10,11 @@ import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.tanker.SimpleTankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.Property;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 /**
  * ExploreSolo agent. 
@@ -47,6 +52,25 @@ public class TankerAgent extends DedaleAgent {
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		this.priority=0;
 		mySpot=null;
+		
+		
+		//Register to df
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd .setName(getAID()); // The agent AID
+		
+		
+		ServiceDescription sd = new ServiceDescription () ;
+		sd .setType( type ); // You have to give aname to each service your agent offers
+		sd .setName(getLocalName());//(local)name ofthe agent
+		dfd . addServices(sd) ;
+		
+		
+		//Register the service
+		try {
+			DFService. register ( this , dfd ) ;
+		} catch (FIPAException fe) {
+			fe . printStackTrace () ; 
+		}
 		
 		/************************************************
 		 * 

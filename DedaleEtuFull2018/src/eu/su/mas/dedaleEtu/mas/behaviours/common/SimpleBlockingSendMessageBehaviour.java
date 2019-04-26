@@ -23,7 +23,7 @@ import jade.lang.acl.ACLMessage;
  
   */
 
-public class SimpleBlockingSendMessageBehaviour extends SimpleBehaviour{
+public class SimpleBlockingSendMessageBehaviour extends DedaleSimpleBehaviour{
 	 private static final long serialVersionUID = 9088209402507795289L;
 	 
 	 private boolean finished=false;

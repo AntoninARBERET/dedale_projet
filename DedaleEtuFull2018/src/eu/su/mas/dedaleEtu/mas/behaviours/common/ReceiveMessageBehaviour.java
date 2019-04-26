@@ -20,7 +20,7 @@ import jade.lang.acl.UnreadableException;
  * @author Cédric Herpson
  *
  */
-public class ReceiveMessageBehaviour extends SimpleBehaviour{
+public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 
 	private static final long serialVersionUID = 9088209402507795289L;
 
@@ -53,13 +53,20 @@ public class ReceiveMessageBehaviour extends SimpleBehaviour{
 
 				switch(msg.getProtocol()) {
 				case "PING":
-					System.out.println(myDedaleAgent.getLocalName() + " ----> ping recue");
-					
+					 int actionsCpt =myDedaleAgent.getActionsCpt();
+					 String recievedName = msg.getSender().getLocalName();
+					 if(myDedaleAgent.getLastPing(recievedName)<actionsCpt-DedaleAgent.pingGap) {
+						 System.out.println(myDedaleAgent.getLocalName() + " ----> ping answer");
+						 myDedaleAgent.setLastPing(recievedName, actionsCpt);
+						 myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, recievedName));
+					 }
 					break;
+					
 				case "MAP":
 					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
 					MapRepresentation.MergeWithSendableMap(myDedaleAgent, msg.getContentObject());
 					break;
+					
 				case "BLOCKSIMPLE":
 					Couple<String, Integer> content =(Couple<String, Integer>)msg.getContentObject();
 					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, content.getLeft(), content.getRight().intValue()));

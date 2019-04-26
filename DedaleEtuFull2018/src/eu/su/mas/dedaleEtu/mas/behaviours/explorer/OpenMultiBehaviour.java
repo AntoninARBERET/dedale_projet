@@ -13,6 +13,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
@@ -35,7 +36,7 @@ import jade.core.behaviours.SimpleBehaviour;
  * @author hc
  *
  */
-public class OpenMultiBehaviour extends SimpleBehaviour {
+public class OpenMultiBehaviour extends DedaleSimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
@@ -102,7 +103,7 @@ public class OpenMultiBehaviour extends SimpleBehaviour {
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			
 		
-			//Plus de tresor fermés
+			//Plus de tresor fermï¿½s
 			if (myDedaleAgent.getClosedTresor().isEmpty()){
 				finished=true;
 				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));

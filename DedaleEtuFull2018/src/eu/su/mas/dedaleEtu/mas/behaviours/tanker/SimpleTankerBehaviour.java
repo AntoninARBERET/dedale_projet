@@ -10,6 +10,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.TankerAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -25,7 +26,7 @@ import jade.core.behaviours.TickerBehaviour;
  **************************************/
 
 
-public class SimpleTankerBehaviour extends SimpleBehaviour{
+public class SimpleTankerBehaviour extends DedaleSimpleBehaviour{
 	
 	/**
 	 * When an agent choose to move
