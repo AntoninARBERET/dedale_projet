@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Hashtable;
-
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
 
@@ -47,6 +47,8 @@ public class MapRepresentation implements Serializable {
 	private Viewer viewer; //ref to the display
 	private Integer nbEdges;//used to generate the edges ids
 	private HashMap<String, Couple<String,String>> agentsInfo;
+	private Graph gPrime;
+	private String silloSpot;
 	
 	/*********************************
 	 * Parameters for graph rendering
@@ -70,6 +72,8 @@ public class MapRepresentation implements Serializable {
 		this.viewer = this.g.display();
 		this.nbEdges=0;
 		agentsInfo=new  HashMap<String, Couple<String,String>>();
+		this.gPrime=null;
+		this.silloSpot=null;
 		//this.nodes_informations=new Hashtable<String, String[]>();
 	}
 
@@ -200,6 +204,88 @@ public class MapRepresentation implements Serializable {
 		}
 	}
 	
+	//calcul le coefficient de clustering d'un noeud
+	public float clusteringCoeff(Node n) {
+		Iterator<Node>it=n.getNeighborNodeIterator();
+		int connexions = 0;
+		
+		ArrayList<Node> voisins=new ArrayList<Node>();
+		while(it.hasNext()) {
+			voisins.add(it.next());
+		}
+		int degree =voisins.size();
+		if(degree<=1) {
+			return 0;
+		}
+		for(Node v1 : voisins) {
+			for(Node v2 : voisins) {
+				if(v1!=v2 && v1.hasEdgeToward(v2)) {
+					connexions++;
+				}
+			}
+		}
+		
+		return(connexions/(degree*(degree-1)));
+	}
+	
+	public float meanDist(Node n) {
+		List<String> shortestPath=new ArrayList<String>();
+		float meanDist=0;
+		int nbNode=this.g.getNodeCount();
+		String idFrom=n.getId();
+		Dijkstra dijkstra = new Dijkstra();//number of edge
+		dijkstra.init(g);
+		dijkstra.setSource(g.getNode(idFrom));
+		dijkstra.compute();//compute the distance to all nodes from idFrom
+		
+		for(Node idTo : g.getEachNode()) {
+			if(!idTo.equals(idFrom)) {
+				meanDist += dijkstra.getPath(idTo).size()-1;
+			}
+		}
+		dijkstra.clear();
+		return (meanDist/nbNode);
+	}
+	
+	public String calculateSilloSpot() {
+		int maxNodeSpot=(int)(this.g.getNodeCount()*0.2)+1;
+		ArrayList<Couple<String, float[]>> listed = new ArrayList<Couple<String, float[]>>();
+		
+		//classement des noeud par dist moyenne aux autres puis coeff de clustering
+		for(Node n: g.getEachNode()) {
+			String label = n.getId();
+			float meanDist = meanDist(n);
+			float clustCoeff = clusteringCoeff(n);
+			float[] values = {meanDist,clustCoeff};
+			int insertInd = 0;
+			Iterator<Couple<String, float[]>> it = listed.iterator();
+			boolean over=false;
+			while(it.hasNext()&&!over) {
+				Couple<String, float[]> tmp = it.next();
+				if(tmp.getRight()[0]<=meanDist && tmp.getRight()[1]<=clustCoeff) {
+					over = true;
+				}
+				else {
+					insertInd++;
+				}
+			}
+			listed.add(insertInd, new Couple<String, float[]>(label, values));
+		}
+		
+		float maxCoeff=-1;
+		String selectedNode=null;
+		for(int i=0; i<=maxNodeSpot; i++) {
+			float coeff = listed.get(i).getRight()[1];
+			if(coeff>maxCoeff) {
+				maxCoeff=coeff;
+				selectedNode=listed.get(i).getLeft();
+			}
+		}
+		this.silloSpot=selectedNode;
+		this.gPrime=Graphs.clone(this.g);
+		gPrime.removeNode(silloSpot);
+		return selectedNode;		
+	}
 
 	
 
@@ -242,13 +328,30 @@ public class MapRepresentation implements Serializable {
 	}
 
 	/**
-	 * Compute the shortest Path from idFrom to IdTo. The computation is currently not very efficient
+	 * Compute shortest path from idForm to idTo on gPrime if it exists, on g if not
+	 * @param idFrom
+	 * @param idTo
+	 * @return
+	 */
+	public List<String> getShortestPath(String idFrom,String idTo){
+		List<String> shortestPath=null;
+		if(gPrime!=null) {
+			shortestPath=shortestPathOnGraph(idFrom, idTo, gPrime);
+		}
+		if(shortestPath==null || shortestPath.size()==0) {
+			shortestPath=shortestPathOnGraph(idFrom, idTo, this.g);
+		}
+		return shortestPath;
+	}
+	
+	/**
+	 * Compute the shortest Path from idFrom to IdTo on given graph. The computation is currently not very efficient
 	 * 
 	 * @param idFrom id of the origin node
 	 * @param idTo id of the destination node
 	 * @return the list of nodes to follow
 	 */
-	public List<String> getShortestPath(String idFrom,String idTo){
+	public List<String> shortestPathOnGraph(String idFrom,String idTo, Graph g){
 		List<String> shortestPath=new ArrayList<String>();
 
 		Dijkstra dijkstra = new Dijkstra();//number of edge
@@ -266,44 +369,66 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public List<String> getShortestPathOpenNodes(String idFrom,List<String> idTo){
-		List<String> shortestPath=new ArrayList<String>();
-
-		Dijkstra dijkstra = new Dijkstra();//number of edge
-		dijkstra.init(g);
-		dijkstra.setSource(g.getNode(idFrom));
-		dijkstra.compute();//compute the distance to all nodes from idFrom
-		int minDist=-1;
-		List<Node> minPath=null;
-		for(String id : idTo) {
-			List<Node> path=dijkstra.getPath(g.getNode(id)).getNodePath(); //the shortest path from idFrom to idTo
-			int dist = path.size();
-			if((minDist==-1 || dist<minDist)&&dist>1) {
-				minDist=dist;
-				minPath=path;
+		Graph g;
+		if(this.gPrime!=null) {
+			g=this.gPrime;
+		}
+		else {
+			g=this.g;
+		}
+		List<String> shortestPath = null;
+		boolean over=false;
+		while(!over) {
+			//second tour, recherche sur g initial
+			if(shortestPath!=null) {
+				g=this.g;
 			}
-
+			
+			shortestPath=new ArrayList<String>();
+	
+			Dijkstra dijkstra = new Dijkstra();//number of edge
+			dijkstra.init(g);
+			dijkstra.setSource(g.getNode(idFrom));
+			dijkstra.compute();//compute the distance to all nodes from idFrom
+			int minDist=-1;
+			List<Node> minPath=null;
+			for(String id : idTo) {
+				List<Node> path=dijkstra.getPath(g.getNode(id)).getNodePath(); //the shortest path from idFrom to idTo
+				int dist = path.size();
+				if((minDist==-1 || dist<minDist)&&dist>1) {
+					minDist=dist;
+					minPath=path;
+				}
+	
+			}
+			if(minPath==null) {
+				System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
+				return null;
+			}
+			
+			Iterator<Node> iter=minPath.iterator();
+			while (iter.hasNext()){
+				shortestPath.add(iter.next().getId());
+			}
+			dijkstra.clear();
+			if(shortestPath.size()>0) {
+				try {
+					shortestPath.remove(0);//remove the current position bug
+					return shortestPath;
+					}
+					catch(Exception e){
+						e.printStackTrace();
+						System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
+						return null;
+					}
+				
+			}
+			over=true;
 		}
-		if(minPath==null) {
-			System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
-			return null;
-		}
-		
-		Iterator<Node> iter=minPath.iterator();
-		while (iter.hasNext()){
-			shortestPath.add(iter.next().getId());
-		}
-		dijkstra.clear();
-		try {
-		shortestPath.remove(0);//remove the current position bug
-		return shortestPath;
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
-			return null;
-		}
+		return null;
 	}
 	
+	//not changed
 	public String getRandomNodeWhitout(String idFrom, String idWithout){
 		Iterator<Node> it = getNode(idFrom).getNeighborNodeIterator();
 		ArrayList<Node> candidates = new ArrayList<Node>();

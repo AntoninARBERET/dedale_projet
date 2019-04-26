@@ -65,7 +65,7 @@ public class SimpleBlockingReceptionBehaviour extends SimpleBehaviour{
 			 else{
 				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple not prio vs "+recievedName/*peut etre ajout� le receveur*/);
 
-				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax));
+				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax, false));
 				 this.finished=true;
 			 }
 		 }
@@ -78,7 +78,7 @@ public class SimpleBlockingReceptionBehaviour extends SimpleBehaviour{
 			 else{
 				 System.out.println(this.myDedaleAgent.getLocalName()+" ----> BlockSimple second "+recievedName/*peut etre ajout� le receveur*/);
 
-				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax));
+				 myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, moveMax, false));
 				 
 				 this.finished=true;
 			 }

@@ -133,7 +133,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 						if(goals.size()==0) {
 							myDedaleAgent.resetToRetry();
 							goals=myDedaleAgent.getLootableWhithout(myDedaleAgent.getToRetry());
-							myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+							myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4, false));
 						}
 					}
 					else {
@@ -157,7 +157,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 				}
 				
 				else {
-					myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+					myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4, false));
 				}
 			}
 			//si sac plein ou plus de tresor, depot
@@ -170,7 +170,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 				}
 				
 				if(myPosition.equals(myDedaleAgent.getTargetNode())){
-					finished = myDedaleAgent.emptyMyBackPack(targetAgent);
+					myDedaleAgent.emptyMyBackPack(targetAgent);
 					System.out.println(myDedaleAgent.getLocalName() + "-----> on target");
 					lobs=myDedaleAgent.observe();//myPosition
 					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
@@ -181,7 +181,7 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 
 					if(goals.size()==0) {
 						System.out.println(myDedaleAgent.getLocalName() + "-----> size goal =0");
-						myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4));
+						myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 4, false));
 					}
 					
 					if(goals.size()>0) {
@@ -199,6 +199,9 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 							nextNode=newPath.get(0);
 							myDedaleAgent.moveTo(nextNode);
 						}
+						if(previousPosition !=null && previousPosition.equals(myPosition)) {
+							System.out.println(myDedaleAgent.getLocalName()+" -----> goals : "+goals);
+						}
 						
 					}
 				}
@@ -209,6 +212,8 @@ public class CollectMultiBehaviour extends SimpleBehaviour {
 			
 			//check si l'agent est bloque
 			if(previousPosition !=null && previousPosition.equals(myPosition)) {
+				
+				
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
