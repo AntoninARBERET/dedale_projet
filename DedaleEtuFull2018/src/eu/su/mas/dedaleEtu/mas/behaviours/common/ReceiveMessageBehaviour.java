@@ -5,9 +5,12 @@ import java.util.Date;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.Block;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.tools.AlphaNumCompare;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -70,6 +73,29 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 				case "BLOCKSIMPLE":
 					Couple<String, Integer> content =(Couple<String, Integer>)msg.getContentObject();
 					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, content.getLeft(), content.getRight().intValue()));
+					break;
+					
+				case "BLOCK":
+					//Ajouter hardblock
+					//recupere le block
+					Block b = (Block) msg.getContentObject();
+					System.out.println(myDedaleAgent.getLocalName()+" -----> "+b.toString());
+					//si je suis sur la position de conflit
+					if(b.getDest().equals(myDedaleAgent.getPosition())){
+						boolean greaterPrio=false;
+						//check priorite
+						if(myDedaleAgent.getPriority()>b.getPriority()) {
+							greaterPrio=true;
+						}
+						else if(AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), b.getSender())){
+							greaterPrio=true;
+						}
+						if(!greaterPrio) {
+							DedaleSimpleBehaviour mainBehav = myDedaleAgent.getMainBehaviour();
+							myDedaleAgent.addBehaviour(new BlockHandlingBehaviour(myDedaleAgent, b, mainBehav));
+						}
+						
+					}
 					break;
 				
 				/*if(msg.getProtocol().equals("MAP")) {

@@ -43,7 +43,7 @@ public class DedaleSimpleBehaviour extends SimpleBehaviour{
 	public void action() {
 		myDedaleAgent.incActionsCpt();
 		//temporisation generale
-		//myDedaleAgent.doWait(200);
+		myDedaleAgent.doWait(200);
 	}
 
 	public boolean done() {

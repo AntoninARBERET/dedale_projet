@@ -26,7 +26,7 @@ import jade.core.behaviours.TickerBehaviour;
  **************************************/
 
 
-public class SimpleTankerBehaviour extends DedaleSimpleBehaviour{
+public class TankerBehaviour extends DedaleSimpleBehaviour{
 	
 	/**
 	 * When an agent choose to move
@@ -35,7 +35,7 @@ public class SimpleTankerBehaviour extends DedaleSimpleBehaviour{
 	private static final long serialVersionUID = 9088209402507795289L;
 	private TankerAgent myDedaleAgent;
 	private String[] agentsIds;
-	public SimpleTankerBehaviour (final TankerAgent myagent) {
+	public TankerBehaviour (final TankerAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
 		this.agentsIds=myDedaleAgent.getIdList();
@@ -43,40 +43,37 @@ public class SimpleTankerBehaviour extends DedaleSimpleBehaviour{
 
 	@Override
 	public void action() {
-
-		myDedaleAgent.doWait(100);
-		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-		
-		
-		//Example to retrieve the current position
-		//System.out.println(this.myAgent.getLocalName()+" -- myCurrentPosition is: "+myPosition);
+		String myPosition=this.myDedaleAgent.getCurrentPosition();
+		myDedaleAgent.setPriority(10);
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
+			//premier spot : noeud initial
 			if(myDedaleAgent.getMySpot()==null){
 				System.out.println(myDedaleAgent.getLocalName()+" -----> spot = "+myPosition);
 				myDedaleAgent.setMySpot(myPosition);
+				myDedaleAgent.setTargetNode(myPosition);
 			}
+			
+			//observations
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+			
+			if(!myDedaleAgent.isFinalSpot() && myDedaleAgent.getOpenNodes().isEmpty()) {
+				myDedaleAgent.setMySpot(myDedaleAgent.getMap().calculateSilloSpot());
+			}
+			
+			
 			
 			if(!myDedaleAgent.getMySpot().equals(myPosition)) {
 				System.out.println("Tanker try to come back");
 				List<String> spotList = new ArrayList<String>();
 				spotList.add(myDedaleAgent.getMySpot());
-				
 				List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, spotList);
 				myDedaleAgent.setTagetPath(newPath);
-				
-			
 				myDedaleAgent.moveTo(newPath.get(0));
 			}
-			//List of observable from the agent's current position
 			
-			//ADD PING AUX AUTRES
-			if(!myDedaleAgent.isCheckingBehaviourRunning()) {
-				myDedaleAgent.addBehaviour(new ReceiveMessageBehaviour(myDedaleAgent));
-			}
 		}
 		
 

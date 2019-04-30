@@ -327,6 +327,16 @@ public class MapRepresentation implements Serializable {
 		return new Couple<List<String>,List<String>>(listId,listPos);
 	}
 
+	
+	public List<String> getNeighbours(String id){
+		Iterator<Node> it = g.getNode(id).getNeighborNodeIterator();
+		ArrayList<String> neighbours=new ArrayList<String>();
+		while(it.hasNext()) {
+			neighbours.add(it.next().getId());
+		}
+		return neighbours;
+	}
+	
 	/**
 	 * Compute shortest path from idForm to idTo on gPrime if it exists, on g if not
 	 * @param idFrom

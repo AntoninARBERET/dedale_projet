@@ -5,9 +5,12 @@ import java.util.List;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
+import eu.su.mas.dedaleEtu.archive.dummies.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.tanker.SimpleTankerBehaviour;
+import eu.su.mas.dedaleEtu.archive.dummies.SimpleTankerBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.PingBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.tanker.TankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -30,6 +33,7 @@ public class TankerAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
 	private String mySpot;
+	private boolean finalSpot;
 	//private String[] idList;
 	
 	
@@ -52,7 +56,7 @@ public class TankerAgent extends DedaleAgent {
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		this.priority=0;
 		mySpot=null;
-		
+		finalSpot =false;
 		
 		//Register to df
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -78,7 +82,9 @@ public class TankerAgent extends DedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new SimpleTankerBehaviour(this));
+		lb.add(new TankerBehaviour(this));
+		lb.add(new PingBehaviour(this));
+		lb.add(new ReceiveMessageBehaviour(this));
 		
 		
 		/***
@@ -105,7 +111,21 @@ public class TankerAgent extends DedaleAgent {
 	public void setMySpot(String mySpot) {
 		this.mySpot = mySpot;
 	}
-	
 
+
+
+
+	public boolean isFinalSpot() {
+		return finalSpot;
+	}
+
+
+
+
+	public void setFinalSpot(boolean finalSpot) {
+		this.finalSpot = finalSpot;
+	}
+	
+	
 	
 }

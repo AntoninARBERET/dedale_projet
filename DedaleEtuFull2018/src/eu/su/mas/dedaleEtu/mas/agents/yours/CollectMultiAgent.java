@@ -5,9 +5,12 @@ import java.util.List;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
+import eu.su.mas.dedaleEtu.archive.dummies.ExploCollectorMultiBehaviour;
+import eu.su.mas.dedaleEtu.archive.dummies.ExploMultiBehaviour;
 import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.collector.ExploCollectorMultiBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.collector.ExploCollectorBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.PingBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -83,7 +86,10 @@ public class CollectMultiAgent extends DedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new ExploCollectorMultiBehaviour(this));
+		lb.add(new ExploCollectorBehaviour(this));
+		lb.add(new PingBehaviour(this));
+		lb.add(new ReceiveMessageBehaviour(this));
+
 		
 		
 		/***

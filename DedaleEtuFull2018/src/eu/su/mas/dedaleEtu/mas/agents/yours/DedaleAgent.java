@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.graphstream.graph.Node;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
-import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.explorer.ExploMultiBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import jade.core.behaviours.Behaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.Property;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 /**
  * ExploreSolo agent. 
@@ -61,6 +66,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	private String targetNode;
 	
 	private List<String> tagetPath;
+	
+	protected List<String> objectives;
 
 	protected int myLockPicking;
 	
@@ -75,6 +82,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	protected int actionsCpt;
 	
 	protected HashMap<String, Integer> lastPinged;
+	
+	protected DedaleSimpleBehaviour mainBehaviour;
 
 
 
@@ -97,6 +106,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.priority=1;
 		this.targetNode=null;
 		this.tagetPath=new ArrayList<String>();
+		this.objectives=new ArrayList<String>();
 		this.myMap=new MapRepresentation();
 		this.checkingBehaviourRunning=false;
 		this.actionsCpt=0;
@@ -299,6 +309,206 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	public void setLastPing(String id, int val) {
 		lastPinged.put(id, new Integer(val));
+	}
+
+
+	public DedaleSimpleBehaviour getMainBehaviour() {
+		return mainBehaviour;
+	}
+
+
+	public void setMainBehaviour(DedaleSimpleBehaviour mainBehaviour) {
+		this.mainBehaviour = mainBehaviour;
+	}
+
+
+	public List<String> getObjectives() {
+		return objectives;
+	}
+	
+	public void generateObjectives() {
+		if(this instanceof ExploreMultiAgent) {
+			generateObjectiveOpen();
+		}
+		else if(this instanceof CollectMultiAgent) {
+			generateObjectiveCollect();
+		}
+	}
+	
+	public void generateObjectiveCollect() {
+		//liste objectifs et liste infos pour le tri
+		ArrayList<String> obj = new ArrayList<String>();
+		ArrayList<Couple<Integer, Integer>> tmpInfos = new ArrayList<Couple<Integer,Integer>>();
+		
+		//recuperation des forces des collectors
+		ArrayList<Integer> agentsStrenghs=new ArrayList<Integer>();
+		DFAgentDescription dfd = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription () ;
+		sd.setType( "collector" ); // name of the service
+		dfd.addServices(sd) ;
+		DFAgentDescription[] result =null;
+		try {
+			result = DFService.search( this , dfd) ;
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
+		
+		
+		//creation de liste triee des forces disponibles
+		for(DFAgentDescription desc : result) {
+			jade.util.leap.Iterator itServ = desc.getAllServices();
+			while(itServ.hasNext()) {
+				 sd = (ServiceDescription)itServ.next();
+				 if(!sd.getName().equals(this.getLocalName())){
+					 jade.util.leap.Iterator itProp = sd.getAllProperties();
+					 while(itProp.hasNext()) {
+						 Property p = (Property)itProp.next();
+						 if(p.getName().equals("strengh")) {
+							 int cpt=0;
+							 int val = ((Integer)p.getValue()).intValue();
+							 while(cpt<agentsStrenghs.size() && agentsStrenghs.get(cpt)<val) {
+								 cpt++;
+							 }
+							 agentsStrenghs.add(cpt, new Integer(val));
+						 }
+					 }
+				}
+			}
+		}
+		
+		//parcours des noeuds avec tresor
+		for(Node n : myMap.getEachNode()) {
+			int g = (int)n.getAttribute("gold");
+			if(g>0) {
+				Iterator<String> it = obj.iterator();
+				int cpt=0;
+				
+				
+				//nb agent
+				int nbAgent=1;
+				int strenghSum =myStrengh;
+				int neededStrengh =(int)n.getAttribute("force");
+	
+				Iterator<Integer> itStre= agentsStrenghs.iterator();
+				while(itStre.hasNext() && strenghSum<neededStrengh) {
+					strenghSum+=itStre.next().intValue();
+					nbAgent++;
+				}
+			
+				//classe en fonction du nombre min d'agent necessaire (dont l'actuel) puis du gain
+				if(strenghSum>=neededStrengh) {
+					while(it.hasNext() && (tmpInfos.get(cpt).getLeft()>nbAgent ||tmpInfos.get(cpt).getRight()>g)) {
+						it.next();
+						cpt++;
+					}
+					obj.add(cpt, n.getId());
+					tmpInfos.add(new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
+				}
+				
+			}
+		}
+		this.objectives=obj;
+	}
+	
+	public void generateObjectiveOpen() {
+		//liste objectifs et liste infos pour le tri
+		ArrayList<String> obj = new ArrayList<String>();
+		ArrayList<Couple<Integer, Integer>> tmpInfos = new ArrayList<Couple<Integer,Integer>>();
+		
+		//recuperation des forces des collectors
+		ArrayList<Integer> agentsStrenghs=new ArrayList<Integer>();
+		ArrayList<Integer> agentsLP=new ArrayList<Integer>();
+		
+		DFAgentDescription dfd = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription () ;
+		sd.setType( "collector" ); // name of the service
+		dfd.addServices(sd) ;
+		DFAgentDescription[] result =null;
+		try {
+			result = DFService.search( this , dfd) ;
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
+		
+		
+		//creation de liste triee des forces disponibles
+		for(DFAgentDescription desc : result) {
+			jade.util.leap.Iterator itServ = desc.getAllServices();
+			while(itServ.hasNext()) {
+				 sd = (ServiceDescription)itServ.next();
+				 if(!sd.getName().equals(this.getLocalName())){
+					 jade.util.leap.Iterator itProp = sd.getAllProperties();
+					 while(itProp.hasNext()) {
+						 Property p = (Property)itProp.next();
+						 if(p.getName().equals("strengh")) {
+							 int cpt=0;
+							 int val = ((Integer)p.getValue()).intValue();
+							 while(cpt<agentsStrenghs.size() && agentsStrenghs.get(cpt)<val) {
+								 cpt++;
+							 }
+							 agentsStrenghs.add(cpt, new Integer(val));
+						 }
+						 if(p.getName().equals("lockPicking")) {
+							 int cpt=0;
+							 int val = ((Integer)p.getValue()).intValue();
+							 while(cpt<agentsLP.size() && agentsLP.get(cpt)<val) {
+								 cpt++;
+							 }
+							 agentsLP.add(cpt, new Integer(val));
+						 }
+					 }
+				}
+			}
+		}
+		
+		//parcours des noeuds avec tresor
+		for(Node n : myMap.getEachNode()) {
+			int g = (int)n.getAttribute("gold");
+			if(g>0) {
+				Iterator<String> it = obj.iterator();
+				int cpt=0;
+				
+				int nbAgent =1;
+				//nb agent strengh
+				int nbAgentStre=1;
+				int strenghSum =myStrengh;
+				int neededStrengh =(int)n.getAttribute("force");
+	
+				Iterator<Integer> itStre= agentsStrenghs.iterator();
+				while(itStre.hasNext() && strenghSum<neededStrengh) {
+					nbAgentStre++;
+					strenghSum+=itStre.next().intValue();
+				}
+				nbAgent=nbAgentStre;
+				
+				//nb agentLP
+				int nbAgentLP=1;
+				int LPSum =myLockPicking;
+				int neededLP =(int)n.getAttribute("lockPicking");
+	
+				Iterator<Integer> itLP= agentsLP.iterator();
+				while(itLP.hasNext() && LPSum<neededLP) {
+					nbAgentLP++;
+					LPSum+=itLP.next().intValue();
+				}
+				if(nbAgentLP>nbAgent) {
+					nbAgent=nbAgentLP;
+				}
+			
+				//classe en fonction du nombre min d'agent necessaire (dont l'actuel) puis du gain
+				if(strenghSum>=neededStrengh &&LPSum>=neededLP) {
+					while(it.hasNext() && (tmpInfos.get(cpt).getLeft()>nbAgent ||tmpInfos.get(cpt).getRight()>g)) {
+						it.next();
+						cpt++;
+					}
+					obj.add(cpt, n.getId());
+					tmpInfos.add(new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
+
+				}
+				
+			}
+		}
+		this.objectives=obj;
 	}
 	
 }

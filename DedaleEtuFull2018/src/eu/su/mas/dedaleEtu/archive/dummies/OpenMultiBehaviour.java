@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.collector;
+package eu.su.mas.dedaleEtu.archive.dummies;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import java.util.Set;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SimpleBlockingSendMessageBehaviour;
@@ -36,7 +36,7 @@ import jade.core.behaviours.SimpleBehaviour;
  * @author hc
  *
  */
-public class ExploCollectorMultiBehaviour extends DedaleSimpleBehaviour {
+public class OpenMultiBehaviour extends DedaleSimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
@@ -52,24 +52,24 @@ public class ExploCollectorMultiBehaviour extends DedaleSimpleBehaviour {
 	
 	private String[] agentsIds;
 	
-	private CollectMultiAgent myDedaleAgent;
+	private ExploreMultiAgent myDedaleAgent;
 
 
-	public ExploCollectorMultiBehaviour(final CollectMultiAgent myagent) {
+	public OpenMultiBehaviour(final ExploreMultiAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
 		this.previousPosition=null;
 		this.agentsIds = myDedaleAgent.getIdList();
+		System.out.println("Start opening "+myDedaleAgent.getClosedTresor());
 	}
 
 	@Override
 	public void action() {
 		
-		/*if(myDedaleAgent.getMap()==null) {
-			System.out.println("CREATION MAP DE PORC");
+		if(myDedaleAgent.getMap()==null) {
 			myDedaleAgent.setMap(new MapRepresentation());
-		}*/
+		}
 		
 		//0) Retrieve the current position
 		
@@ -82,6 +82,9 @@ public class ExploCollectorMultiBehaviour extends DedaleSimpleBehaviour {
 		if (myPosition!=null){
 			
 			myDedaleAgent.setPosition(myPosition);
+			
+			
+			
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 			//System.out.println(lobs.toString());
@@ -94,36 +97,49 @@ public class ExploCollectorMultiBehaviour extends DedaleSimpleBehaviour {
 				e.printStackTrace();
 			}
 
-			
-			
-
 			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
 			String nextNode=null;
+			
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			
-
-			//3) while openNodes is not empty, continues.
-			if (myDedaleAgent.getOpenNodes().isEmpty()){
-				//Explo finished
+		
+			//Plus de tresor ferm�s
+			if (myDedaleAgent.getClosedTresor().isEmpty()){
 				finished=true;
-				//myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent, agentsIds));
-				if(myDedaleAgent instanceof CollectMultiAgent) {
-					myDedaleAgent.addBehaviour(new CollectMultiBehaviour((CollectMultiAgent)myDedaleAgent));
-
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+				System.out.println("Opening successufully done no more closed treasure, behaviour removed.");
+			//Plus de tresor ouvrable
+			}else if(myDedaleAgent.getOpenable().isEmpty()){
+				finished=true;
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
+				System.out.println("Opening successufully done no more openable treasure, behaviour removed.");
+			}
+			else{
+				//si sur target
+				if(myPosition.equals(myDedaleAgent.getTargetNode())){
+					System.out.println(myDedaleAgent.getLocalName() + "-----> " +myDedaleAgent.getMyExpertise()+ " expertise to "+ lobs);
+					if(myDedaleAgent.openLock(Observation.GOLD)) {
+						myDedaleAgent.getOpenTresor().add(myPosition);
+						myDedaleAgent.getClosedTresor().remove(myPosition);
+						myDedaleAgent.setTargetNode(null);
+						System.out.println(myDedaleAgent.getLocalName() + "-----> Open at "+myPosition);
+					}
+					lobs=myDedaleAgent.observe();
+					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+				}else {
+					
+					List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, myDedaleAgent.getOpenable());
+					myDedaleAgent.setTagetPath(newPath);
+					myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));
+					nextNode=newPath.get(0);
+					System.out.println(myDedaleAgent.getLocalName() +" -------> chose target in "+ myDedaleAgent.getOpenable()+" from "+myPosition +" next node ="+nextNode);
+					
+					lobs=myDedaleAgent.observe();
+					MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+					myDedaleAgent.moveTo(nextNode);
 				}
-				System.out.println("Exploration successufully done, behaviour removed.");
-			}else{
-				//4) select next move.
-				//4.1 If there exist one open node directly reachable, go for it,
-				//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
-				if (nextNode==null){
-					//no directly accessible openNode
-					//chose one, compute the path and take the first step.
-					//nextNode=this.myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getOpenNodes().get(0)).get(0);
-					nextNode=this.myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, myDedaleAgent.getOpenNodes()).get(0);
-					myDedaleAgent.setNextNode(nextNode);
-				}
-				myDedaleAgent.moveTo(nextNode);
+		
+				
 			}
 			
 			//check si l'agent est bloqué
@@ -131,7 +147,7 @@ public class ExploCollectorMultiBehaviour extends DedaleSimpleBehaviour {
 				blocked=true;
 				myDedaleAgent.incBlockedSince();
 				if(nextNode!=null) {
-					//System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, objectif : " + nextNode.toString() );
+					System.out.println(this.myDedaleAgent.getLocalName()+" est bloque, next : " + nextNode.toString() );
 				}
 				
 				if(myDedaleAgent.getBlockedSince()<2) {
