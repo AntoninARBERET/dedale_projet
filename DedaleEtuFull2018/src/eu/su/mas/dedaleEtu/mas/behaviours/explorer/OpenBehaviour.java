@@ -166,10 +166,10 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 								}
 							
 							}else {
-								if(!myPosition.equals(keepingNode)) {
+								if(!myPosition.equals(myDedaleAgent.getTargetNode())) {
 									//Calcul du chemin, MaJ de l'objectif
 									List<String> path = this.myDedaleAgent.getMap().getShortestPath(myPosition,myDedaleAgent.getTargetNode());
-									nextNode=path.get(0);
+									nextNode=path.get(0);//bug liste vide gprime ?
 									myDedaleAgent.setNextNode(nextNode);
 									myDedaleAgent.moveTo(nextNode);
 									moved=true;

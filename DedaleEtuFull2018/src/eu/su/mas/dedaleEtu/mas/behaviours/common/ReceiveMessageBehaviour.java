@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.common;
 import java.util.Date;
 
 import dataStructures.tuple.Couple;
+import eu.su.mas.dedaleEtu.archive.dummies.SimpleBlockingReceptionBehaviour;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.Block;
@@ -59,7 +60,6 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 					 int actionsCpt =myDedaleAgent.getActionsCpt();
 					 String recievedName = msg.getSender().getLocalName();
 					 if(myDedaleAgent.getLastPing(recievedName)<actionsCpt-DedaleAgent.pingGap) {
-						 System.out.println(myDedaleAgent.getLocalName() + " ----> ping answer");
 						 myDedaleAgent.setLastPing(recievedName, actionsCpt);
 						 myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, recievedName));
 					 }
@@ -79,15 +79,18 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 					//Ajouter hardblock
 					//recupere le block
 					Block b = (Block) msg.getContentObject();
-					System.out.println(myDedaleAgent.getLocalName()+" -----> "+b.toString());
+					System.out.println(myDedaleAgent.getLocalName()+" -----> sur "+myDedaleAgent.getPosition()+" recu : "+b.toString());
 					//si je suis sur la position de conflit
 					if(b.getDest().equals(myDedaleAgent.getPosition())){
 						boolean greaterPrio=false;
 						//check priorite
 						if(myDedaleAgent.getPriority()>b.getPriority()) {
+							System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car prio : "+myDedaleAgent.getPriority()+"plus haute" +b.getSender());
 							greaterPrio=true;
 						}
-						else if(AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), b.getSender())){
+						else if(myDedaleAgent.getPriority()==b.getPriority() && AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), b.getSender())){
+							System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car id avant " +b.getSender());
+
 							greaterPrio=true;
 						}
 						if(!greaterPrio) {

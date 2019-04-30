@@ -55,7 +55,13 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 			int moveId=1+r.nextInt(lobs.size()-1);//removing the current position from the list of target, not necessary as to stay is an action but allow quicker random move
 			String nextNode=lobs.get(moveId).getLeft();
 			if(lobs.size()>1 && nextNode.equals(previousPosition)) {
-				int tmp=1+r.nextInt(lobs.size()-2);
+				int tmp;
+				if(lobs.size()>2){
+					tmp=1+r.nextInt(lobs.size()-2);
+				}else{
+					tmp=0;
+				}
+				
 				if(tmp>=moveId){
 					moveId=tmp+1;
 				}

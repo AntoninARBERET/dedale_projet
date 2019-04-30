@@ -284,6 +284,7 @@ public class MapRepresentation implements Serializable {
 		this.silloSpot=selectedNode;
 		this.gPrime=Graphs.clone(this.g);
 		gPrime.removeNode(silloSpot);
+		System.out.println("Calculate sillo spot returned : "+selectedNode);
 		return selectedNode;		
 	}
 
@@ -315,7 +316,6 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public Couple<List<String>,List<String>> getPosByType(String type){
-		System.out.println(agentsInfo);
 		ArrayList<String> listId = new ArrayList<String>();
 		ArrayList<String> listPos = new ArrayList<String>();
 		for(String k:agentsInfo.keySet()) {
@@ -345,7 +345,7 @@ public class MapRepresentation implements Serializable {
 	 */
 	public List<String> getShortestPath(String idFrom,String idTo){
 		List<String> shortestPath=null;
-		if(gPrime!=null) {
+		if(gPrime!=null && !idTo.equals(this.silloSpot)) {
 			shortestPath=shortestPathOnGraph(idFrom, idTo, gPrime);
 		}
 		if(shortestPath==null || shortestPath.size()==0) {
@@ -727,6 +727,11 @@ public class MapRepresentation implements Serializable {
 				
 			}
 		}
+		
+	}
+
+	public String getSilloSpot() {
+		return silloSpot;
 	}
 	
 

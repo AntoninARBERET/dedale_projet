@@ -136,21 +136,39 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 				//phase de depot
 				}else {
 					Couple<List<String>, List<String>> tmp = myDedaleAgent.getMap().getPosByType("tanker");
-					List<String> goals=tmp.getRight();
-					List<String> goalsId=tmp.getLeft();
-					List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
-					String goalPos = newPath.get(newPath.size()-1);
-					targetAgent = goalsId.get(goals.indexOf(goalPos));
+					String goalPos;
+					String targetAgent;//hardcoded, todo
+					List<String> newPath ;
+					if(myDedaleAgent.getMap().getSilloSpot()!=null){
+						goalPos=myDedaleAgent.getMap().getSilloSpot();
+						targetAgent="Tanker1";//hardcoded, todo
+						newPath = myDedaleAgent.getMap().getShortestPath(myPosition, goalPos);
+					}
+					else{
+						List<String> goals=tmp.getRight();
+						List<String> goalsId=tmp.getLeft();
+						newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
+						goalPos = newPath.get(newPath.size()-1);
+						targetAgent = goalsId.get(goals.indexOf(goalPos));
+					}
 					//sur le spot
 					if(newPath.size()==0) {
 						myAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 1, false));
 					}
 					else {
-						myDedaleAgent.setTargetNode(newPath.get(newPath.size()-2));
+						
+						if(newPath.size()>1){
+							myDedaleAgent.setTargetNode(newPath.get(newPath.size()-2));//crash todo
+						}
+						//si sur un voisin du tanker
+						else{
+							myDedaleAgent.setTargetNode(myPosition);
+						}
 						
 						//sur l'objectif
 						if(myPosition.equals(myDedaleAgent.getTargetNode())){
-							if(myDedaleAgent.emptyMyBackPack(targetAgent)) {
+							if(myDedaleAgent.emptyMyBackPack(targetAgent+"@Ithaq")) {
+								System.out.println(myDedaleAgent.getLocalName() +" -----> succes drop vers "+targetAgent+" en "+myPosition);
 								dropPhase=false;
 							//echec de drop
 							}else {
@@ -177,7 +195,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 			//GESTION DES BLOCAGES
 			//
 			//position inchangee meme si moveTo
-			if(previousPosition !=null && previousPosition.equals(myPosition) && moved &&  nextNode!=null) {
+			if(previousPosition !=null &&  nextNode!=null && !nextNode.equals(myPosition) && moved ) {
 				myDedaleAgent.incBlockedSince();
 				//premier blocage, envoie de map
 				if(myDedaleAgent.getBlockedSince()<2) {

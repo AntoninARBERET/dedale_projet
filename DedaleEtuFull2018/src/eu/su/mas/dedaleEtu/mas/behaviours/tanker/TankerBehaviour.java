@@ -44,12 +44,13 @@ public class TankerBehaviour extends DedaleSimpleBehaviour{
 	@Override
 	public void action() {
 		String myPosition=this.myDedaleAgent.getCurrentPosition();
-		myDedaleAgent.setPriority(10);
+		myDedaleAgent.setMainBehaviour(this);
+		myDedaleAgent.setPriority(20);
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
 			//premier spot : noeud initial
 			if(myDedaleAgent.getMySpot()==null){
-				System.out.println(myDedaleAgent.getLocalName()+" -----> spot = "+myPosition);
+				System.out.println(myDedaleAgent.getName()+" -----> spot = "+myPosition);
 				myDedaleAgent.setMySpot(myPosition);
 				myDedaleAgent.setTargetNode(myPosition);
 			}
@@ -61,15 +62,15 @@ public class TankerBehaviour extends DedaleSimpleBehaviour{
 			
 			if(!myDedaleAgent.isFinalSpot() && myDedaleAgent.getOpenNodes().isEmpty()) {
 				myDedaleAgent.setMySpot(myDedaleAgent.getMap().calculateSilloSpot());
+				myDedaleAgent.setFinalSpot(true);
 			}
 			
 			
 			
 			if(!myDedaleAgent.getMySpot().equals(myPosition)) {
 				System.out.println("Tanker try to come back");
-				List<String> spotList = new ArrayList<String>();
-				spotList.add(myDedaleAgent.getMySpot());
-				List<String> newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, spotList);
+				
+				List<String> newPath = myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getMySpot());
 				myDedaleAgent.setTagetPath(newPath);
 				myDedaleAgent.moveTo(newPath.get(0));
 			}
