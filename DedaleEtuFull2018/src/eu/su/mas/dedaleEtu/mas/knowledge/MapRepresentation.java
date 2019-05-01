@@ -345,7 +345,7 @@ public class MapRepresentation implements Serializable {
 	 */
 	public List<String> getShortestPath(String idFrom,String idTo){
 		List<String> shortestPath=null;
-		if(gPrime!=null && !idTo.equals(this.silloSpot)) {
+		if(gPrime!=null && !idTo.equals(this.silloSpot)&& !idFrom.equals(this.silloSpot)) {
 			shortestPath=shortestPathOnGraph(idFrom, idTo, gPrime);
 		}
 		if(shortestPath==null || shortestPath.size()==0) {

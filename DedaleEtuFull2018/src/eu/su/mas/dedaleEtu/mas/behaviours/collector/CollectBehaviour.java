@@ -172,7 +172,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 						
 						//sur l'objectif
 						if(myPosition.equals(myDedaleAgent.getTargetNode())){
-							if(myDedaleAgent.emptyMyBackPack(targetAgent+"@Ithaq")) {
+							if(myDedaleAgent.emptyMyBackPack(targetAgent)) {
 								System.out.println(myDedaleAgent.getLocalName() +" -----> succes drop vers "+targetAgent+" en "+myPosition);
 								dropPhase=false;
 							//echec de drop

@@ -7,6 +7,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.CheckTankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -67,7 +68,7 @@ public class ExploExplorerBehaviour extends DedaleSimpleBehaviour {
 			if (myDedaleAgent.getOpenNodes().isEmpty()){
 				//Explo finished
 				finished=true;
-				myDedaleAgent.addBehaviour(new OpenBehaviour(myDedaleAgent));
+				myDedaleAgent.addBehaviour(new CheckTankerBehaviour(myDedaleAgent));
 				System.out.println(myDedaleAgent.getLocalName()+" -----> Exploration successufully done, behaviour removed.");
 			}else{
 				//Calcul du chemin, MaJ de l'objectif
