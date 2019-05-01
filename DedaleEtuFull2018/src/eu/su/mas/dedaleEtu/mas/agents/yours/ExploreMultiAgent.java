@@ -66,7 +66,7 @@ public class ExploreMultiAgent extends DedaleAgent {
 		dfd . addServices(sd) ;
 		
 		Property p=new Property();
-		p.setName("stengh");
+		p.setName("strengh");
 		p.setValue(new Integer(myStrengh));
 		sd.addProperties(p);
 		

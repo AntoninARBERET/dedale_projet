@@ -413,7 +413,7 @@ public class MapRepresentation implements Serializable {
 			}
 			if(minPath==null) {
 				System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
-				return null;
+				return new ArrayList<String>();
 			}
 			
 			Iterator<Node> iter=minPath.iterator();
@@ -429,7 +429,7 @@ public class MapRepresentation implements Serializable {
 					catch(Exception e){
 						e.printStackTrace();
 						System.out.println(idFrom +" -> "+idTo + " minpath "+minPath);
-						return null;
+						return new ArrayList<String>();
 					}
 				
 			}

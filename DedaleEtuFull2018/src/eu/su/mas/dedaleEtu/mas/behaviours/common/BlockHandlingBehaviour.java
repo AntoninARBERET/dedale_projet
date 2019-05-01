@@ -90,6 +90,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 
 	@Override
 	public void action() {
+		super.action();
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(60);
@@ -133,6 +134,8 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 				//
 				//position inchangee meme si moveTo
 				if(previousPosition !=null && previousPosition.equals(myPosition) && moved  && nextNode!=null) {
+					System.out.println(myDedaleAgent.getLocalName() +" -----> blocage dans handling prev : " +previousPosition + " current "+ myPosition + "next" +nextNode );
+					System.out.println(myDedaleAgent.getLocalName() +" -----> block associe : " +b.toString() );
 					myDedaleAgent.incBlockedSince();
 					//premier blocage, envoie de map
 					if(myDedaleAgent.getBlockedSince()<2) {

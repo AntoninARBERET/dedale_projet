@@ -353,6 +353,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 			e.printStackTrace();
 		}
 		
+
+		
 		
 		//creation de liste triee des forces disponibles
 		for(DFAgentDescription desc : result) {
@@ -365,7 +367,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 						 Property p = (Property)itProp.next();
 						 if(p.getName().equals("strengh")) {
 							 int cpt=0;
-							 int val = ((Integer)p.getValue()).intValue();
+							 int val = (Integer.valueOf((String)p.getValue())).intValue();
 							 while(cpt<agentsStrenghs.size() && agentsStrenghs.get(cpt)<val) {
 								 cpt++;
 							 }
@@ -375,6 +377,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 				}
 			}
 		}
+		
 		
 		//parcours des noeuds avec tresor
 		for(Node n : myMap.getEachNode()) {
@@ -421,7 +424,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		
 		DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription () ;
-		sd.setType( "collector" ); // name of the service
+		sd.setType( "explorer" ); // name of the service
 		dfd.addServices(sd) ;
 		DFAgentDescription[] result =null;
 		try {
@@ -429,7 +432,6 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
-		
 		
 		//creation de liste triee des forces disponibles
 		for(DFAgentDescription desc : result) {
@@ -442,7 +444,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 						 Property p = (Property)itProp.next();
 						 if(p.getName().equals("strengh")) {
 							 int cpt=0;
-							 int val = ((Integer)p.getValue()).intValue();
+							 int val = (Integer.valueOf((String)p.getValue())).intValue();//TODO changed
 							 while(cpt<agentsStrenghs.size() && agentsStrenghs.get(cpt)<val) {
 								 cpt++;
 							 }
@@ -450,7 +452,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 						 }
 						 if(p.getName().equals("lockPicking")) {
 							 int cpt=0;
-							 int val = ((Integer)p.getValue()).intValue();
+							 int val = (Integer.valueOf((String)p.getValue())).intValue();
 							 while(cpt<agentsLP.size() && agentsLP.get(cpt)<val) {
 								 cpt++;
 							 }
@@ -460,6 +462,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 				}
 			}
 		}
+		
 		
 		//parcours des noeuds avec tresor
 		for(Node n : myMap.getEachNode()) {

@@ -137,19 +137,24 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 				}else {
 					Couple<List<String>, List<String>> tmp = myDedaleAgent.getMap().getPosByType("tanker");
 					String goalPos;
-					String targetAgent;//hardcoded, todo
 					List<String> newPath ;
 					if(myDedaleAgent.getMap().getSilloSpot()!=null){
 						goalPos=myDedaleAgent.getMap().getSilloSpot();
-						targetAgent="Tanker1";//hardcoded, todo
+						targetAgent="Tanker1";//hardcoded, TODO
 						newPath = myDedaleAgent.getMap().getShortestPath(myPosition, goalPos);
 					}
 					else{
 						List<String> goals=tmp.getRight();
 						List<String> goalsId=tmp.getLeft();
 						newPath = myDedaleAgent.getMap().getShortestPathOpenNodes(myPosition, goals);
-						goalPos = newPath.get(newPath.size()-1);
-						targetAgent = goalsId.get(goals.indexOf(goalPos));
+						/*if(newPath.size()>1) {
+							myDedaleAgent.setTargetNode(newPath.get(newPath.size()-1));//TODO exception
+							//targetAgent = goalsId.get(goals.indexOf(goalPos));
+							
+						}*/
+						targetAgent="Tanker1";//hardcoded, TODO
+						
+						
 					}
 					//sur le spot
 					if(newPath.size()==0) {
