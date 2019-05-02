@@ -79,7 +79,7 @@ public class BlockingSendMessageBehaviour extends DedaleSimpleBehaviour{
 			//2° compute the random value
 			 try {
 				  msg.setProtocol("BLOCK");
-				  Block b = new Block(myDedaleAgent.getLocalName(), priority, dest, objective);
+				  Block b = new Block(myDedaleAgent.getLocalName(), priority, dest, objective, myDedaleAgent.getPosition());
 				  msg.setContentObject(b);
 				} catch (IOException e) {
 					e.printStackTrace();

@@ -37,7 +37,6 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 
 
 	
-	private String previousPosition;
 	
 	
 	private DedaleAgent myDedaleAgent;
@@ -54,7 +53,6 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		this.myDedaleAgent = myagent;
 		this.b=b;
 		this.callingBehaviour=callingBehaviour;
-		this.previousPosition=null;
 		callingBehaviour.block();
 		this.solution=null;
 		
@@ -66,7 +64,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		Iterator<String> voisIt = myDedaleAgent.getMap().getNeighbours(position).iterator();
 		while(voisIt.hasNext() && solution==null){
 			String s=voisIt.next();
-			if(!matePath.contains(s)) {
+			if(!matePath.contains(s)&& !s.equals(b.getOrigin())&&!s.equals(myDedaleAgent.getPosition())) {
 				solution=s;
 			}
 		}
@@ -78,7 +76,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 			voisIt = myDedaleAgent.getMap().getNeighbours(n).iterator();
 			while(voisIt.hasNext() && solution==null){
 				String s=voisIt.next();
-				if(!matePath.contains(s)) {
+				if(!matePath.contains(s) && !s.equals(b.getOrigin())&&!s.equals(myDedaleAgent.getPosition())) {
 					solution=s;
 				}
 			}
@@ -125,7 +123,11 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 						nextNode=path.get(0);
 						myDedaleAgent.setNextNode(nextNode);
 					}
-					myDedaleAgent.moveTo(nextNode);
+					boolean tmp=myDedaleAgent.moveTo(nextNode);
+					if(!tmp) {
+						System.out.println(myDedaleAgent.getLocalName() +"Fail move : " + myPosition + "next" +nextNode );
+
+					}
 					moved=true;
 				}
 				
@@ -133,8 +135,8 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 				//GESTION DES BLOCAGES
 				//
 				//position inchangee meme si moveTo
-				if(previousPosition !=null && previousPosition.equals(myPosition) && moved  && nextNode!=null) {
-					System.out.println(myDedaleAgent.getLocalName() +" -----> blocage dans handling prev : " +previousPosition + " current "+ myPosition + "next" +nextNode );
+				if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
+					System.out.println(myDedaleAgent.getLocalName() +" -----> blocage dans handling prev : " +myDedaleAgent.getPreviousPos() + " current "+ myPosition + "next" +nextNode );
 					System.out.println(myDedaleAgent.getLocalName() +" -----> block associe : " +b.toString() );
 					myDedaleAgent.incBlockedSince();
 					//premier blocage, envoie de map
@@ -142,7 +144,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 						myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 					}
 					//deuxieme blocage, envoie message
-					else if(myDedaleAgent.getBlockedSince()<=5){
+					else if(myDedaleAgent.getBlockedSince()<=10&&myDedaleAgent.isBlockDelayExpired()){
 						myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
 					}else {
 						myDedaleAgent.addBehaviour(new RandomStepsBehaviour(myDedaleAgent, 2, false));
@@ -150,7 +152,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 				}else{
 					myDedaleAgent.resetBlockedSince();
 				}
-				previousPosition = myPosition;
+				myDedaleAgent.setPreviousPos(myPosition);
 			}
 		}
 		

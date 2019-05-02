@@ -1,21 +1,30 @@
 package eu.su.mas.dedaleEtu.mas.tools;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class AlphaNumCompare {
 	public static boolean isFirst(String str1, String str2){
+		String lows1 = str1.toLowerCase();
+		String lows2 = str2.toLowerCase();
 		int cpt=0;
-		while(cpt<str1.length() && cpt<str2.length()){
-			if(str1.charAt(cpt)>str2.charAt(cpt)){
+		
+		while(cpt<lows1.length() && cpt<lows2.length()) {
+			if((int)lows1.charAt(cpt)<(int)lows2.charAt(cpt)) {
 				return true;
 			}
-			else if(str1.charAt(cpt)<str2.charAt(cpt)){
+			else if((int)lows1.charAt(cpt)>(int)lows2.charAt(cpt)) {
 				return false;
 			}
 			cpt++;
 		}
-		if(str1.length()<str2.length()){
+		if(lows1.length()<(int)lows2.length()) {
 			return true;
-		}else{
+		}
+		else if(lows1.length()>(int)lows2.length()) {
 			return false;
 		}
+		return false;
+		
 	}
 }

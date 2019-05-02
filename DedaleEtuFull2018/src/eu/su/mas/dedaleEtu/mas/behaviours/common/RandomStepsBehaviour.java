@@ -28,14 +28,12 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 	private int nbSteps;
 	private boolean finished = false;
 	private boolean mapSending;
-	private String previousPosition;
 
 	public RandomStepsBehaviour (final DedaleAgent myagent, int nbSteps, boolean mapSending) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
 		this.nbSteps=nbSteps;
 		this.mapSending=mapSending;
-		this.previousPosition=null;
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 			Random r= new Random();
 			int moveId=1+r.nextInt(lobs.size()-1);//removing the current position from the list of target, not necessary as to stay is an action but allow quicker random move
 			String nextNode=lobs.get(moveId).getLeft();
-			if(lobs.size()>1 && nextNode.equals(previousPosition)) {
+			if(lobs.size()>1 && nextNode.equals(myDedaleAgent.getPreviousPos())) {
 				int tmp;
 				if(lobs.size()>2){
 					tmp=1+r.nextInt(lobs.size()-2);
@@ -72,7 +70,7 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 			if(nbSteps<=0) {
 				this.finished=true;
 			}
-			previousPosition = myPosition;
+			myDedaleAgent.setPreviousPos(myPosition);
 		}
 
 	}

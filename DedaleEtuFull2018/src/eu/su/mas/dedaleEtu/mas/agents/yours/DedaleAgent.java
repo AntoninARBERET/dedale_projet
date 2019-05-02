@@ -13,7 +13,10 @@ import org.graphstream.graph.Node;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -88,6 +91,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	private int blockSentAt;
 	
 	private static int delai = 5;
+	
+	private String previousPos;
 
 
 
@@ -116,6 +121,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.actionsCpt=0;
 		this.lastPinged=new HashMap<String, Integer>();
 		this.blockSentAt=-1*delai;
+		this.previousPos=null;
 		
 		
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
@@ -156,6 +162,25 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	}
 	
+	public void onBlock(String nextNode) {
+
+		this.incBlockedSince();
+		//premier blocage, envoie de map
+		System.out.println(getLocalName() + " since "+blockedSince +"blockat"+this.blockSentAt);
+		if(this.getBlockedSince()<2) {
+			
+			this.addBehaviour(new SendMapBehaviour(this, "-1"));
+			//this.setBlockSentAt();
+		}
+		else if(this.getBlockedSince()>15) {
+			this.addBehaviour(new RandomStepsBehaviour(this, 2, false));
+		}
+		//deuxieme blocage, envoie message
+		else if(this.isBlockDelayExpired()){
+			this.setBlockSentAt();
+			this.addBehaviour(new BlockingSendMessageBehaviour(this, "-1", this.getPriority(), nextNode, this.getTargetNode()));
+		}
+	}
 	
 	public List<String> getOpenNodes() {
 		return openNodes;
@@ -353,6 +378,18 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		}
 	}
 	
+	
+	
+	public String getPreviousPos() {
+		return previousPos;
+	}
+
+
+	public void setPreviousPos(String previousPos) {
+		this.previousPos = previousPos;
+	}
+
+
 	public void generateObjectiveCollect() {
 		//liste objectifs et liste infos pour le tri
 		ArrayList<String> obj = new ArrayList<String>();
@@ -572,5 +609,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		}
 		this.objectives=obj;
 	}
+	
+	
 	
 }

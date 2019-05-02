@@ -19,21 +19,14 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.agent.behaviours.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.tools.AlphaNumCompare;
 import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 public class RandomTest {
 	public static void main(String args[]) {
 		
-		ArrayList<String> a = new ArrayList<String>();
-		a.add("rrrrrr");
-		ArrayList<String> b = a;
-		b.add("eeee");
-		System.out.println(a);
-		a.add(0,"ddd");
-		System.out.println(a);
-
-		b.remove(0);
-		System.out.println(a.get(0));
+		
+		System.out.println(AlphaNumCompare.isFirst("explo1","explo2"));
 
 	}
 }

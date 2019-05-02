@@ -8,6 +8,7 @@ import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.CheckTankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
@@ -57,7 +58,7 @@ public class ExploCollectorBehaviour extends DedaleSimpleBehaviour {
 		String myPosition=myDedaleAgent.getCurrentPosition();
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
-			
+			boolean moved = false;
 			//OBSERVATIONS ET MAJ
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=myDedaleAgent.observe();//myPosition
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
@@ -78,26 +79,20 @@ public class ExploCollectorBehaviour extends DedaleSimpleBehaviour {
 					myDedaleAgent.setTargetNode(path.get(path.size()-1));
 				}
 				myDedaleAgent.moveTo(nextNode);
+				moved=true;
 			}
 			
 			
 			//GESTION DES BLOCAGES
 			//
-			
-			if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
-				myDedaleAgent.incBlockedSince();
-				if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
-					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
-					myDedaleAgent.setBlockSentAt();
-				}
-				else/* if(myDedaleAgent.getBlockedSince()<=5) */{
-					myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
-				}
+			//position inchangee meme si moveTo
+			if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
+				
+				myDedaleAgent.onBlock(nextNode);
 			}else{
 				myDedaleAgent.resetBlockedSince();
-
 			}
-			previousPosition = myPosition;
+			myDedaleAgent.setPreviousPos(myPosition);
 			
 
 		}

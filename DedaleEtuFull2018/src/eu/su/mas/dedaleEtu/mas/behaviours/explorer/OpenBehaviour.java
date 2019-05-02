@@ -10,6 +10,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
@@ -99,31 +100,21 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 							if(objectives.size()>0) {
 								myDedaleAgent.setTargetNode(objectives.get(currentObjective));
 							}
-							//sur objectif
-							if(myPosition.equals(myDedaleAgent.getTargetNode())){
-								if((boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
-									System.out.println(myDedaleAgent.getLocalName()+" -----> Deja open on "+myPosition);
-									//maj objectif
-									objectives.remove(currentObjective);
-									if(currentObjective>=objectives.size()) {
-										currentObjective=0;
-									}
-									if(objectives.size()>0) {
-										myDedaleAgent.setTargetNode(objectives.get(currentObjective));
-									}
+							//check si le coffre a ete ouvert
+							if((boolean)myDedaleAgent.getMap().getNode(myDedaleAgent.getTargetNode()).getAttribute("tresor_open")) {
+								objectives.remove(currentObjective);
+								if(currentObjective>=objectives.size()) {
+									currentObjective=0;
 								}
-								else {
-									boolean openSucces=myDedaleAgent.openLock(Observation.GOLD);
-									//OBSERVATIONS ET MAJ
-									lobs=myDedaleAgent.observe();//myPosition
-									MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
-									//succes ouverture
-									if(openSucces) {
-										System.out.println(myDedaleAgent.getLocalName()+" -----> Open on "+myPosition);
-										if(helpNeeded) {
-											//Envoie du message de fin
-										}
-										
+								if(objectives.size()>0) {
+									myDedaleAgent.setTargetNode(objectives.get(currentObjective));
+								}
+							}
+							else {
+								//sur objectif
+								if(myPosition.equals(myDedaleAgent.getTargetNode())){
+									if((boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
+										System.out.println(myDedaleAgent.getLocalName()+" -----> Deja open on "+myPosition);
 										//maj objectif
 										objectives.remove(currentObjective);
 										if(currentObjective>=objectives.size()) {
@@ -132,17 +123,19 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 										if(objectives.size()>0) {
 											myDedaleAgent.setTargetNode(objectives.get(currentObjective));
 										}
-										keepedNode=myPosition;
-										keepingPhase=true;
-									}	
-									//echec ouverture
-									else{
-										if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
-											//demande aide
-										}
-										
-										//ouvert par autre agent
-										else {
+									}
+									else {
+										boolean openSucces=myDedaleAgent.openLock(Observation.GOLD);
+										//OBSERVATIONS ET MAJ
+										lobs=myDedaleAgent.observe();//myPosition
+										MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+										//succes ouverture
+										if(openSucces) {
+											System.out.println(myDedaleAgent.getLocalName()+" -----> Open on "+myPosition);
+											if(helpNeeded) {
+												//Envoie du message de fin
+											}
+											
 											//maj objectif
 											objectives.remove(currentObjective);
 											if(currentObjective>=objectives.size()) {
@@ -151,25 +144,46 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 											if(objectives.size()>0) {
 												myDedaleAgent.setTargetNode(objectives.get(currentObjective));
 											}
+											keepedNode=myPosition;
+											keepingPhase=true;
+										}	
+										//echec ouverture
+										else{
+											if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
+												//demande aide
+											}
+											
+											//ouvert par autre agent
+											else {
+												//maj objectif
+												objectives.remove(currentObjective);
+												if(currentObjective>=objectives.size()) {
+													currentObjective=0;
+												}
+												if(objectives.size()>0) {
+													myDedaleAgent.setTargetNode(objectives.get(currentObjective));
+												}
+											}
 										}
 									}
 								}
+								//vers objectif
+								else {
+									//Calcul du chemin, MaJ de l'objectif
+									List<String> path = this.myDedaleAgent.getMap().getShortestPath(myPosition,myDedaleAgent.getTargetNode());
+									nextNode=path.get(0);
+									myDedaleAgent.setNextNode(nextNode);
+									myDedaleAgent.moveTo(nextNode);
+									moved=true;
+								}
 							}
-							//vers objectif
-							else {
-								//Calcul du chemin, MaJ de l'objectif
-								List<String> path = this.myDedaleAgent.getMap().getShortestPath(myPosition,myDedaleAgent.getTargetNode());
-								nextNode=path.get(0);
-								myDedaleAgent.setNextNode(nextNode);
-								myDedaleAgent.moveTo(nextNode);
-								moved=true;
-							}
+							
 						}
 						//phase de garde
 						else {
 							myDedaleAgent.setPriority(10);
 							//premier tour : init keepingNode
-							if(keepingNode==null) {
+							if(this.keepingNode==null) {
 								String tmpNode=getKeepingNode(myPosition);
 								if(tmpNode==null) {
 									keepingPhase=false;
@@ -179,7 +193,9 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 								}
 							
 							}else {
+								myDedaleAgent.setTargetNode(keepingNode);
 								if(!myPosition.equals(myDedaleAgent.getTargetNode())) {
+									myDedaleAgent.doWait(100);
 									//Calcul du chemin, MaJ de l'objectif
 									List<String> path = this.myDedaleAgent.getMap().getShortestPath(myPosition,myDedaleAgent.getTargetNode());
 									nextNode=path.get(0);//bug liste vide gprime ?
@@ -189,6 +205,8 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 								}
 								if((int)myDedaleAgent.getMap().getNode(keepedNode).getAttribute("gold")<=0){
 									keepingPhase=false;
+									keepingNode=null;
+									keepedNode=null;
 								}
 							}
 						}
@@ -197,22 +215,15 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 					
 					//GESTION DES BLOCAGES
 					//
-					
-					if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
-						myDedaleAgent.incBlockedSince();
-						if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
-							myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
-							myDedaleAgent.setBlockSentAt();
-						}
-						else/* if(myDedaleAgent.getBlockedSince()<=5) */{
-							myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
-						}
+					//position inchangee meme si moveTo
+					if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
+						
+						myDedaleAgent.onBlock(nextNode);
+						
 					}else{
 						myDedaleAgent.resetBlockedSince();
-
 					}
-					previousPosition = myPosition;
-					
+					myDedaleAgent.setPreviousPos(myPosition);
 
 				}
 	}

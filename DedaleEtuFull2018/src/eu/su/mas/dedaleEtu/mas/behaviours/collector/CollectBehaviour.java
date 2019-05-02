@@ -200,21 +200,13 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 			
 			//GESTION DES BLOCAGES
 			//
-			
-			if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
-				myDedaleAgent.incBlockedSince();
-				if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
-					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
-					myDedaleAgent.setBlockSentAt();
-				}
-				else/* if(myDedaleAgent.getBlockedSince()<=5) */{
-					myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
-				}
+			//position inchangee meme si moveTo
+			if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
+				myDedaleAgent.onBlock(nextNode);
 			}else{
 				myDedaleAgent.resetBlockedSince();
-
 			}
-			previousPosition = myPosition;
+			myDedaleAgent.setPreviousPos(myPosition);
 			
 
 		}

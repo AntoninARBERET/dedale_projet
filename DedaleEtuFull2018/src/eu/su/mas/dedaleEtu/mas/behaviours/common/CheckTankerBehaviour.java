@@ -38,7 +38,6 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 
 
 	
-	private String previousPosition;
 	
 	
 	private DedaleAgent myDedaleAgent;
@@ -49,7 +48,6 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
-		this.previousPosition=null;
 		tankerPos=null;
 		Couple<List<String>, List<String>> tmp = myDedaleAgent.getMap().getPosByType("tanker");
 		if(tmp.getRight().size()>0) {
@@ -129,21 +127,12 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 				//GESTION DES BLOCAGES
 				//
 				//position inchangee meme si moveTo
-				if(previousPosition !=null &&  nextNode!=null && !nextNode.equals(myPosition) && moved ) {
-					myDedaleAgent.incBlockedSince();
-					//premier blocage, envoie de map
-					if(myDedaleAgent.getBlockedSince()<2) {
-						myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
-					}
-					//deuxieme blocage, envoie message
-					else/* if(myDedaleAgent.getBlockedSince()<=5) */{
-						myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
-					}
+				if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
+					myDedaleAgent.onBlock(nextNode);
 				}else{
 					myDedaleAgent.resetBlockedSince();
-
 				}
-				previousPosition = myPosition;
+				myDedaleAgent.setPreviousPos(myPosition);
 				
 
 			}
