@@ -84,6 +84,10 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	protected HashMap<String, Integer> lastPinged;
 	
 	protected DedaleSimpleBehaviour mainBehaviour;
+	
+	private int blockSentAt;
+	
+	private static int delai = 5;
 
 
 
@@ -111,6 +115,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.checkingBehaviourRunning=false;
 		this.actionsCpt=0;
 		this.lastPinged=new HashMap<String, Integer>();
+		this.blockSentAt=-1*delai;
 		
 		
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
@@ -209,12 +214,25 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 	public void incBlockedSince() {
 		this.blockedSince++;
+		
 	}
 	
 	public void resetBlockedSince() {
 		this.blockedSince=0;
+		this.blockSentAt=-1*delai;
 	}
 	
+	public int getBlockSentAt(){
+		return blockSentAt;
+	}
+	
+	public void setBlockSentAt(){
+		blockSentAt = blockedSince;
+	}
+	
+	public boolean isBlockDelayExpired() {
+		return (blockedSince-blockSentAt)>delai;
+	}
 
 	public String[] getIdList() {
 		return idList;
@@ -342,9 +360,11 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		
 		//recuperation des forces des collectors
 		ArrayList<Integer> agentsStrenghs=new ArrayList<Integer>();
+		ArrayList<Integer> agentsLP=new ArrayList<Integer>();
+		
 		DFAgentDescription dfd = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription () ;
-		sd.setType( "collector" ); // name of the service
+		sd.setType( "explorer" ); // name of the service
 		dfd.addServices(sd) ;
 		DFAgentDescription[] result =null;
 		try {
@@ -352,9 +372,6 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
-		
-
-		
 		
 		//creation de liste triee des forces disponibles
 		for(DFAgentDescription desc : result) {
@@ -367,11 +384,19 @@ public class DedaleAgent extends AbstractDedaleAgent {
 						 Property p = (Property)itProp.next();
 						 if(p.getName().equals("strengh")) {
 							 int cpt=0;
-							 int val = (Integer.valueOf((String)p.getValue())).intValue();
+							 int val = (Integer.valueOf((String)p.getValue())).intValue();//TODO changed
 							 while(cpt<agentsStrenghs.size() && agentsStrenghs.get(cpt)<val) {
 								 cpt++;
 							 }
 							 agentsStrenghs.add(cpt, new Integer(val));
+						 }
+						 if(p.getName().equals("lockPicking")) {
+							 int cpt=0;
+							 int val = (Integer.valueOf((String)p.getValue())).intValue();
+							 while(cpt<agentsLP.size() && agentsLP.get(cpt)<val) {
+								 cpt++;
+							 }
+							 agentsLP.add(cpt, new Integer(val));
 						 }
 					 }
 				}
@@ -386,30 +411,56 @@ public class DedaleAgent extends AbstractDedaleAgent {
 				Iterator<String> it = obj.iterator();
 				int cpt=0;
 				
-				
-				//nb agent
-				int nbAgent=1;
-				int strenghSum =myStrengh;
+				int nbAgent =0;
+				//nb agent strengh
+				int nbAgentStre=0;
+				int strenghSum =0;
 				int neededStrengh =(int)n.getAttribute("force");
 	
 				Iterator<Integer> itStre= agentsStrenghs.iterator();
 				while(itStre.hasNext() && strenghSum<neededStrengh) {
+					nbAgentStre++;
 					strenghSum+=itStre.next().intValue();
-					nbAgent++;
+				}
+				nbAgent=nbAgentStre;
+				
+				//nb agentLP
+				int nbAgentLP=0;
+				int LPSum =0;
+				int neededLP =(int)n.getAttribute("lockPicking");
+	
+				Iterator<Integer> itLP= agentsLP.iterator();
+				while(itLP.hasNext() && LPSum<neededLP) {
+					nbAgentLP++;
+					LPSum+=itLP.next().intValue();
+				}
+				if(nbAgentLP>nbAgent) {
+					nbAgent=nbAgentLP;
 				}
 			
 				//classe en fonction du nombre min d'agent necessaire (dont l'actuel) puis du gain
-				if(strenghSum>=neededStrengh) {
-					while(it.hasNext() && (tmpInfos.get(cpt).getLeft()>nbAgent ||tmpInfos.get(cpt).getRight()>g)) {
+				if(strenghSum>=neededStrengh &&LPSum>=neededLP) {
+					boolean over =false;
+					while(it.hasNext() && !over) {
 						it.next();
-						cpt++;
+						if(tmpInfos.get(cpt).getLeft()>=nbAgent && tmpInfos.get(cpt).getRight()<=g) {
+							over=true;
+						}
+						else {
+							cpt++;
+						}
 					}
+					
+					
+					
 					obj.add(cpt, n.getId());
-					tmpInfos.add(new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
+					tmpInfos.add(cpt,new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
+
 				}
 				
 			}
 		}
+		System.out.println(this.getLocalName()+ " -----> obj "+obj+" tmpinfo : " +tmpInfos.toString());
 		this.objectives=obj;
 	}
 	
@@ -500,13 +551,21 @@ public class DedaleAgent extends AbstractDedaleAgent {
 			
 				//classe en fonction du nombre min d'agent necessaire (dont l'actuel) puis du gain
 				if(strenghSum>=neededStrengh &&LPSum>=neededLP) {
-					while(it.hasNext() && (tmpInfos.get(cpt).getLeft()>nbAgent ||tmpInfos.get(cpt).getRight()>g)) {
+					boolean over =false;
+					while(it.hasNext() && !over) {
 						it.next();
-						cpt++;
+						if(tmpInfos.get(cpt).getLeft()>=nbAgent && tmpInfos.get(cpt).getRight()<=g) {
+							over=true;
+						}
+						else {
+							cpt++;
+						}
 					}
+					
+					
+					
 					obj.add(cpt, n.getId());
-					tmpInfos.add(new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
-
+					tmpInfos.add(cpt,new Couple<Integer, Integer>(new Integer(nbAgent), new Integer(g)));
 				}
 				
 			}

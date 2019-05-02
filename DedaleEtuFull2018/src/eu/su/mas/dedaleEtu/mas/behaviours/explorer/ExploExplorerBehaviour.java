@@ -87,8 +87,9 @@ public class ExploExplorerBehaviour extends DedaleSimpleBehaviour {
 			
 			if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
 				myDedaleAgent.incBlockedSince();
-				if(myDedaleAgent.getBlockedSince()<2) {
+				if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
 					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+					myDedaleAgent.setBlockSentAt();
 				}
 				else/* if(myDedaleAgent.getBlockedSince()<=5) */{
 					myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
@@ -98,7 +99,6 @@ public class ExploExplorerBehaviour extends DedaleSimpleBehaviour {
 
 			}
 			previousPosition = myPosition;
-			
 
 		}
 	}

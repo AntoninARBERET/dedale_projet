@@ -101,17 +101,8 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 							}
 							//sur objectif
 							if(myPosition.equals(myDedaleAgent.getTargetNode())){
-								boolean openSucces=myDedaleAgent.openLock(Observation.GOLD);
-								//OBSERVATIONS ET MAJ
-								lobs=myDedaleAgent.observe();//myPosition
-								MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
-								//succes ouverture
-								if(openSucces) {
-									System.out.println(myDedaleAgent.getLocalName()+" -----> Open on "+myPosition);
-									if(helpNeeded) {
-										//Envoie du message de fin
-									}
-									
+								if((boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
+									System.out.println(myDedaleAgent.getLocalName()+" -----> Deja open on "+myPosition);
 									//maj objectif
 									objectives.remove(currentObjective);
 									if(currentObjective>=objectives.size()) {
@@ -120,17 +111,19 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 									if(objectives.size()>0) {
 										myDedaleAgent.setTargetNode(objectives.get(currentObjective));
 									}
-									keepedNode=myPosition;
-									keepingPhase=true;
-								}	
-								//echec ouverture
-								else{
-									if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
-										//demande aide
-									}
-									
-									//ouvert par autre agent
-									else {
+								}
+								else {
+									boolean openSucces=myDedaleAgent.openLock(Observation.GOLD);
+									//OBSERVATIONS ET MAJ
+									lobs=myDedaleAgent.observe();//myPosition
+									MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
+									//succes ouverture
+									if(openSucces) {
+										System.out.println(myDedaleAgent.getLocalName()+" -----> Open on "+myPosition);
+										if(helpNeeded) {
+											//Envoie du message de fin
+										}
+										
 										//maj objectif
 										objectives.remove(currentObjective);
 										if(currentObjective>=objectives.size()) {
@@ -138,6 +131,26 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 										}
 										if(objectives.size()>0) {
 											myDedaleAgent.setTargetNode(objectives.get(currentObjective));
+										}
+										keepedNode=myPosition;
+										keepingPhase=true;
+									}	
+									//echec ouverture
+									else{
+										if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
+											//demande aide
+										}
+										
+										//ouvert par autre agent
+										else {
+											//maj objectif
+											objectives.remove(currentObjective);
+											if(currentObjective>=objectives.size()) {
+												currentObjective=0;
+											}
+											if(objectives.size()>0) {
+												myDedaleAgent.setTargetNode(objectives.get(currentObjective));
+											}
 										}
 									}
 								}
@@ -184,14 +197,13 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 					
 					//GESTION DES BLOCAGES
 					//
-					//position inchangee meme si moveTo
-					if(previousPosition !=null && previousPosition.equals(myPosition) && moved && nextNode!=null) {
+					
+					if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
 						myDedaleAgent.incBlockedSince();
-						//premier blocage, envoie de map
-						if(myDedaleAgent.getBlockedSince()<2) {
+						if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
 							myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+							myDedaleAgent.setBlockSentAt();
 						}
-						//deuxieme blocage, envoie message
 						else/* if(myDedaleAgent.getBlockedSince()<=5) */{
 							myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
 						}

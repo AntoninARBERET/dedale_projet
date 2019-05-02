@@ -735,7 +735,15 @@ public class MapRepresentation implements Serializable {
 	}
 	
 
-	
+	public void printMap() {
+		for(Node n:this.getEachNode()) {
+			String str ="n: "+n.getId();
+			for(String k: n.getAttributeKeySet()) {
+				str=str+" "+k+" "+n.getAttribute(k);
+			}
+			System.out.println(str);
+		}
+	}
 	
 	
 

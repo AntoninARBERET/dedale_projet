@@ -98,6 +98,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 						//pick
 						int picked= myDedaleAgent.pick();
 						if(picked>0) {
+							myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 							System.out.println(myDedaleAgent.getLocalName() + "-----> Picked "+picked+" gold at "+myPosition);
 						}else if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
 							myDedaleAgent.setTargetNode(nextObj());
@@ -199,14 +200,13 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 			
 			//GESTION DES BLOCAGES
 			//
-			//position inchangee meme si moveTo
-			if(previousPosition !=null &&  nextNode!=null && !nextNode.equals(myPosition) && moved ) {
+			
+			if(previousPosition !=null && previousPosition.equals(myPosition) && nextNode!=null) {
 				myDedaleAgent.incBlockedSince();
-				//premier blocage, envoie de map
-				if(myDedaleAgent.getBlockedSince()<2) {
+				if(myDedaleAgent.getBlockedSince()<2 && myDedaleAgent.isBlockDelayExpired()) {
 					myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+					myDedaleAgent.setBlockSentAt();
 				}
-				//deuxieme blocage, envoie message
 				else/* if(myDedaleAgent.getBlockedSince()<=5) */{
 					myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent, "-1", myDedaleAgent.getPriority(), nextNode, myDedaleAgent.getTargetNode()));
 				}
