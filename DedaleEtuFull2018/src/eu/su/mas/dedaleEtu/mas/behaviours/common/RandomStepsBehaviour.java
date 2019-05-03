@@ -10,17 +10,8 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import jade.core.behaviours.SimpleBehaviour;
 
-/**************************************
- * 
- * 
- * 				BEHAVIOUR RandomWalk : Illustrates how an agent can interact with, and move in, the environment
- * 
- * 
- **************************************/
-
-
+//effectue un nombre donne de deplacements aleatoires
 public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 	
 	private static final long serialVersionUID = 9088209402507795289L;
@@ -33,6 +24,7 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 		super(myagent);
 		this.myDedaleAgent=myagent;
 		this.nbSteps=nbSteps;
+		//si true, envoie de la map a chaque pas
 		this.mapSending=mapSending;
 	}
 
@@ -48,9 +40,9 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);			
-			//Random move avec position précédente exclue
+			//Random move avec position predente exclue
 			Random r= new Random();
-			int moveId=1+r.nextInt(lobs.size()-1);//removing the current position from the list of target, not necessary as to stay is an action but allow quicker random move
+			int moveId=1+r.nextInt(lobs.size()-1);
 			String nextNode=lobs.get(moveId).getLeft();
 			if(lobs.size()>1 && nextNode.equals(myDedaleAgent.getPreviousPos())) {
 				int tmp;

@@ -3,15 +3,10 @@ package eu.su.mas.dedaleEtu.mas.agents.yours;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
-import eu.su.mas.dedaleEtu.archive.dummies.ExploCollectorMultiBehaviour;
-import eu.su.mas.dedaleEtu.archive.dummies.ExploMultiBehaviour;
-import eu.su.mas.dedaleEtu.archive.dummies.ExploSoloBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.collector.ExploCollectorBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.PingBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.ReceiveMessageBehaviour;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -19,39 +14,19 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-/**
- * ExploreSolo agent. 
- * It explore the map using a DFS algorithm.
- * It stops when all nodes have been visited
- *  
- *  
- * @author hc
- *
- */
+
 
 public class CollectMultiAgent extends DedaleAgent {
 
 	private static final long serialVersionUID = -6431752665590433727L;
-	//private String[] idList;
 	private List<String> toRetry;
 	private int totalSpace;
 
 	
-	
 
-	/**
-	 * This method is automatically called when "agent".start() is executed.
-	 * Consider that Agent is launched for the first time. 
-	 * 			1) set the agent attributes 
-	 *	 		2) add the behaviours
-	 *          
-	 */
 	protected void setup(){
 		
 		super.setup();
-		final Object[] args = getArguments();
-		//idList = (String[])args[2];
-		//myMap=new MapRepresentation();
 		type="collector";
 		toRetry = new ArrayList<String>();
 		totalSpace =  this.getBackPackFreeSpace();
@@ -80,22 +55,13 @@ public class CollectMultiAgent extends DedaleAgent {
 			fe . printStackTrace () ; 
 		}
 		
-		/************************************************
-		 * 
-		 * ADD the behaviours of the Dummy Moving Agent
-		 * 
-		 ************************************************/
 		
+		//Ajout de la premiere behaviour et des deux permanente
 		lb.add(new ExploCollectorBehaviour(this));
 		lb.add(new PingBehaviour(this));
 		lb.add(new ReceiveMessageBehaviour(this));
 
-		
-		
-		/***
-		 * MANDATORY TO ALLOW YOUR AGENT TO BE DEPLOYED CORRECTLY
-		 */
-		
+
 		
 		addBehaviour(new startMyBehaviours(this,lb));
 		

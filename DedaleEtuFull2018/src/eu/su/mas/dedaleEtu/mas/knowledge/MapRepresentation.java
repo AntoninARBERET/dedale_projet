@@ -7,9 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.Hashtable;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
@@ -23,8 +21,6 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.TankerAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import eu.su.mas.dedaleEtu.mas.tools.Pair;
 
 /**
  * This simple topology representation only deals with the graph, not its content.</br>
@@ -229,7 +225,6 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public float meanDist(Node n) {
-		List<String> shortestPath=new ArrayList<String>();
 		float meanDist=0;
 		int nbNode=this.g.getNodeCount();
 		String idFrom=n.getId();
@@ -641,7 +636,6 @@ public class MapRepresentation implements Serializable {
 		int obsLockPicking=-1;
 		int obsForce=-1;
 		boolean obsWumpus = false;
-		Couple<String, String> obsAgent=null;
 		
 		for(Couple<Observation, Integer> c : obs) {
 			switch (c.getLeft().getName()) {
@@ -688,7 +682,6 @@ public class MapRepresentation implements Serializable {
 					obsLockPicking=-1;
 					obsForce=-1;
 					obsWumpus = false;
-					obsAgent=null;
 					
 					
 					for(Couple<Observation, Integer> c : obs) {

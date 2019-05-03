@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 import dataStructures.tuple.Couple;
-
+//classe representant un noeud pour les envois de maps
 public class Case implements Serializable{
-	
+
+	private static final long serialVersionUID = 1429822429237280539L;
 	private String id;
 	private boolean node_open;//mis a true car si on cree la case c'est que le noeud est ouvert
 	private Date date;

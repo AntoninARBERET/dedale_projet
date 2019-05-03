@@ -2,7 +2,10 @@ package eu.su.mas.dedaleEtu.mas.knowledge;
 
 import java.io.Serializable;
 
+//classe representant un blocage
 public class Block implements Serializable{
+	
+	private static final long serialVersionUID = 31787038228418415L;
 	private String sender, dest, objective, origin;
 	private int priority;
 

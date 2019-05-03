@@ -1,43 +1,22 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
-import java.util.Date;
 
-import dataStructures.tuple.Couple;
-import eu.su.mas.dedaleEtu.archive.dummies.SimpleBlockingReceptionBehaviour;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
-import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.Block;
+import eu.su.mas.dedaleEtu.mas.knowledge.Help;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.tools.AlphaNumCompare;
-import eu.su.mas.dedaleEtu.mas.tools.Pair;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
-/**
- * This behaviour is a one Shot.
- * It receives a message tagged with an inform performative, print the content in the console and destroy itlself
- * 
- * @author Cédric Herpson
- *
- */
+//reception des messages
 public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 
 	private static final long serialVersionUID = 9088209402507795289L;
 
-	private boolean finished=false;
 	
 	private DedaleAgent myDedaleAgent;
 
-	/**
-	 * 
-	 * This behaviour is a one Shot.
-	 * It receives a message tagged with an inform performative, print the content in the console and destroy itlself
-	 * @param myagent
-	 */
 	public ReceiveMessageBehaviour(final DedaleAgent myagent) {
 		super(myagent);
 		myDedaleAgent = myagent;
@@ -54,8 +33,10 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 			try {
 				
 
-
+				//switch case selon le type de message dans le protocole
 				switch(msg.getProtocol()) {
+				
+				//reception ping
 				case "PING":
 					 int actionsCpt =myDedaleAgent.getActionsCpt();
 					 String recievedName = msg.getSender().getLocalName();
@@ -64,20 +45,14 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 						 myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, recievedName));
 					 }
 					break;
-					
+				
+				//reception map
 				case "MAP":
-					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
 					MapRepresentation.MergeWithSendableMap(myDedaleAgent, msg.getContentObject());
 					break;
 					
-				case "BLOCKSIMPLE":
-					Couple<String, Integer> content =(Couple<String, Integer>)msg.getContentObject();
-					myDedaleAgent.addBehaviour(new SimpleBlockingReceptionBehaviour(myDedaleAgent, content.getLeft(), content.getRight().intValue()));
-					break;
-					
+				//reception du message de blocage	
 				case "BLOCK":
-					//Ajouter hardblock
-					//recupere le block
 					Block b = (Block) msg.getContentObject();
 					System.out.println(myDedaleAgent.getLocalName()+" -----> sur "+myDedaleAgent.getPosition()+" recu : "+b.toString());
 					//si je suis sur la position de conflit
@@ -100,27 +75,27 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 						
 					}
 					break;
+					
+				case "HELP":
+					Help h = (Help) msg.getContentObject();
+					if(h.getType().equals(myDedaleAgent.getType())){
+						myDedaleAgent.addBehaviour(new HelpingBehaviour(myDedaleAgent, h, myDedaleAgent.getMainBehaviour()));
+					}
+					break;
 				
-				/*if(msg.getProtocol().equals("MAP")) {
-					System.out.println(myDedaleAgent.getLocalName() + " ----> map recue");
-					//MapRepresentation.MergeMaps(myDedaleAgent, msg.getContentObject());
-					MapRepresentation.MergeFullMaps(myDedaleAgent, msg.getContentObject());
-					}*/
+				
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this.finished=true;
 		}else{
-			block();// the behaviour goes to sleep until the arrival of a new message in the agent's Inbox.
+			block();
 		}
 	}
 
 	public boolean done() {
-		//myDedaleAgent.setCheckingBehaviourRunning(false);
 
-		return false; //change pour check en permanence
+		return false; 
 	}
 
 }

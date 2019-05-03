@@ -1,9 +1,10 @@
 package eu.su.mas.dedaleEtu.mas.tools;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class AlphaNumCompare {
+	
+	//Compare les deux chaines de charactere
 	public static boolean isFirst(String str1, String str2){
 		String lows1 = str1.toLowerCase();
 		String lows2 = str2.toLowerCase();

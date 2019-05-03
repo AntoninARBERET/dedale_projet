@@ -6,7 +6,11 @@ import java.util.HashMap;
 
 import dataStructures.tuple.Couple;
 
+//encapsule la map pour l'envoie
 public class SendableMap implements Serializable {
+	
+	private static final long serialVersionUID = 2105819789141240827L;
+
 	//Liste de cases, 1 par node
 	private ArrayList<Case> cases;
 	

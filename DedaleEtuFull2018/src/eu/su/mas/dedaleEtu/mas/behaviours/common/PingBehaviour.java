@@ -1,42 +1,18 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
-import dataStructures.tuple.Couple;
-import eu.su.mas.dedale.env.Observation;
-import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.SimpleBehaviour;
+
 import jade.lang.acl.ACLMessage;
 
-/* Behaviour permettant d'indiquer ca pr�sence aux voisins environnants
- 
-  */
-
+//envoie le ping en permanence
 public class PingBehaviour extends DedaleSimpleBehaviour{
 	 private static final long serialVersionUID = 9088209402507795289L;
 	 
-	 private boolean finished=false;
 	 private DedaleAgent myDedaleAgent;
 	 private String[] agentslist;
-	 
-	 
-	 
-	 /**
-		 * 
-		 * @param myagent the Agent this behaviour is linked to
-		 * @param agentslist is the list of all the agents
-		 */
-	 
 	 
 	 
 	 public PingBehaviour (DedaleAgent myagent){
@@ -58,7 +34,6 @@ public class PingBehaviour extends DedaleSimpleBehaviour{
 		 }
 		 
 		
-		//2° compute the random value
 		 try {
 			  msg.setProtocol("PING");
 			  msg.setContentObject(myDedaleAgent.getPosition());
@@ -67,7 +42,6 @@ public class PingBehaviour extends DedaleSimpleBehaviour{
 			} 
 		 this.myDedaleAgent.send(msg);
 		 
-		 //System.out.println(this.myDedaleAgent.getLocalName()+" ----> Ping sent "/*peut etre ajout� le receveur*/);
 	 }
 	 
 	 

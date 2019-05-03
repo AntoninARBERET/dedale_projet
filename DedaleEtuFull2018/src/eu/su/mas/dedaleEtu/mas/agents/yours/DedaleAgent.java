@@ -96,34 +96,37 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 
 
-	/**
-	 * This method is automatically called when "agent".start() is executed.
-	 * Consider that Agent is launched for the first time. 
-	 * 			1) set the agent attributes 
-	 *	 		2) add the behaviours
-	 *          
-	 */
+	
 	protected void setup(){
 
 		super.setup();
+		//noeuds ouverts
 		this.openNodes=new ArrayList<String>();
+		//noeud fermés
 		this.closedNodes=new HashSet<String>();
 		this.openTresor=new ArrayList<String>();
 		this.closedTresor=new ArrayList<String>();
+		//nombre de tentative de deplacement depuis blocage
 		this.blockedSince=0;
 		this.lockingStart=null;
+		//priorite
 		this.priority=1;
+		//noeud cible
 		this.targetNode=null;
 		this.tagetPath=new ArrayList<String>();
+		//list objectifs
 		this.objectives=new ArrayList<String>();
+		//map
 		this.myMap=new MapRepresentation();
 		this.checkingBehaviourRunning=false;
+		//compte les actions
 		this.actionsCpt=0;
+		//liste de ping
 		this.lastPinged=new HashMap<String, Integer>();
 		this.blockSentAt=-1*delai;
 		this.previousPos=null;
 		
-		
+		//caracteristique de l'agent
 		for(Couple<Observation, Integer> o : getMyExpertise()) {//add to agent directly
 			if(o.getLeft().equals(Observation.LOCKPICKING)) {
 				myLockPicking=o.getRight().intValue();
@@ -138,30 +141,11 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		for(String id:idList) {
 			lastPinged.put(id, new Integer(-1*pingGap));
 		}
-		//myMap=new MapRepresentation();
-
-		//List<Behaviour> lb=new ArrayList<Behaviour>();
 		
-		/************************************************
-		 * 
-		 * ADD the behaviours of the Dummy Moving Agent
-		 * 
-		 ************************************************/
-		
-		//lb.add(new ExploMultiBehaviour(this,this.myMap, idList));
-		
-		
-		/***
-		 * MANDATORY TO ALLOW YOUR AGENT TO BE DEPLOYED CORRECTLY
-		 */
-		
-		
-		/*addBehaviour(new startMyBehaviours(this,lb));
-		
-		System.out.println("the  agent "+this.getLocalName()+ " is started");*/
 
 	}
 	
+	//appelle par les agents en fin d'action impliquant un deplacement pour gere le blocage
 	public void onBlock(String nextNode) {
 
 		this.incBlockedSince();
@@ -368,7 +352,17 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	public List<String> getObjectives() {
 		return objectives;
 	}
-	
+
+	public String getPreviousPos() {
+		return previousPos;
+	}
+
+
+	public void setPreviousPos(String previousPos) {
+		this.previousPos = previousPos;
+	}
+
+	//genere la liste d'objectif de l'agent
 	public void generateObjectives() {
 		if(this instanceof ExploreMultiAgent) {
 			generateObjectiveOpen();
@@ -380,16 +374,8 @@ public class DedaleAgent extends AbstractDedaleAgent {
 	
 	
 	
-	public String getPreviousPos() {
-		return previousPos;
-	}
 
-
-	public void setPreviousPos(String previousPos) {
-		this.previousPos = previousPos;
-	}
-
-
+	//genere la liste d'objecti des collecteurs
 	public void generateObjectiveCollect() {
 		//liste objectifs et liste infos pour le tri
 		ArrayList<String> obj = new ArrayList<String>();
@@ -501,6 +487,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		this.objectives=obj;
 	}
 	
+	//genere la liste d'objecti des ramasseurs
 	public void generateObjectiveOpen() {
 		//liste objectifs et liste infos pour le tri
 		ArrayList<String> obj = new ArrayList<String>();

@@ -5,38 +5,20 @@ import java.util.List;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
-import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.CheckTankerBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
-/**
- * This behaviour allows an agent to explore the environment and learn the associated topological map.
- * The algorithm is a pseudo - DFS computationally consuming because its not optimised at all.</br>
- * 
- * When all the nodes around him are visited, the agent randomly select an open node and go there to restart its dfs.</br> 
- * This (non optimal) behaviour is done until all nodes are explored. </br> 
- * 
- * Warning, this behaviour does not save the content of visited nodes, only the topology.</br> 
- * Warning, this behaviour is a solo exploration and does not take into account the presence of other agents (or well) and indefinitely tries to reach its target node
- * @author hc
- *
- */
+//exploration du collecteur
 public class ExploCollectorBehaviour extends DedaleSimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
 	private boolean finished = false;
 
-	/**
-	 * Current knowledge of the agent regarding the environment
-	 */
 
 
 	
-	private String previousPosition;
 	
 	
 	private CollectMultiAgent myDedaleAgent;
@@ -46,7 +28,6 @@ public class ExploCollectorBehaviour extends DedaleSimpleBehaviour {
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		
-		this.previousPosition=null;
 	}
 
 	@Override

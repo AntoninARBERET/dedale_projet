@@ -1,59 +1,70 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.tanker;
+package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
-
+import java.util.Iterator;
 import java.util.List;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.agents.yours.TankerAgent;
+import eu.su.mas.dedaleEtu.mas.agents.yours.DedaleAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.common.BlockingSendMessageBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
+import eu.su.mas.dedaleEtu.mas.knowledge.Block;
+import eu.su.mas.dedaleEtu.mas.knowledge.Help;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
-//comportement du tanker
-public class TankerBehaviour extends DedaleSimpleBehaviour{
+//gestion d'un blocage
+public class HelpingBehaviour extends DedaleSimpleBehaviour {
+
+	private static final long serialVersionUID = 8567689731496787661L;
+
+	private boolean finished = false;
+
+	private DedaleAgent myDedaleAgent;
 	
+	private DedaleSimpleBehaviour callingBehaviour;
 	
-	private static final long serialVersionUID = 9088209402507795289L;
-	private TankerAgent myDedaleAgent;
-	public TankerBehaviour (final TankerAgent myagent) {
+	public Help h;
+	
+	private String solution;
+
+	//gestion de l'aide, icomplet
+	public HelpingBehaviour(DedaleAgent myagent, Help h, DedaleSimpleBehaviour callingBehaviour) {
 		super(myagent);
-		this.myDedaleAgent=myagent;
+		this.myDedaleAgent = myagent;
+		this.h=h;
+		this.callingBehaviour=callingBehaviour;
+		callingBehaviour.block();
+		
+		
 	}
 
 	@Override
 	public void action() {
-		String myPosition=this.myDedaleAgent.getCurrentPosition();
-		myDedaleAgent.setMainBehaviour(this);
-		myDedaleAgent.setPriority(20);
+		super.action();
+		//SET MAINBEHAVIOUR
+		myDedaleAgent.setTargetNode(h.getObjective());
+		String myPosition = myDedaleAgent.getCurrentPosition();
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
 			boolean moved = false;
 			String nextNode=null;
 			//premier spot : noeud initial
-			if(myDedaleAgent.getMySpot()==null){
-				System.out.println(myDedaleAgent.getName()+" -----> spot = "+myPosition);
-				myDedaleAgent.setMySpot(myPosition);
-				myDedaleAgent.setTargetNode(myPosition);
-			}
 			
 			//observations
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			MapRepresentation.updateMapWithObs( myDedaleAgent,  myPosition , lobs);
 			myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 			
-			if(!myDedaleAgent.isFinalSpot() && myDedaleAgent.getOpenNodes().isEmpty()) {
-				myDedaleAgent.setMySpot(myDedaleAgent.getMap().calculateSilloSpot());
-				myDedaleAgent.setFinalSpot(true);
-			}
+			
 			
 			
 			//si je ne suis plus sur mon noeud
-			if(!myDedaleAgent.getMySpot().equals(myPosition)) {
+			if(!myDedaleAgent.getTargetNode().equals(myPosition)) {
 				System.out.println("Tanker try to come back");
 				
-				List<String> newPath = myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getMySpot());
+				List<String> newPath = myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getTargetNode());
 				myDedaleAgent.setTagetPath(newPath);
 				nextNode=newPath.get(0);
 				myDedaleAgent.moveTo(nextNode);
@@ -72,12 +83,15 @@ public class TankerBehaviour extends DedaleSimpleBehaviour{
 			myDedaleAgent.setPreviousPos(myPosition);
 		}
 		
+		
+			
 
 	}
-
 	@Override
 	public boolean done() {
-		return false;
+		return finished;
 	}
+	
+	
 
 }
