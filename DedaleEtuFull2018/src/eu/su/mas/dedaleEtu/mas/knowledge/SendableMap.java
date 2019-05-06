@@ -27,12 +27,14 @@ public class SendableMap implements Serializable {
 	private String sendingPos;
 	
 	private HashMap<String, Couple<String,String>> agentsInfo;
+	
+	private boolean silochecked;
 
 
 	
 
 	public SendableMap(ArrayList<Case> cases, ArrayList<Couple<String, String>> edges, HashMap<String, Couple<String,String>> agentsInfo,
-			String sender, String type, String sendingPos) {
+			String sender, String type, String sendingPos, boolean silochecked) {
 		
 		this.cases = cases;
 		this.edges = edges;
@@ -40,6 +42,7 @@ public class SendableMap implements Serializable {
 		this.type = type;
 		this.sendingPos = sendingPos;
 		this.agentsInfo=agentsInfo;
+		this.silochecked=silochecked;
 	}
 
 	public ArrayList<Case> getCases() {
@@ -66,6 +69,8 @@ public class SendableMap implements Serializable {
 		return agentsInfo;
 	}
 	
-	
+	public boolean getSilochecked() {
+		return silochecked;
+	}
 	
 }

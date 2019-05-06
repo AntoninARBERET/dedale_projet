@@ -43,13 +43,13 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 			return;
 		}
 		//si on a pas d'info sur le tanker
-		if(tankerPos==null) {
+		if(tankerPos==null || myDedaleAgent.getMap().getSilochecked()) {
 			finished = true;
 			if(myDedaleAgent instanceof CollectMultiAgent) {
-				System.out.println(myDedaleAgent.getLocalName() + " -----> pas de tanker a check, passage a la collecte");
+				System.out.println(myDedaleAgent.getLocalName() + " -----> pas ou plus de tanker a check, passage a la collecte");
 				myDedaleAgent.addBehaviour(new CollectBehaviour((CollectMultiAgent)myDedaleAgent));
 			}else {
-				System.out.println(myDedaleAgent.getLocalName() + " -----> pas de tanker a check, passage a l'ouverture");
+				System.out.println(myDedaleAgent.getLocalName() + " -----> pas ou plus de tanker a check, passage a l'ouverture");
 				myDedaleAgent.addBehaviour(new OpenBehaviour((ExploreMultiAgent)myDedaleAgent));
 			}
 			
@@ -88,6 +88,7 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 					if(myPosition.equals(myDedaleAgent.getTargetNode())){
 						finished = true;
 						myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
+						myDedaleAgent.getMap().setSilochecked(true);
 						myDedaleAgent.getMap().calculateSilloSpot();
 						if(myDedaleAgent instanceof CollectMultiAgent) {
 							System.out.println(myDedaleAgent.getLocalName() + " -----> tanker checked, passage a la collecte");

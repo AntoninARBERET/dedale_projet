@@ -45,6 +45,7 @@ public class MapRepresentation implements Serializable {
 	private HashMap<String, Couple<String,String>> agentsInfo;
 	private Graph gPrime;
 	private String silloSpot;
+	private boolean silochecked;
 	
 	/*********************************
 	 * Parameters for graph rendering
@@ -70,6 +71,7 @@ public class MapRepresentation implements Serializable {
 		agentsInfo=new  HashMap<String, Couple<String,String>>();
 		this.gPrime=null;
 		this.silloSpot=null;
+		this.silochecked=false;
 		//this.nodes_informations=new Hashtable<String, String[]>();
 	}
 
@@ -243,7 +245,7 @@ public class MapRepresentation implements Serializable {
 	}
 	
 	public String calculateSilloSpot() {
-		int maxNodeSpot=(int)(this.g.getNodeCount()*0.2)+1;
+		int maxNodeSpot=(int)(this.g.getNodeCount()*0.1)+1;
 		ArrayList<Couple<String, float[]>> listed = new ArrayList<Couple<String, float[]>>();
 		
 		//classement des noeud par dist moyenne aux autres puis coeff de clustering
@@ -508,7 +510,7 @@ public class MapRepresentation implements Serializable {
 		}
 		
 		String type = myDedaleAgent.getType();
-		return new SendableMap(cases, edges, agentsInfo, sender, type, pos);
+		return new SendableMap(cases, edges, agentsInfo, sender, type, pos, silochecked);
 	}
 	
 	//A passer en non static
@@ -533,7 +535,8 @@ public class MapRepresentation implements Serializable {
 		//Gestion de l'agent envoyeur
 		myDedaleAgent.getMap().getAgentsInfo().put(recieved.getSender(), new Couple<String, String>(recieved.getType(), recieved.getSendingPos()));
 		
-		
+		//
+		myDedaleAgent.getMap().setSilochecked(myDedaleAgent.getMap().getSilochecked()|| recieved.getSilochecked());
 		
 		//ajout des noeuds
 		for(Case c : recieved.getCases()) {
@@ -737,9 +740,17 @@ public class MapRepresentation implements Serializable {
 			System.out.println(str);
 		}
 	}
-	
-	
 
+	public boolean getSilochecked() {
+		return silochecked;
+	}
+
+	public void setSilochecked(boolean silochecked) {
+		this.silochecked = silochecked;
+	}
+	
+	
+	
 	
 	
 }

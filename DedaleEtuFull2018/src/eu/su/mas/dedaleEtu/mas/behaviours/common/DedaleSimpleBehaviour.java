@@ -33,7 +33,7 @@ public class DedaleSimpleBehaviour extends SimpleBehaviour{
 			return;
 		}
 		if(temporised) {
-			myDedaleAgent.doWait(300);
+			myDedaleAgent.doWait(150);
 		}
 		myDedaleAgent.incActionsCpt();
 	}

@@ -85,6 +85,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 						try {
 							picked= myDedaleAgent.pick();//TODO null pointer ex 
 						}catch(Exception e) {
+							System.out.println(myDedaleAgent.getLocalName() + "-----> Exception sur pick  gold at "+myPosition);
 							e.printStackTrace();
 							return;
 						}
