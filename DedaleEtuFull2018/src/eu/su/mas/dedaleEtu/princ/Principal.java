@@ -420,11 +420,11 @@ public class Principal {
 		/*********
 		 * AGENT Golem
 		 *********/
-		/*c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+		c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
 		agentName="Golem";
 		Object [] entityParameters={"My parameters"};
 		ag=createNewDedaleAgent(c, agentName, DummyWumpusShift.class.getName(), entityParameters);
-		 agentList.add(ag);*/
+		 agentList.add(ag);
 		
 		
 		

@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 	public Block b;
 	
 	private String solution;
+	
+	private Date start;
 
 
 	public BlockHandlingBehaviour(DedaleAgent myagent, Block b, DedaleSimpleBehaviour callingBehaviour) {
@@ -36,6 +39,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		callingBehaviour.suspend();
 		this.solution=null;
 		this.temporised=true;
+		start=new Date();
 		
 		//recherche du noeud le plus proche qui ne gene pas
 		String position = myDedaleAgent.getCurrentPosition();
@@ -73,6 +77,10 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		if(suspended) {
 			return;
 		}
+		if(new Date().getTime()-start.getTime()>10000) {
+			finished=true;
+			callingBehaviour.resume();
+		}
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(60);
@@ -109,7 +117,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 					}
 					boolean tmp=myDedaleAgent.moveTo(nextNode);
 					if(!tmp) {
-						System.out.println(myDedaleAgent.getLocalName() +"Fail move : " + myPosition + "next" +nextNode );
+						//System.out.println(myDedaleAgent.getLocalName() +"Fail move : " + myPosition + "next" +nextNode );
 
 					}
 					moved=true;

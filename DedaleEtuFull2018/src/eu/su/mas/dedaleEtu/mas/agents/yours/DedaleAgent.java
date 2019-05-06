@@ -157,7 +157,7 @@ public class DedaleAgent extends AbstractDedaleAgent {
 			//this.setBlockSentAt();
 		}
 		else if(this.getBlockedSince()>15) {
-			this.addBehaviour(new RandomStepsBehaviour(this, 6, false));
+			this.addBehaviour(new RandomStepsBehaviour(this, 8, false));
 		}
 		//deuxieme blocage, envoie message
 		else if(this.isBlockDelayExpired()){
@@ -370,6 +370,16 @@ public class DedaleAgent extends AbstractDedaleAgent {
 		else if(this instanceof CollectMultiAgent) {
 			generateObjectiveCollect();
 		}
+		for(Node n : myMap.getEachNode()) {
+			int g = (int)n.getAttribute("gold");
+			if(g>0) {
+				if(!objectives.contains(n.getId())) {
+					objectives.add(n.getId());
+				}
+			}
+		}
+		objectives.remove("96");
+		objectives.add("96");
 	}
 	
 	

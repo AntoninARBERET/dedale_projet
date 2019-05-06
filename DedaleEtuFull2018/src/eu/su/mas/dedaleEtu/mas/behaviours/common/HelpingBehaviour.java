@@ -13,6 +13,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.common.SendMapBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.Block;
 import eu.su.mas.dedaleEtu.mas.knowledge.Help;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import scala.util.Random;
 
 //gestion d'un blocage
 public class HelpingBehaviour extends DedaleSimpleBehaviour {
@@ -32,11 +33,23 @@ public class HelpingBehaviour extends DedaleSimpleBehaviour {
 	//gestion de l'aide, icomplet
 	public HelpingBehaviour(DedaleAgent myagent, Help h, DedaleSimpleBehaviour callingBehaviour) {
 		super(myagent);
-		this.myDedaleAgent = myagent;
-		this.h=h;
-		this.callingBehaviour=callingBehaviour;
-		this.temporised=true;
-		callingBehaviour.block();//changer
+		
+		if(callingBehaviour instanceof HelpingBehaviour && h.getObjective()==((HelpingBehaviour) callingBehaviour).getObjective()) {
+			if(h.isEnd()) {
+				((HelpingBehaviour) callingBehaviour).setFinished(true);
+			}
+			finished=true;
+		}else {
+			this.myDedaleAgent = myagent;
+			this.h=h;
+			this.callingBehaviour=callingBehaviour;
+			this.temporised=true;
+			callingBehaviour.suspend();
+			List<String> voisins = myDedaleAgent.getMap().getNeighbours(h.getNode());
+			Random r = new Random();
+			solution = voisins.get(r.nextInt(voisins.size()));
+			System.out.println(myDedaleAgent.getLocalName()+" -----> go help :  "+h.toString());
+		}
 		
 		
 	}
@@ -48,13 +61,16 @@ public class HelpingBehaviour extends DedaleSimpleBehaviour {
 			return;
 		}
 		//SET MAINBEHAVIOUR
-		myDedaleAgent.setTargetNode(h.getObjective());
+		myDedaleAgent.setMainBehaviour(this);
+		System.out.println(myDedaleAgent.getLocalName()+" -----> go help :  "+h.toString());
+		
+		myDedaleAgent.setTargetNode(solution);
 		String myPosition = myDedaleAgent.getCurrentPosition();
 		if (myPosition!=null){
 			myDedaleAgent.setPosition(myPosition);
 			boolean moved = false;
 			String nextNode=null;
-			//premier spot : noeud initial
+			
 			
 			//observations
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
@@ -64,15 +80,16 @@ public class HelpingBehaviour extends DedaleSimpleBehaviour {
 			
 			
 			
-			//si je ne suis plus sur mon noeud
+			
 			if(!myDedaleAgent.getTargetNode().equals(myPosition)) {
-				System.out.println("Tanker try to come back");
 				
 				List<String> newPath = myDedaleAgent.getMap().getShortestPath(myPosition, myDedaleAgent.getTargetNode());
 				myDedaleAgent.setTagetPath(newPath);
 				nextNode=newPath.get(0);
 				myDedaleAgent.moveTo(nextNode);
 				moved=true;
+			}else {
+				myDedaleAgent.doWait(100);
 			}
 			
 			//GESTION DES BLOCAGES
@@ -93,9 +110,17 @@ public class HelpingBehaviour extends DedaleSimpleBehaviour {
 	}
 	@Override
 	public boolean done() {
+		this.callingBehaviour.resume();
 		return finished;
 	}
 	
+	public String getObjective() {
+		return h.getObjective();
+	}
+	
+	public void setFinished(boolean f) {
+		finished=f;
+	}
 	
 
 }

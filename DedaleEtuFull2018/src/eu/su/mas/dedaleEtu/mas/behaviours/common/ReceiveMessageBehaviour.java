@@ -79,7 +79,7 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 					
 				case "HELP":
 					Help h = (Help) msg.getContentObject();
-					if(h.getType().equals(myDedaleAgent.getType())){
+					if(h.getObjective().equals(myDedaleAgent.getTargetNode())){
 						myDedaleAgent.addBehaviour(new HelpingBehaviour(myDedaleAgent, h, myDedaleAgent.getMainBehaviour()));
 					}
 					break;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
+import eu.su.mas.dedale.mas.agent.behaviours.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.agents.yours.CollectMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.RandomStepsBehaviour;
@@ -70,7 +71,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 			//Condition d'arret : check si plus de noeuds ouverts
 			if(objectives.isEmpty() && myDedaleAgent.getBackPackFreeSpace()==myDedaleAgent.getTotalSpace()){
 				finished=true;
-				System.out.println("AJOUTER PASSAGE AU BEHAVIOUR SUIVANT");
+				myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
 				System.out.println("Exploration successufully done, behaviour removed.");
 			}else {
 				//phase de collecte

@@ -2,6 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.common;
 
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +20,7 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 	private int nbSteps;
 	private boolean finished = false;
 	private boolean mapSending;
+	private Date start;
 
 	public RandomStepsBehaviour (final DedaleAgent myagent, int nbSteps, boolean mapSending) {
 		super(myagent);
@@ -27,6 +29,7 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 		//si true, envoie de la map a chaque pas
 		this.mapSending=mapSending;
 		this.temporised=true;
+		this.start = new Date();
 	}
 
 	@Override
@@ -34,6 +37,9 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 		onAction();
 		if(suspended) {
 			return;
+		}
+		if(new Date().getTime()-start.getTime()>10000) {
+			finished=true;
 		}
 		//Envoie de map si requis
 		if(mapSending) {

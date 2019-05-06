@@ -78,7 +78,7 @@ public class BlockingSendMessageBehaviour extends DedaleSimpleBehaviour{
 			 this.myDedaleAgent.sendMessage(msg);
 			 this.finished=true;
 			 myDedaleAgent.setLockingStart(new Date());
-			 System.out.println(this.myDedaleAgent.getLocalName()+" ----> Block on "+myDedaleAgent.getPosition()+" to "+myDedaleAgent.getTargetNode() +" during "+myDedaleAgent.getMainBehaviour().getBehaviourName());//*peut etre ajout� le receveur*/);
+			// System.out.println(this.myDedaleAgent.getLocalName()+" ----> Block on "+myDedaleAgent.getPosition()+" to "+myDedaleAgent.getTargetNode() +" during "+myDedaleAgent.getMainBehaviour().getBehaviourName());//*peut etre ajout� le receveur*/);
 		 }
 	 }
 	 

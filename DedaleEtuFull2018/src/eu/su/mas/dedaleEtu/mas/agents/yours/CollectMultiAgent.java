@@ -47,6 +47,11 @@ public class CollectMultiAgent extends DedaleAgent {
 		p.setValue(new Integer(myStrengh));
 		sd.addProperties(p);
 		
+		p=new Property();
+		p.setName("lockPicking");
+		p.setValue(new Integer(myLockPicking));
+		sd.addProperties(p);
+		
 		
 		//Register the service
 		try {

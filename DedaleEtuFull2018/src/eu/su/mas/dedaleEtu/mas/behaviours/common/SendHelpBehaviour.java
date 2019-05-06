@@ -20,15 +20,18 @@ public class SendHelpBehaviour extends DedaleSimpleBehaviour{
 	private String recieverName;
 	private int priority;
 	private String type;
+	private boolean end;
+	private String node;
 
 	 
 	 
 	 
-	 public SendHelpBehaviour (DedaleAgent myagent, String type, String objective){
+	 public SendHelpBehaviour (DedaleAgent myagent, String objective, String node, boolean end){
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.agentslist = myDedaleAgent.getIdList();
-		this.type = type;
+		this.node=node;
+		this.end=end;
 		this.objective=objective;
 		this.temporised=false;
 
@@ -56,7 +59,8 @@ public class SendHelpBehaviour extends DedaleSimpleBehaviour{
 		//2° compute the random value
 		 try {
 			  msg.setProtocol("HELP");
-			  Help h = new Help(myDedaleAgent.getLocalName(), type, objective);
+			  Help h = new Help(myDedaleAgent.getLocalName(), objective, node, end);
+			  System.out.println(myDedaleAgent.getLocalName()+" -----> sent help : "+h.toString());
 			  msg.setContentObject(h);
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -7,9 +7,10 @@ import org.graphstream.graph.Node;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
+import eu.su.mas.dedale.mas.agent.behaviours.RandomWalkBehaviour;
 import eu.su.mas.dedaleEtu.mas.agents.yours.ExploreMultiAgent;
 import eu.su.mas.dedaleEtu.mas.behaviours.common.DedaleSimpleBehaviour;
-
+import eu.su.mas.dedaleEtu.mas.behaviours.common.SendHelpBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
 
@@ -75,7 +76,7 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 					//Condition d'arret : check si plus de noeuds ouverts
 					if(myDedaleAgent.getObjectives().isEmpty()){
 						finished=true;
-						System.out.println("AJOUTER PASSAGE AU BEHAVIOUR SUIVANT");
+						myDedaleAgent.addBehaviour(new RandomWalkBehaviour(myDedaleAgent));
 						System.out.println(myDedaleAgent.getLocalName()+" -----> Opening successufully done, behaviour removed.");
 					}else {
 						//phase d'ouverture
@@ -117,7 +118,8 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 										if(openSucces) {
 											System.out.println(myDedaleAgent.getLocalName()+" -----> Open on "+myPosition);
 											if(helpNeeded) {
-												//Envoie du message de fin
+												helpNeeded=false;
+												myDedaleAgent.addBehaviour(new SendHelpBehaviour(myDedaleAgent, myDedaleAgent.getPosition(),myDedaleAgent.getPosition(),true));
 											}
 											
 											//maj objectif
@@ -134,7 +136,8 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 										//echec ouverture
 										else{
 											if(!(boolean)myDedaleAgent.getMap().getNode(myPosition).getAttribute("tresor_open")) {
-												//demande aide
+												helpNeeded=true;
+												myDedaleAgent.addBehaviour(new SendHelpBehaviour(myDedaleAgent, myPosition,myPosition,false));
 											}
 											
 											//ouvert par autre agent
