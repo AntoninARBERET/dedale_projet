@@ -12,23 +12,43 @@ public class DedaleSimpleBehaviour extends SimpleBehaviour{
 
 	
 	private DedaleAgent myDedaleAgent;
-
-
+	protected boolean suspended;
+	protected boolean temporised;
+	
 	public DedaleSimpleBehaviour(final DedaleAgent myagent) {
 		super(myagent);
 		myDedaleAgent = myagent;
+		suspended=false;
+		
 	}
 
 
 	public void action() {
+		
+		
+		
+	}
+	public void onAction() {
+		if(suspended) {
+			return;
+		}
+		if(temporised) {
+			myDedaleAgent.doWait(300);
+		}
 		myDedaleAgent.incActionsCpt();
-		//temporisation generale
-		myDedaleAgent.doWait(200);
 	}
 
 	public boolean done() {
 
 		return false;
+	}
+	
+	public void suspend() {
+		suspended=true;
+	}
+	
+	public void resume(){
+		suspended=false;
 	}
 
 }

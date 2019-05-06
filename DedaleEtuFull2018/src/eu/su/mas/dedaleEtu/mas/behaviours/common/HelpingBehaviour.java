@@ -35,14 +35,18 @@ public class HelpingBehaviour extends DedaleSimpleBehaviour {
 		this.myDedaleAgent = myagent;
 		this.h=h;
 		this.callingBehaviour=callingBehaviour;
-		callingBehaviour.block();
+		this.temporised=true;
+		callingBehaviour.block();//changer
 		
 		
 	}
 
 	@Override
 	public void action() {
-		super.action();
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setTargetNode(h.getObjective());
 		String myPosition = myDedaleAgent.getCurrentPosition();

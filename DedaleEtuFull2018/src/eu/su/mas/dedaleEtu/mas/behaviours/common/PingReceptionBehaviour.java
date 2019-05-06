@@ -15,6 +15,7 @@ public class PingReceptionBehaviour extends DedaleSimpleBehaviour{
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.recievedName = recievedName;
+		this.temporised=false;
 	 }
 	 
 	 

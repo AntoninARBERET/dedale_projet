@@ -21,11 +21,15 @@ public class RandomWalkBehaviour extends DedaleSimpleBehaviour{
 	public RandomWalkBehaviour (final DedaleAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
+		this.temporised=true;
 	}
 
 	@Override
 	public void action() {
-		
+		onAction();
+		if(suspended) {
+			return;
+		}
 		myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 		if (myPosition!=null){

@@ -33,8 +33,9 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		this.myDedaleAgent = myagent;
 		this.b=b;
 		this.callingBehaviour=callingBehaviour;
-		callingBehaviour.block();
+		callingBehaviour.suspend();
 		this.solution=null;
+		this.temporised=true;
 		
 		//recherche du noeud le plus proche qui ne gene pas
 		String position = myDedaleAgent.getCurrentPosition();
@@ -68,7 +69,10 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 
 	@Override
 	public void action() {
-		super.action();
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(60);
@@ -76,7 +80,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 		if(solution==null) {
 			finished=true;
 			myDedaleAgent.addBehaviour(new BlockingSendMessageBehaviour(myDedaleAgent,"-1", b.getPriority()+1, myDedaleAgent.getNextNode(), myDedaleAgent.getTargetNode()));
-			callingBehaviour.restart();
+			callingBehaviour.resume();
 		}
 		
 		//solution
@@ -95,7 +99,7 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 				//arrive
 				if (myPosition.equals(myDedaleAgent.getTargetNode())){
 					finished=true;
-					callingBehaviour.restart();
+					callingBehaviour.resume();
 				}else{
 					//Calcul du chemin, MaJ de l'objectif
 					if (nextNode==null){
@@ -116,8 +120,8 @@ public class BlockHandlingBehaviour extends DedaleSimpleBehaviour {
 				//
 				//position inchangee meme si moveTo
 				if(myDedaleAgent.getPreviousPos() !=null && myDedaleAgent.getPreviousPos().equals(myPosition) && moved  && nextNode!=null) {
-					System.out.println(myDedaleAgent.getLocalName() +" -----> blocage dans handling prev : " +myDedaleAgent.getPreviousPos() + " current "+ myPosition + "next" +nextNode );
-					System.out.println(myDedaleAgent.getLocalName() +" -----> block associe : " +b.toString() );
+					//System.out.println(myDedaleAgent.getLocalName() +" -----> blocage dans handling prev : " +myDedaleAgent.getPreviousPos() + " current "+ myPosition + "next" +nextNode );
+					//System.out.println(myDedaleAgent.getLocalName() +" -----> block associe : " +b.toString() );
 					myDedaleAgent.incBlockedSince();
 					//premier blocage, envoie de map
 					if(myDedaleAgent.getBlockedSince()<2) {

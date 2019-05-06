@@ -40,6 +40,7 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 		this.keepingNode=null;
 		this.keepedNode=null;
 		this.currentObjective = 0;
+		this.temporised=true;
 		
 		myDedaleAgent.generateObjectives();
 		this.objectives=myDedaleAgent.getObjectives();
@@ -54,6 +55,10 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//SET MAINBEHAVIOUR
 				myDedaleAgent.setMainBehaviour(this);
 				
@@ -241,7 +246,7 @@ public class OpenBehaviour extends DedaleSimpleBehaviour {
 					voisin=tmp;
 				}
 				if(cpt==3) {
-					return prec;
+					return voisin;
 				}
 			}
 		}

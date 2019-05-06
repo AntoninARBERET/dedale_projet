@@ -35,6 +35,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 		this.myDedaleAgent = myagent;
 		this.dropPhase=false;
 		this.currentObjective = 0;
+		this.temporised=true;
 		
 		myDedaleAgent.generateObjectives();
 		this.objectives=myDedaleAgent.getObjectives();
@@ -49,6 +50,10 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(40);
@@ -76,7 +81,13 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 					//sur l'objectif
 					if(myPosition.equals(myDedaleAgent.getTargetNode())){
 						//pick
-						int picked= myDedaleAgent.pick();
+						int picked=0;
+						try {
+							picked= myDedaleAgent.pick();//TODO null pointer ex 
+						}catch(Exception e) {
+							e.printStackTrace();
+							return;
+						}
 						if(picked>0) {
 							myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
 							System.out.println(myDedaleAgent.getLocalName() + "-----> Picked "+picked+" gold at "+myPosition);
@@ -132,7 +143,7 @@ public class CollectBehaviour extends DedaleSimpleBehaviour {
 							//targetAgent = goalsId.get(goals.indexOf(goalPos));
 							
 						}*/
-						targetAgent="Tanker1";//hardcoded, TODO
+						targetAgent="Silo";//hardcoded, TODO
 						
 						
 					}

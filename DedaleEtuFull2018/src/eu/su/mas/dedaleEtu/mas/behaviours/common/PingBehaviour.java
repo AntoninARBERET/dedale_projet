@@ -19,11 +19,12 @@ public class PingBehaviour extends DedaleSimpleBehaviour{
 		super(myagent);
 		this.myDedaleAgent = myagent;
 		this.agentslist = myDedaleAgent.getIdList();
+		this.temporised=true;
 	 }
 	 
 	 
 	 public void action() {
-		 super.action();
+		onAction();
 		 //creation du message
 		 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		 msg.setSender(this.myDedaleAgent.getAID());

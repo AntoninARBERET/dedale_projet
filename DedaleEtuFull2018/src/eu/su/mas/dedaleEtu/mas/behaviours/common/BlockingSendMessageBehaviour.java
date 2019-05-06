@@ -34,10 +34,12 @@ public class BlockingSendMessageBehaviour extends DedaleSimpleBehaviour{
 		this.objective=objective;
 		this.dest = dest;
 		this.priority=priority;
+		this.temporised=false;
 	 }
 	 
 	 
 	 public void action() {
+		onAction();
 		 
 		 if(myDedaleAgent.getLockingStart() !=null && new Date().getTime() -myDedaleAgent.getLockingStart().getTime()<500) {
 			 if(!myDedaleAgent.isCheckingBehaviourRunning()) {

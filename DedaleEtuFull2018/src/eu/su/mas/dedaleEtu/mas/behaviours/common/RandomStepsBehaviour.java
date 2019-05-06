@@ -26,10 +26,15 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 		this.nbSteps=nbSteps;
 		//si true, envoie de la map a chaque pas
 		this.mapSending=mapSending;
+		this.temporised=true;
 	}
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//Envoie de map si requis
 		if(mapSending) {
 			myDedaleAgent.addBehaviour(new SendMapBehaviour(myDedaleAgent, "-1"));
@@ -56,7 +61,10 @@ public class RandomStepsBehaviour extends DedaleSimpleBehaviour{
 					moveId=tmp+1;
 				}
 			}
-			((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());
+			boolean moved=this.myDedaleAgent.moveTo(lobs.get(moveId).getLeft());
+			if(moved) {
+				myDedaleAgent.resetBlockedSince();
+			}
 			myDedaleAgent.doWait(200);
 			nbSteps--;
 			if(nbSteps<=0) {

@@ -25,13 +25,17 @@ public class ExploExplorerBehaviour extends DedaleSimpleBehaviour {
 	public ExploExplorerBehaviour(final ExploreMultiAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
+		this.temporised=true;
 		
 	}
 
 	@Override
 	public void action() {
 		//SET MAINBEHAVIOUR
-		
+		onAction();
+		if(suspended) {
+			return;
+		}
 		
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(30);

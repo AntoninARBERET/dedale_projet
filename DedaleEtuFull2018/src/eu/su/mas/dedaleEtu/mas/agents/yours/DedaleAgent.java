@@ -150,14 +150,14 @@ public class DedaleAgent extends AbstractDedaleAgent {
 
 		this.incBlockedSince();
 		//premier blocage, envoie de map
-		System.out.println(getLocalName() + " since "+blockedSince +"blockat"+this.blockSentAt);
+		//System.out.println(getLocalName() + " since "+blockedSince +"blockat"+this.blockSentAt);
 		if(this.getBlockedSince()<2) {
 			
 			this.addBehaviour(new SendMapBehaviour(this, "-1"));
 			//this.setBlockSentAt();
 		}
 		else if(this.getBlockedSince()>15) {
-			this.addBehaviour(new RandomStepsBehaviour(this, 2, false));
+			this.addBehaviour(new RandomStepsBehaviour(this, 6, false));
 		}
 		//deuxieme blocage, envoie message
 		else if(this.isBlockDelayExpired()){

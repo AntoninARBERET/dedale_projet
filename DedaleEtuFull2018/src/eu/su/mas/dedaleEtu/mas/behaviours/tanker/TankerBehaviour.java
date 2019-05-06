@@ -20,10 +20,15 @@ public class TankerBehaviour extends DedaleSimpleBehaviour{
 	public TankerBehaviour (final TankerAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent=myagent;
+		this.temporised=true;
 	}
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		String myPosition=this.myDedaleAgent.getCurrentPosition();
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(20);

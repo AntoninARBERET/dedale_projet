@@ -20,6 +20,7 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 	public ReceiveMessageBehaviour(final DedaleAgent myagent) {
 		super(myagent);
 		myDedaleAgent = myagent;
+		this.temporised=false;
 	}
 
 
@@ -56,15 +57,15 @@ public class ReceiveMessageBehaviour extends DedaleSimpleBehaviour{
 					Block b = (Block) msg.getContentObject();
 					System.out.println(myDedaleAgent.getLocalName()+" -----> sur "+myDedaleAgent.getPosition()+" recu : "+b.toString());
 					//si je suis sur la position de conflit
-					if(b.getDest().equals(myDedaleAgent.getPosition())){
+					if(myDedaleAgent.getPosition().equals(b.getDest())){//TODO NPE
 						boolean greaterPrio=false;
 						//check priorite
 						if(myDedaleAgent.getPriority()>b.getPriority()) {
-							System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car prio : "+myDedaleAgent.getPriority()+"plus haute" +b.getSender());
+							//System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car prio : "+myDedaleAgent.getPriority()+"plus haute" +b.getSender());
 							greaterPrio=true;
 						}
 						else if(myDedaleAgent.getPriority()==b.getPriority() && AlphaNumCompare.isFirst(myDedaleAgent.getLocalName(), b.getSender())){
-							System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car id avant " +b.getSender());
+							//System.out.println(myDedaleAgent.getLocalName()+" -----> ignore block car id avant " +b.getSender());
 
 							greaterPrio=true;
 						}

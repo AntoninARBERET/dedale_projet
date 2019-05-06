@@ -27,6 +27,7 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 	public CheckTankerBehaviour(final DedaleAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
+		this.temporised=true;
 		
 		tankerPos=null;
 		Couple<List<String>, List<String>> tmp = myDedaleAgent.getMap().getPosByType("tanker");
@@ -37,6 +38,10 @@ public class CheckTankerBehaviour extends DedaleSimpleBehaviour {
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//si on a pas d'info sur le tanker
 		if(tankerPos==null) {
 			finished = true;

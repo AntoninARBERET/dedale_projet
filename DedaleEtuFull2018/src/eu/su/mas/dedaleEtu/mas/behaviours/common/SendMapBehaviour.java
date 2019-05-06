@@ -24,7 +24,7 @@ public class SendMapBehaviour extends DedaleSimpleBehaviour{
 		this.myDedaleAgent = myagent;
 		this.receiverName=receiverNames;
 		this.agentsIds = myDedaleAgent.getIdList();
-		
+		this.temporised=false;
 	}
 
 

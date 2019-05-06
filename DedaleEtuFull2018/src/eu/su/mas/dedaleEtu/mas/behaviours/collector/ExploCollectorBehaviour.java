@@ -27,11 +27,15 @@ public class ExploCollectorBehaviour extends DedaleSimpleBehaviour {
 	public ExploCollectorBehaviour(final CollectMultiAgent myagent) {
 		super(myagent);
 		this.myDedaleAgent = myagent;
-		
+		this.temporised=true;
 	}
 
 	@Override
 	public void action() {
+		onAction();
+		if(suspended) {
+			return;
+		}
 		//SET MAINBEHAVIOUR
 		myDedaleAgent.setMainBehaviour(this);
 		myDedaleAgent.setPriority(30);

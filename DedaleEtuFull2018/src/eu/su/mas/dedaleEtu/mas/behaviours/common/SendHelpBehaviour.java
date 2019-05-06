@@ -30,6 +30,7 @@ public class SendHelpBehaviour extends DedaleSimpleBehaviour{
 		this.agentslist = myDedaleAgent.getIdList();
 		this.type = type;
 		this.objective=objective;
+		this.temporised=false;
 
 	 }
 	 
